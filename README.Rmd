@@ -13,7 +13,7 @@ Details of SCnorm may be found in the vignette at:
 To install the development version of SCnorm from Github:
 ```R
 library(devtools)
-devtools::install_github("rstatbacher/SCnorm", build_vignettes = TRUE)
+devtools::install_github("rhondabacher/SCnorm", build_vignettes = TRUE)
 ```
 
 
