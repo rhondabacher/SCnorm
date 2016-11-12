@@ -63,7 +63,7 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, N
 	if(PLOT == TRUE) {	
 		plot(density(na.omit(NormSlopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
 			xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
-		for (i in 1:10) {
+		for (i in 1:length(sreg)) {
 			useg <- names(sreg[[i]])
 			lines(density(na.omit(NormSlopes[useg]), from=-3, to=3, adjust=1), lwd=3, col=colors[i])
 		}
