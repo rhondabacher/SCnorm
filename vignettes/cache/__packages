@@ -1,0 +1,9 @@
+base
+knitr
+SparseM
+quantreg
+cluster
+moments
+reshape2
+ggplot2
+SCnorm

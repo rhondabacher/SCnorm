@@ -1,0 +1,190 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{SCnorm_vigette}
+\documentclass{article}
+%\usepackage{fullpage}
+\usepackage{graphicx, graphics, epsfig,setspace,amsmath, amsthm}
+%\usepackage{hyperref}
+\usepackage{natbib}
+%\usepackage{listings}
+\usepackage{moreverb}
+
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis", cahce=TRUE>>=
+  BiocStyle::latex()
+@
+  
+  \begin{document}
+% \SweaveOpts{concordance=TRUE}
+\title{SCnorm: a quantile-regression based approach for robust normalization of single-cell RNA-seq data}
+\author{Rhonda Bacher and Christina Kendziorski}
+\maketitle
+\tableofcontents
+\setcounter{tocdepth}{2}
+
+\section{Introduction}
+\label{sec:intro}
+SCnorm (as detailed in Bacher* and Chu* {\it et al.}, {\it{submitted}}) 
+is a quantile-regression based approach for robust normalization of 
+single-cell RNA-seq data. SCnorm groups genes based on their count-depth relationship then applies a quantile regression to each group in order to estimate scaling factors which will remove the effect of sequencing depth from the counts. 
+
+\section{Run SCnorm}
+\label{sec:quickstart}
+Before analysis can proceed, the SCnorm package must be installed.
+<<cache=TRUE, eval=FALSE, echo=TRUE>>=
+install.packages('SCnorm_x.x.x.tar.gz', repos=NULL, type="source")
+@
+
+After successful installation, the package must be loaded into the working space:
+<<cache=TRUE, eval=TRUE, echo=TRUE>>=
+  library(SCnorm)
+@
+  
+  \subsection{Required inputs}
+\label{sec:startgenedeinput}
+\begin{flushleft}
+{\bf Data}:  The matrix \verb+Data+ should be a $G-by-S$ matrix
+containing the expression values for each gene and each cell,
+where $G$ is the number of genes and $S$ is the number of cells/samples. The matrix should contain
+estimates of gene expression. Counts of this nature may be obtained from RSEM, HTSeq, Cufflinks, Salmon or a similar approach.
+\end{flushleft}
+
+\noindent The object \verb+ExampleData+ is a simulated data matrix containing
+5,000 rows of genes and 180 columns of cells. 
+
+<<cache=TRUE, eval=TRUE>>=
+data(ExampleData)
+str(ExampleData)
+@
+  
+  Here we simulated data as in SIM 1 (as detailed in Bacher* and Chu* {\it et al.}, {\it{submitted}}) with K = 4 (four slope groups), each condition has 90 cells and condition 2 has been 
+sequenced approximately 4 times as much as condition 1.
+
+{\bf Conditions}: The object \verb+Conditions+ should be a vector of length $S$ indicating which condition each cell belongs to. The order of this vector should match the order of the columns in the \verb+Data+ matrix.
+<<cache=TRUE, eval=TRUE>>=
+Conditions = rep(c(1,2), each= 90)
+str(Conditions)
+@
+  
+  
+  
+  \subsection{SCnorm: Check count-depth relationship}
+\label{sec:checkData}
+Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar mode then a global strategy such as median-by-ratio in the DESeq package will work fine. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
+
+The function below will estimate the count-depth relationship for all genes, genes are divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only gene expressed in very few cells or very low expressors are the main concern.
+<<cache=TRUE, eval=FALSE>>=
+checkCountDepth(Data = ExampleData, Conditions = Conditions, OutputName = "check_exampleData", 
+                PLOT=TRUE, FilterCellProportion = .1)
+@
+  
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.7\textwidth]{check_exampleData_initial_evaluation.pdf}
+\caption{Evaluation of count-depth relationship in un-normalized data.}
+\end{figure}
+
+\newpage
+It can also be used to evaluate data normalized by other methods:
+<<cache=TRUE, eval=FALSE>>=
+
+# Total Count normalization, Counts Per Million, CPM. 
+ExampleData.Norm <- t((t(ExampleData) / colSums(ExampleData)) * mean(colSums(ExampleData))) 
+
+checkCountDepth(Data = ExampleData, NormalizedData = ExampleData.Norm, 
+                Condition = Conditions, OutputName = "check_exampleDataNorm", PLOT=TRUE, 
+                FilterCellProportion = .1, FilterExpression = 2)
+
+@
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.7\textwidth]{check_exampleDataNorm_count-depth_evaluation}
+\caption{Evaluation of count-depth relationship in counts per million normalized example data.}
+\end{figure}
+
+
+\newpage
+Evaluating the bulk dataset included in the paper:
+<<cache=TRUE, eval=FALSE>>=
+library(SCnorm)
+data(bulkH1data)
+Conditions <- rep(1, dim(bulkH1data)[2])
+checkCountDepth(Data = bulkH1data, Condition = Conditions, OutputName = "check_bulkData", 
+                PLOT=TRUE, FilterCellProportion = .1, FilterExpression = 2)
+@
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.7\textwidth]{check_bulkData_initial_evaluation}
+\caption{Evaluation of count-depth relationship in un-normalized bulk H1 data.}
+\end{figure}
+
+Evaluating the H1 single cell dataset included in the paper:
+<<cache=TRUE, eval=FALSE>>=
+
+library(SCnorm)
+data(scH1data)
+Conditions <- rep(c("1M", "4M"), each=92)
+checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", PLOT=TRUE, 
+                FilterCellProportion = .1, FilterExpression = 2)
+
+@
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.7\textwidth]{check_scData_initial_evaluation}
+\caption{Evaluation of count-depth relationship in un-normalized H1 single cell data.}
+\end{figure}
+
+\newpage
+
+
+
+
+  \subsection{SCnorm: Normalization}
+\label{sec:Normalization}
+SCnorm will normalize across cells to remove the effect of sequencing depth on the counts. SCnorm will return the normalized expression counts and optionally an additional matrix of scale factors (default = FALSE).  SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum (default is 10).
+
+<<cache=TRUE, eval=FALSE>>=
+Conditions = rep(c(1,2), each= 90)
+DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
+                     PLOT=TRUE, FilterCellNum = 10)
+@
+  
+  SCnorm only considers genes having at least 10 non-zero expression value.
+The user may wish to adjust the filter and may do so by changing the value of FilterCellNum (default is 10).
+
+
+\subsection{Evaluate choice of \textit{K}}
+\label{sec:NormalizationK}
+SCnorm first fits the model for $K = 1$, and sequentially increases K until a satisfactory stopping point is reached. For each value of $K$, SCnorm will estimate the count-depth relationship on the normalized counts. Gene evaluation groups are formed by splitting into 10 groups based on their non-zero median expression and for each group the mode of the count-depth relationship is estimated. If the maximum mode is < .1, then $K$ is selected. 
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.5\textwidth]{MyNormalizedData_k_evaluation.pdf}
+\caption{Evaluation of K}
+\end{figure}
+
+
+
+In Figure 4, $K = 4$ is chosen, once all 10 slope densities have slope mode < .1.
+
+\newpage
+
+When more than one condition is present SCnorm will first normalize each condition independently then apply a scaling procedure between the conditions. In this step the assumption is that most genes are not differentially expressed (DE) between cells, that any systematic differences in expression across the majority of genes is due to technical bias and should be removed.
+
+Generally the definition of condition will be obvious given the experimental setup. If the data are very heterogenous within an experimental setup it may be beneficial to first cluster more similar cells into groups and define these as conditions in SCnorm.
+
+\section{Session info}
+Here is the output of sessionInfo on the system on which this document was compiled:
+<<eval=TRUE>>=
+  print(sessionInfo())
+@
+  
+  \vspace{1cm}
+%\bibliographystyle{natbib}
+
+
+%\bibliography{lengetal}
+
+\end{document}

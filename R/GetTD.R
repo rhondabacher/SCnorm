@@ -1,0 +1,47 @@
+#' @title Fit group regression for specific quantile and degree
+#' @usage GetTD(x, InputData)
+#' @param x specifies a column of the grid matrix of tau and d.
+#' @param InputData contains the expression values, sequencing depths to fit the group regression, and the quantile used in the individual 
+#' gene regression for grouping.
+
+#' @description This is an internal fitting of the group regression. For a single combination of possible tau and d values the group regression is fist fit, then predicted values are obtained and regressed against the original sequencing depths. The estimates slope is passed back to the SCnorm_fit() function.
+#' @author Rhonda Bacher
+#' @export
+
+GetTD <- function(x, InputData) {
+
+
+	T <- InputData[[4]][x,1]
+	D <- InputData[[4]][x,2]
+	
+	O <- InputData[[1]]
+	Y <- InputData[[2]]
+	SeqDepth <- InputData[[3]]
+	Tau <- InputData[[5]]
+	
+	polyX <- try(poly(O, degree = D, raw = FALSE), silent=T)
+	
+	if(!is.null(dim(polyX))){
+		Xmat <- data.frame(model.matrix( ~ polyX ))
+	
+		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
+	
+		rqfit <- try(rq(Y ~ ., data = polydata, na.action = na.exclude, tau = T, method="fn"), silent=T)
+	
+		if(class(rqfit) != "try-error"){
+			revX <- data.frame(predict(polyX, SeqDepth))
+					
+			colnames(revX) <- colnames(polydata[-1])
+			pdvalsrq <- predict(rqfit, newdata=data.frame(revX))
+
+			names(pdvalsrq) <- colnames(SeqDepth)
+	
+			if (min(pdvalsrq) > 0) { 
+				S <- rq(pdvalsrq ~ SeqDepth, tau = Tau)$coef[2]
+			} else {S <- -50}
+		} else {S <- -50}	
+	} else {S <- -50}
+
+
+return(as.numeric(S))
+}

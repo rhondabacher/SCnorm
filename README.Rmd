@@ -1,0 +1,26 @@
+# SCnorm
+
+
+A quantile regression based approach for robust normalization of single cell RNA-seq data
+
+
+SCnorm is an R package which can be used to normalize single cell RNA-seq data. 
+
+Details of SCnorm may be found in the vignette at:
+
+## Installation
+
+To install the development version of SCnorm from Github:
+```R
+library(devtools)
+devtools::install_github("rstatbacher/SCnorm", build_vignettes = TRUE)
+```
+
+
+
+## Author
+
+Rhonda Bacher <rhonda.bacher@gmail.com>
+
+
+
