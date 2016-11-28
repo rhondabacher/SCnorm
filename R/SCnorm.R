@@ -74,7 +74,7 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   print("Gene filter is applied within each condition.")
   
  lapply(1:length(Levels), function(x) print(paste0(length(GeneFilterOUT[[x]]), 
- " genes were not included in the normalization due to having less than ", FilterCellNum, "non-zero values.")))
+ " genes were not included in the normalization due to having less than ", FilterCellNum, " non-zero values.")))
  
   print("A list of these genes can be accessed in output, see vignette for example.") 
   
@@ -118,12 +118,14 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
 if (PLOT==TRUE) {  dev.off() }
 
+FilterCellProportion = lapply(1:length(Levels), function(x) FilterCellNum / dim(DataList[[x]])[2])
+
 ## plot the normalized data to screen
 lapply(1:length(Levels), function(x) {
-		checkCountDepth(Data = DataList[[x]], NormalizedData = NormList[[x]]$NormData,
-                Condition = rep(Levels[x], dim(DataList[[x]])[2]), OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT,
-                FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression)
-			})
+  checkCountDepth(Data = DataList[[x]], NormalizedData = NormList[[x]]$NormData,
+                  Conditions = rep(Levels[x], dim(DataList[[x]])[2]), OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT,
+                  FilterCellProportion = FilterCellProportion[[x]], FilterExpression = FilterExpression)
+})
 
 
 
