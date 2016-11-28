@@ -62,11 +62,14 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
-  lapply(1:length(Levels), function(x) initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
-                                                        Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm))
+  lapply(1:length(Levels), function(x) {
+ 	par(mfrow=c(1,2))
+ 	initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
+                                                        Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm)
+	})
   
    if(PLOT==TRUE) {  
-	 dev.copy(pdf, file=paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=8)
+	 dev.copy(pdf, file=paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=10)
      dev.off()
      }
 
