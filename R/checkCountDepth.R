@@ -62,7 +62,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
-  ROWS <- round(length(Levels) / 2)
+  ROWS <- max(1,round(length(Levels) / 2))
   par(mfrow=c(ROWS,2))
   lapply(1:length(Levels), function(x) {
  	initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
