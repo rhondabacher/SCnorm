@@ -163,9 +163,9 @@ sequenced approximately 4 times as much as condition 1.
   
   \subsection{SCnorm: Check count-depth relationship}
 \label{sec:checkData}
-Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar mode then a global strategy such as median-by-ratio in the DESeq package will work fine. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
+Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
 
-The function below will estimate the count-depth relationship for all genes, genes are divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only gene expressed in very few cells or very low expressors are the main concern.
+The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -249,7 +249,7 @@ Evaluating the H1 single cell dataset included in the paper:
 
   \subsection{SCnorm: Normalization}
 \label{sec:Normalization}
-SCnorm will normalize across cells to remove the effect of sequencing depth on the counts. SCnorm will return the normalized expression counts and optionally an additional matrix of scale factors (default = FALSE).  SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum (default is 10).
+SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -261,13 +261,13 @@ SCnorm will normalize across cells to remove the effect of sequencing depth on t
 \end{kframe}
 \end{knitrout}
   
-  SCnorm only considers genes having at least 10 non-zero expression value.
-The user may wish to adjust the filter and may do so by changing the value of FilterCellNum (default is 10).
+
 
 
 \subsection{Evaluate choice of \textit{K}}
 \label{sec:NormalizationK}
-SCnorm first fits the model for $K = 1$, and sequentially increases K until a satisfactory stopping point is reached. For each value of $K$, SCnorm will estimate the count-depth relationship on the normalized counts. Gene evaluation groups are formed by splitting into 10 groups based on their non-zero median expression and for each group the mode of the count-depth relationship is estimated. If the maximum mode is < .1, then $K$ is selected. 
+
+SCnorm first fits the model for $K = 1$, and sequentially increases K until a satisfactory stopping point is reached. For each value of $K$, SCnorm will estimate the count-depth relationship on the normalized counts. Gene evaluation groups are formed by splitting genes into 10 groups based on their non-zero median un-normalized expression and for each group the mode of the normalized count-depth relationship is estimated. If the absolute value of the maximum mode is < .1, then $K$ is selected, otherwise $K$ is increase by one.
 
 
 \begin{figure}[h!]
@@ -278,7 +278,7 @@ SCnorm first fits the model for $K = 1$, and sequentially increases K until a sa
 
 
 
-In Figure 4, $K = 4$ is chosen, once all 10 slope densities have slope mode < .1.
+In Figure 4, $K = 4$ is chosen, once all 10 slope densities have absolute value of slope mode < .1.
 
 \newpage
 
