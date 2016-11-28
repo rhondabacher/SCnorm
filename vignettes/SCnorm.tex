@@ -257,6 +257,7 @@ SCnorm will normalize across cells to remove the effect of sequencing depth on t
 \hlstd{Conditions} \hlkwb{=} \hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{each}\hlstd{=} \hlnum{90}\hlstd{)}
 \hlstd{DataNorm} \hlkwb{<-} \hlkwd{SCnorm}\hlstd{(ExampleData, Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"MyNormalizedData"}\hlstd{,}
                      \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{FilterCellNum} \hlstd{=} \hlnum{10}\hlstd{)}
+\hlkwd{str}\hlstd{(DataNorm)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -278,7 +279,7 @@ SCnorm first fits the model for $K = 1$, and sequentially increases K until a sa
 
 
 
-In Figure 4, $K = 4$ is chosen, once all 10 slope densities have absolute value of slope mode < .1.
+In Figure 5, $K = 4$ is chosen, once all 10 slope densities have absolute value of slope mode < .1.
 
 \newpage
 
@@ -302,14 +303,19 @@ Here is the output of sessionInfo on the system on which this document was compi
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] knitr_1.14
+## [1] SCnorm_0.9     ggplot2_2.2.0  reshape2_1.4.2 moments_0.14   cluster_2.0.4 
+## [6] quantreg_5.29  SparseM_1.72   knitr_1.14    
 ## 
 ## loaded via a namespace (and not attached):
-## [1] BiocStyle_2.1.33 magrittr_1.5     formatR_1.4      tools_3.3.1      stringi_1.1.1   
-## [6] digest_0.6.10    stringr_1.1.0    evaluate_0.9
+##  [1] Rcpp_0.12.8        magrittr_1.5       munsell_0.4.3      colorspace_1.2-6  
+##  [5] lattice_0.20-33    highr_0.6          stringr_1.1.0      plyr_1.8.4        
+##  [9] tools_3.3.1        grid_3.3.1         gtable_0.2.0       MatrixModels_0.4-1
+## [13] lazyeval_0.2.0     digest_0.6.10      assertthat_0.1     tibble_1.2        
+## [17] Matrix_1.2-6       formatR_1.4        evaluate_0.9       stringi_1.1.1     
+## [21] scales_0.4.1       BiocStyle_2.1.33
 \end{verbatim}
 \end{kframe}
 \end{knitrout}

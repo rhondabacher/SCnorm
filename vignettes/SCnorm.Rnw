@@ -148,6 +148,7 @@ SCnorm will normalize across cells to remove the effect of sequencing depth on t
 Conditions = rep(c(1,2), each= 90)
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
                      PLOT=TRUE, FilterCellNum = 10)
+str(DataNorm)
 @
   
 
@@ -174,12 +175,6 @@ In Figure 5, $K = 4$ is chosen, once all 10 slope densities have absolute value 
 When more than one condition is present SCnorm will first normalize each condition independently then apply a scaling procedure between the conditions. In this step the assumption is that most genes are not differentially expressed (DE) between cells, that any systematic differences in expression across the majority of genes is due to technical bias and should be removed.
 
 Generally the definition of condition will be obvious given the experimental setup. If the data are very heterogenous within an experimental setup it may be beneficial to first cluster more similar cells into groups and define these as conditions in SCnorm.
-
-\section{Output}
-<<eval=TRUE>>=
-str(DataNorm)
-
-@
 
 \section{Session info}
 Here is the output of sessionInfo on the system on which this document was compiled:
