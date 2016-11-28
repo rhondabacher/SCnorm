@@ -73,8 +73,8 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   GeneFilterOUT <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] < FilterCellNum)))
   print("Gene filter is applied within each condition.")
   
- lapply(1:length(Levels)), function(x) print(paste0(length(GeneFilterOUT[[x]]), 
- " genes were not included in the normalization due to having less than ", FilterCellNum, "non-zero values."))
+ lapply(1:length(Levels), function(x) print(paste0(length(GeneFilterOUT[[x]]), 
+ " genes were not included in the normalization due to having less than ", FilterCellNum, "non-zero values.")))
  
   print("A list of these genes can be accessed in output, see vignette for example.") 
   
