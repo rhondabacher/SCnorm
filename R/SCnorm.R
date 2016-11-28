@@ -83,7 +83,7 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   if(PLOT==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
                     par(mfrow=c(2,2))}
 #   if k is NOT provided
-  if (K == 0) {
+  if (is.null(K)) {
     NormList <- lapply(1:length(Levels), function(x) {
                 Normalize(Data = DataList[[x]], 
                 SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
@@ -99,7 +99,7 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
   # if specific k then do:
   # if length of k is less than number of conditions.
-  if (K != 0 ) {
+  if (!is.null(K) ) {
     if (length(K) == length(Levels)) {
       NormList <- lapply(1:length(Levels), function(x) {
         SCnorm_fit(Data = DataList[[x]], 
