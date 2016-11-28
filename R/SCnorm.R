@@ -38,7 +38,7 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
 	reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0) {
   
   Data <- data.matrix(Data)
-  if(anyNA) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
+  if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
   ## checks
   if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
   if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
