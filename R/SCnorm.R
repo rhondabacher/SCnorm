@@ -5,7 +5,7 @@
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.
 #' @param OutputName specify the path and/or name of output files.
-#' @param PLOT whether to output the evaluation plots while determining the optimal K.
+#' @param PLOT whether to save all output the evaluation plots while determining the optimal K.
 #' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed. 
 #' @param outlierCheck cells/samples with relatively small sequencing depths may recieve very small scaling factors, to ensure these 
 #' small scaling factors do not create outliers, genes with potential outliers are first flagged and then if necessary, their normalized expression 
@@ -34,20 +34,23 @@
 #' @author Rhonda Bacher
 
 
-SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outlierCheck= T, Tau = .5, reportSF = F, FilterCellNum=10, K = 0, NCores = 0) {
+SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outlierCheck= T, Tau = .5, 
+	reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0) {
   
   Data <- data.matrix(Data)
+  if(anyNA) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
   ## checks
   if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
   if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
   if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
-  if (K > 0) {warning(paste0("SCnorm will normalize assuming ", K, " is the optimal number of groups. It is not advised to set this."))}
-  if (NCores == 0) {NCores <- max(1, detectCores() - 1)}
-  
+  if (!is.null(K)) {warning(paste0("SCnorm will normalize assuming ", K, " is the optimal number of groups. It is not advised to set this."))}
+  if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
+
   Levels <- levels(as.factor(Conditions)) # Number of conditions
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
   Genes <- rownames(Data) 
+  
   #options: correctGC=FALSE, methodGC="loess", 
   # if(correctGC==TRUE) {
   # 	  library(EDASeq)
@@ -67,6 +70,13 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] >= FilterCellNum)))
   
+  GeneFilterOUT <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] < FilterCellNum)))
+  print("Gene filter is applied within each condition.")
+  
+ lapply(1:length(Levels)), function(x) print(paste0(length(GeneFilterOUT[[x]]), 
+ " genes were not included in the normalization due to having less than ", FilterCellNum, "non-zero values."))
+ 
+  print("A list of these genes can be accessed in output, see vignette for example.") 
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
   
@@ -108,6 +118,13 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
 if (PLOT==TRUE) {  dev.off() }
 
+## plot the normalized data to screen
+lapply(1:length(Levels), function(x) {
+		checkCountDepth(Data = DataList[[x]], NormalizedData = NormList[[x]]$NormData,
+                Condition = rep(Levels[x], dim(DataList[[x]])[2]), OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT,
+                FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression)
+			})
+
 
 
   if (length(Levels) > 1) {
@@ -116,24 +133,23 @@ if (PLOT==TRUE) {  dev.off() }
     # Genes = Reduce(intersect, GeneFilterList)
   
     ScaledNormData <- scaleNormMultCont(NormList, Data, Genes)
-      
+    ScaledNormData <- list(NormalizedData = ScaledNormData[[1]], ScaleFactors = ScaledNormData[[2]], GenesFilteredOut = GeneFilterOUT)
     if(reportSF == T) {
       return(ScaledNormData) 
     } else {
       ScaledNormData = ScaledNormData[[1]]
+	  ScaledNormData <- list(NormalizedData = ScaledNormData[[1]], GenesFilteredOut = GeneFilterOUT)
       return(ScaledNormData) 
     }
   } else {
        NormDataFull <- do.call(cbind, lapply(1:length(Levels), function(x) {rbind(NormList[[x]]$NormData)}))
        ScaleFactorsFull <- do.call(cbind, lapply(1:length(Levels), function(x) {rbind(NormList[[x]]$ScaleFactors)}))
-       
-	   FinalNorm<-list()
-       FinalNorm[[1]] <- NormDataFull
-       FinalNorm[[2]] <- ScaleFactorsFull
+      
        if(reportSF == T) {
-         return(FinalNorm) 
+      	 FinalNorm <-list(NormalizedData = NormDataFull, ScaleFactors = ScaleFactorsFull, GenesFilteredOut = GeneFilterOUT)
+	     return(FinalNorm) 
        } else {
-         FinalNorm = FinalNorm[[1]]
+		 FinalNorm <-list(NormalizedData = NormDataFull, GenesFilteredOut = GeneFilterOUT)
          return(FinalNorm) 
        }
   }

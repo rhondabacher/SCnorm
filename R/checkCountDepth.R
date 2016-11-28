@@ -7,7 +7,7 @@
 
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix. If not provided data is assumed to come from same condition/batch.
 #' @param OutputName specify the path and/or name of output files.
-#' @param PLOT whether to save the evaluation plots instead of printing to screen.
+#' @param PLOT whether to save the evaluation plots in addition to printing to screen.
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
 #' @param FilterCellProportion the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10. 
 #' @param NumExpressionGroups the number of groups to split the data into, groups are split into equally sized groups based on non-zero median expression. 
@@ -53,9 +53,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
 	  DataList <- lapply(1:length(Levels), function(x) NormalizedData[,which(Conditions == Levels[x])])
 	  BeforeNorm <- FALSE
   }
-  
-
-  
+ 
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(PropZerosList[[x]] >= FilterCellProportion[[x]] & MedExprAll >= FilterExpression)))
  
   
@@ -64,19 +62,13 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
+  lapply(1:length(Levels), function(x) initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
+                                                        Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm))
   
-  if(PLOT==TRUE) {  pdf(paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=10)
-                    par(mfrow=c(1,2))}
+   if(PLOT==TRUE) {  
+	 dev.copy(pdf, file=paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=8)
+     dev.off()
+     }
 
-lapply(1:length(Levels), function(x) initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
-									Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm))
-
-  
-   
-if (PLOT==TRUE) {  dev.off() }
-
-
-  
-  
   
 }
