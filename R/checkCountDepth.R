@@ -22,7 +22,7 @@
 
 
 checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
-	FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL) {
+                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL) {
   
   Data <- data.matrix(Data)
   ## checks
@@ -31,31 +31,31 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   if(is.null(Conditions)) {Conditions <- rep("1", dim(Data)[2])}
   if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
-	  
-
+  
+  
   Levels <- levels(as.factor(Conditions)) # Number of conditions
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
-
-  FilterCellProportion <-  lapply(1:length(Levels), function(x) max(FilterCellProportion, 10 / dim(DataList[[x]])[2])) 
+  
+  FilterCellProportion <-  lapply(1:length(Levels), function(x) max(FilterCellProportion[[x]], 10 / dim(DataList[[x]])[2])) 
   
   SeqDepthList <- lapply(1:length(Levels), function(x) colSums(Data[,which(Conditions == Levels[x])]))
-
+  
   PropZerosList <- lapply(1:length(Levels), function(x) { apply(DataList[[x]], 1, function(c) sum(c != 0)) / length(SeqDepthList[[x]]) })
   
   MedExprAll <- apply(Data, 1, function(c) median(c[c != 0]))
-	
+  
   MedExprList <- lapply(1:length(Levels), function(x) { apply(DataList[[x]], 1, function(c) median(c[c != 0])) })
   
   BeforeNorm <- TRUE
   #switch to the normalized data:
   if(!is.null(NormalizedData)) {  
-	  DataList <- lapply(1:length(Levels), function(x) NormalizedData[,which(Conditions == Levels[x])])
-	  BeforeNorm <- FALSE
+    DataList <- lapply(1:length(Levels), function(x) NormalizedData[,which(Conditions == Levels[x])])
+    BeforeNorm <- FALSE
   }
- 
+  
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(PropZerosList[[x]] >= FilterCellProportion[[x]] & MedExprAll >= FilterExpression)))
- 
+  
   
   # Get median quantile regr. slopes.
   SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, NCores))
@@ -65,14 +65,14 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   ROWS <- max(1,round(length(Levels) / 2))
   par(mfrow=c(ROWS,2))
   lapply(1:length(Levels), function(x) {
- 	initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
-                                                        Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm)
-	})
+    initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
+                    Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm)
+  })
   
-   if(PLOT==TRUE) {  
-	 dev.copy(pdf, file=paste0(OutputName, "_count-depth_evaluation.pdf"), height=5*ROWS, width=10)
-     dev.off()
-     }
-
+  if(PLOT==TRUE) {  
+    dev.copy(pdf, file=paste0(OutputName, "_count-depth_evaluation.pdf"), height=5*ROWS, width=10)
+    dev.off()
+  }
+  
   
 }
