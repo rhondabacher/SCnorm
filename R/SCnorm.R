@@ -128,7 +128,7 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
                   Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT,
-                  FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression)
+                  FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores)
   
   
   
