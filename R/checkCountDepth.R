@@ -26,14 +26,21 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   
   Data <- data.matrix(Data)
   ## checks
-  if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
-  if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
+  if(is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
+  if(is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
   if(is.null(Conditions)) {Conditions <- rep("1", dim(Data)[2])}
-  if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
-  if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
-  
-  
+  if(dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
+  if(is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
   Levels <- levels(as.factor(Conditions)) # Number of conditions
+  
+  if(length(FilterCellProportion) > 1 & !is.list(FilterCellProportion)) {FilterCellProportion <- as.list(FilterCellProportion)}
+  if(length(FilterCellProportion) == 1) { 
+	  FilterCellProportion <- rep(FilterCellProportion, length(Levels))
+	  FilterCellProportion <- as.list(FilterCellProportion)
+  }
+	  
+	  
+ 
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
   
