@@ -21,11 +21,9 @@ GetSlopes <- function(Data, SeqDepth = 0, Tau = .5, NCores) {
 	Genes <- names(which(NumNonZeros >= 10)) ##filter for now	
 	LogData <- redobox(Data, 0) #log data
     
-    if (.Platform$OS.type == "windows") {
-        NCores = 1
-    }
-
-	
+	if (.Platform$OS.type == "windows") {
+		NCores = 1
+	}
 	AllReg <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, InputData = list(LogData, SeqDepth, Genes, Tau), mc.cores = NCores))
 	
 	return(AllReg)
