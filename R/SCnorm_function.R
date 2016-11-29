@@ -56,6 +56,9 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck 
 	ScaleFactors <- c()
 	
 	##normalize within each group
+	if (.Platform$OS.type == "windows") {
+		NCores = 1
+	}
 	
 	for(i in 1:K) {
 		
