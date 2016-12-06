@@ -148,8 +148,8 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
       return(ScaledNormData) 
     }
   } else {
-    NormDataFull <- NormList[[x]]$NormData
-    ScaleFactorsFull <- NormList[[x]]$ScaleFactors
+    NormDataFull <- NormList[[1]]$NormData
+    ScaleFactorsFull <- NormList[[1]]$ScaleFactors
     
     if(reportSF == T) {
       FinalNorm <- list(NormalizedData = NormDataFull, ScaleFactors = ScaleFactorsFull, GenesFilteredOut = GeneFilterOUT)
