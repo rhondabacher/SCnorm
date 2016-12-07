@@ -13,7 +13,7 @@ SCnorm(Data, Conditions, K, OutputName = "SCnorm", PLOT = TRUE, PropToUse = .25,
 
 \item{OutputName}{specify the path and/or name of output files.}
 
-\item{PLOT}{whether to output the evaluation plots while determining the optimal K.}
+\item{PLOT}{whether to save all output the evaluation plots while determining the optimal K.}
 
 \item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed.}
 
@@ -22,7 +22,7 @@ small scaling factors do not create outliers, genes with potential outliers are 
 values are corrected. First, gene expression counts in cells/samples having the three smallest sequencing depths are flagged if they contain
 expression counts larger than 3 times the predicted counts (from the group regression). For each gene, if the flagged values
 are the largest normalized expression value, then the count is corrected to be the median of the non-zero normalized values (default = 
-TRUE)}
+FALSE)}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
 

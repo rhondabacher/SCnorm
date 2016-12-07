@@ -22,7 +22,7 @@ small scaling factors do not create outliers, genes with potential outliers are 
 values are corrected. First, gene expression counts in cells/samples having the three smallest sequencing depths are flagged if they contain
 expression counts larger than 3 times the predicted counts (from the group regression). For each gene, if the flagged values
 are the largest normalized expression value, then the count is corrected to be the median of the non-zero normalized values (default = 
-TRUE)}
+FALSE)}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
 }

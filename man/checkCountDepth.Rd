@@ -15,7 +15,7 @@ checkCountDepth(Data, Conditions, OutputName, PLOT = T, Tau = .5, FilterCellProp
 
 \item{OutputName}{specify the path and/or name of output files.}
 
-\item{PLOT}{whether to save the evaluation plots instead of printing to screen.}
+\item{PLOT}{whether to save the evaluation plots in addition to printing to screen.}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
 
