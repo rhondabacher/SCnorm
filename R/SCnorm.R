@@ -34,7 +34,7 @@
 #' @author Rhonda Bacher
 
 
-SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outlierCheck= T, Tau = .5, 
+SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, 
                    reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0) {
   
   Data <- data.matrix(Data)
