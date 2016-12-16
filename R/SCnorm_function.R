@@ -79,7 +79,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck 
 		InData <- as.matrix(logData[ModalGenes, ])
 
 
-		Melted <- melt(InData)
+		Melted <- reshape2:::melt.matrix(InData)
 		Melted <- Melted[order(Melted$Var1, Melted$Var2), ]
 		colnames(Melted) <- c("Gene", "Sample", "Counts")
 
