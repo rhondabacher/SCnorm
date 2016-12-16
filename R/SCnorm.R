@@ -34,7 +34,7 @@
 #' @author Rhonda Bacher
 
 
-SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, 
+SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, 
                    reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0) {
   
   Data <- data.matrix(Data)
@@ -42,6 +42,8 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   ## checks
   if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
   if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
+  if (is.null(Conditions)) {stop("Must supply conditions.")}
+  if (is.null(OutputName)) {OutputName = "MyNormalizedData"}
   if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
   if (!is.null(K)) {warning(paste0("SCnorm will normalize assuming ", K, " is the optimal number of groups. It is not advised to set this."))}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
@@ -72,13 +74,13 @@ SCnorm <- function(Data, Conditions, OutputName, PLOT = T, PropToUse = .25, outl
   
   GeneFilterOUT <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] < FilterCellNum)))
   
-  print("Gene filter is applied within each condition.")
+  message("Gene filter is applied within each condition.")
   
-  lapply(1:length(Levels), function(x) print(paste0(length(GeneFilterOUT[[x]]), 
+  lapply(1:length(Levels), function(x) message(paste0(length(GeneFilterOUT[[x]]), 
          " genes were not included in the normalization due to having less than ", FilterCellNum, 
          " non-zero values.")))
   
-  print("A list of these genes can be accessed in output, see vignette for example.") 
+  message("A list of these genes can be accessed in output, see vignette for example.") 
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
   
