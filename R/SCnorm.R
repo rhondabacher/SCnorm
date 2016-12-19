@@ -15,11 +15,13 @@
 #' FALSE)
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
 #' @param reportSF whether to provide a matrix of scaling counts in the output (default = FALSE).
-#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). THe initial 
+#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
 #' grouping fits a quantile regression to each gene, making this value too low gives unstable fits.
 #' @param K the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of K
 #' (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.
 #' @param NCores number of cores to use, default is detectCores() - 1.
+#' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
+
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
 #' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 

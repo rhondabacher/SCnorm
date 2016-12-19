@@ -33,7 +33,9 @@ FALSE)}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
 
-\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). THe initial 
+\item{FilterExpression}{exclude genes having median of non-zero expression below this threshold from count-depth plots.}
+
+\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
 grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
 }
 \value{
