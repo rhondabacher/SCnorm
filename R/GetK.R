@@ -48,9 +48,9 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, N
 
 	# if point mass occurs, arbitrarily 25
 	# this is to avoid plotting it
-	if(any(DensH > 25)) {
+	if(any(DensH > 10)) {
 		XX = which(DensH > 10)
-		for(i in 1:length(XX)) {
+		for(i in length(XX):1) {
 			DensH <- DensH[-i]	
 			Mode <- Mode[-i]
 			colors = colors[-i]
