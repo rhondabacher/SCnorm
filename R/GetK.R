@@ -46,17 +46,19 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, N
 	  DensH[i] <- rqdens$y[peak]
   	}
 
-	# if point mass occurs, arbitrarily 25
+	# if point mass occurs, arbitrarily 10
 	# this is to avoid plotting it
 	if(any(DensH > 10)) {
 		XX = which(DensH > 10)
-		for(i in length(XX):1) {
-			DensH <- DensH[-i]	
-			Mode <- Mode[-i]
-			colors = colors[-i]
-			sreg[[i]] <- NULL
-		}
+		TOKEEP <- setdiff(1:10, XX)
+
+		DensH <- DensH[TOKEEP]	
+		Mode <- Mode[TOKEEP]
+		colors = colors[TOKEEP]
+
+		sreg <- sreg[TOKEEP]
 	}
+	
 	
 	
 	YMax <- round(max(DensH), 2) + .2 #just for plotting
