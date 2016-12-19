@@ -52,7 +52,7 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups
 
 	plot(density(na.omit(Slopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
 		xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
-	for (i in 1:NumExpressionGroups) {
+	for (i in 1:length(sreg)) {
 		useg <- names(sreg[[i]])
 		lines(density(na.omit(Slopes[useg]), from=-3, to=3, adjust=1), lwd=3, col=colors[i])
 	}
