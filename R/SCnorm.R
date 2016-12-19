@@ -1,6 +1,6 @@
 #' @title SCnorm
 
-#' @usage SCnorm(Data, Conditions, K, OutputName = "SCnorm", PLOT = TRUE, PropToUse = .25, outlierCheck = TRUE, Tau = .5, reportSF = FALSE)
+#' @usage SCnorm(Data, Conditions, OutputName = NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.

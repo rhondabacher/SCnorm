@@ -4,7 +4,7 @@
 \alias{SCnorm}
 \title{SCnorm}
 \usage{
-SCnorm(Data, Conditions, K, OutputName = "SCnorm", PLOT = TRUE, PropToUse = .25, outlierCheck = TRUE, Tau = .5, reportSF = FALSE)
+SCnorm(Data, Conditions, OutputName = NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
