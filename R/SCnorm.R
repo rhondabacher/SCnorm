@@ -50,7 +50,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   if (!is.null(K)) {warning(paste0("SCnorm will normalize assuming ", K, " is the optimal number of groups. It is not advised to set this."))}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
   
-  Levels <- levels(as.factor(Conditions)) # Number of conditions
+  Levels <- unique(Conditions) # Number of conditions
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
   Genes <- rownames(Data) 
