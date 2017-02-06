@@ -37,7 +37,7 @@
 
 
 SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, 
-                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0) {
+                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1) {
   
   Data <- data.matrix(Data)
   if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
@@ -97,7 +97,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
                 PLOT = PLOT,
                 PropToUse = PropToUse,
                 outlierCheck = outlierCheck,
-                Tau = Tau, NCores= NCores)
+                Tau = Tau, NCores= NCores, Thresh = Thresh)
     }) 
     
   }

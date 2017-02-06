@@ -26,7 +26,7 @@ GetTD <- function(x, InputData) {
 	
 		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 	
-		rqfit <- try(rq(Y ~ ., data = polydata, na.action = na.exclude, tau = T, method="fn"), silent=T)
+		rqfit <- try(rq(dither(Y, type="symmetric", value=.1) ~ ., data = polydata, na.action = na.exclude, tau = T, method="fn"), silent=T)
 	
 		if(class(rqfit) != "try-error"){
 			revX <- data.frame(predict(polyX, SeqDepth))

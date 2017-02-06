@@ -25,12 +25,12 @@
 #' @author Rhonda Bacher
 #' @export
 
-Normalize <- function(Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, OutputName = OutputName, PropToUse, outlierCheck, Tau, NCores) {
+Normalize <- function(Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, OutputName = OutputName, PropToUse, outlierCheck, Tau, NCores, Thresh) {
 	# Set up
 	GetMax = 1
 	i = 0
 	
-		while(GetMax > .1) {
+		while(GetMax > Thresh) {
 			i = i + 1 
 
 			NormDataList <- SCnorm_fit(Data = Data, SeqDepth = SeqDepth, Slopes = Slopes, K = i, 

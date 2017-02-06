@@ -6,7 +6,7 @@ quickreg<-function(x,InputData)
 	X = InputData[[3]][x]
 	Tau = InputData[[4]]
 	
-	slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau)$coef[2] 
+	slope <- rq(dither(LogData[X, ], type="symmetric", value=.1) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
 	names(slope) <- X
 	
 	return(slope)

@@ -4,13 +4,12 @@ Version: 1.1.0
 Authors: Rhonda Bacher, email = rbacher@wisc.com
 Description: Normalization of single cell RNA-seq data
 Depends:
-    R (>= 3.3.0),
+    R (>= 3.2.0),
     parallel,
     quantreg,
     cluster,
     moments,
-    reshape2,
-    ggplot2
+    reshape2
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
