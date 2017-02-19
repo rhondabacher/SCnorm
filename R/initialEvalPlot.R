@@ -34,19 +34,19 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups
 	  DensH[i] <- rqdens$y[peak]
   	}
 
-	# if point mass occurs, arbitrarily 10
-	# this is to avoid plotting it
-	if(any(DensH > 10)) {
-		XX = which(DensH > 10)
-		TOKEEP <- setdiff(1:10, XX)
-
-		DensH <- DensH[TOKEEP]	
-		Mode <- Mode[TOKEEP]
-		colors = colors[TOKEEP]
-
-		sreg <- sreg[TOKEEP]
-	}
-	
+	# # if point mass occurs, arbitrarily 10
+# 	# this is to avoid plotting it
+# 	if(any(DensH > 10)) {
+# 		XX = which(DensH > 10)
+# 		TOKEEP <- setdiff(1:10, XX)
+#
+# 		DensH <- DensH[TOKEEP]
+# 		Mode <- Mode[TOKEEP]
+# 		colors = colors[TOKEEP]
+#
+# 		sreg <- sreg[TOKEEP]
+# 	}
+#
 	
 	YMax <- round(max(DensH), 2) + .2 #just for plotting
 
