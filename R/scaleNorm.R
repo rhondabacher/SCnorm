@@ -42,7 +42,7 @@ for(i in 1:NumCond){
 		 ss1 <- apply(C1[qgenes,], 1, function(x) mean(x[x != 0]))
 		 os <- apply(OC[qgenes,], 1, function(x) mean(x[x != 0]))
 	
-		 rr <- median(ss1/os, na.rm=T); print(rr)
+		 rr <- median(ss1/os, na.rm=T); #print(rr)
 		 C1[qgenes,] <- round((C1[qgenes,] / rr),2 )
 		 SF[qgenes,] <- SF[qgenes,] * rr
 	}
@@ -59,26 +59,4 @@ ScaleFacsAll <- do.call(cbind, ScaleFacs)
 ScaledData <- list(ScaledData = ScaleMatAll, ScaleFactors = ScaleFacsAll)
 return(ScaledData)
 }
-
-
-ScaledNormData <- scaleNormMultCont(NormData = NormList, OrigData = Data, Genes)
-names(ScaledNormData) <- c("NormalizedData", "ScaleFactors")
-ScaledNormData <- c(ScaledNormData, GenesFilteredOut = GeneFilterOUT)
-
-
-p_test2 <- runMASTsim(ScaledData$ScaledData, numcell)
-
-
-
-p_test2 <- runMASTsim(ScaledNormData$NormalizedData, c(100,100))
-sum(p_test2 < .05)
-
-sum(p_scn < .05)
-
-p_test2 <- runMASTsim(NORMDATA, numcell)
-
-03
-R <- c(1.04, .96)
-
-R <- c(.96, .96)
 
