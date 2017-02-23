@@ -18,7 +18,7 @@
 #' @export
 
 
-GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, NCores) {
+GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau, NCores, ditherCounts) {
 	
 	sreg <- list()
 	
@@ -27,7 +27,7 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, N
 	LogData <- redobox(Data, 0) #LOG data
 		
 	NormSlopes <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, 
-					InputData = list(LogData, SeqDepth, Genes, Tau), mc.cores = NCores))
+					InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts), mc.cores = NCores))
 	
 	colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), bias=2)(n = 10)
 		
@@ -46,22 +46,7 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau=Tau, N
 	  DensH[i] <- rqdens$y[peak]
   	}
 
-	# # if point mass occurs, arbitrarily 10
-# 	# this is to avoid plotting it
-# 	if(any(DensH > 10)) {
-# 		XX = which(DensH > 10)
-# 		TOKEEP <- setdiff(1:10, XX)
-#
-# 		DensH <- DensH[TOKEEP]
-# 		Mode <- Mode[TOKEEP]
-# 		colors = colors[TOKEEP]
-#
-# 		sreg <- sreg[TOKEEP]
-# 	}
-	
-	
-	
-	YMax <- round(max(DensH), 2) + .2 #just for plotting
+	YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
 	if(PLOT == TRUE) {	
 		plot(density(na.omit(NormSlopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
 			xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)

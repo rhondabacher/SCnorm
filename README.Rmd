@@ -11,6 +11,7 @@ Details of SCnorm may be found in the vignette.
 ## Installation
 
 To install the development version of SCnorm from Github:
+
 ```R
 library(devtools)
 devtools::install_github("rhondabacher/SCnorm", build_vignettes = TRUE)

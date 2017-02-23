@@ -1,18 +1,13 @@
 #' @title SCnorm
 
-#' @usage SCnorm(Data, Conditions, OutputName = NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0)
+#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
+#'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, ditherCounts=FALSE)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.
 #' @param OutputName specify the path and/or name of output files.
 #' @param PLOT whether to save all output the evaluation plots while determining the optimal K.
 #' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed. 
-#' @param outlierCheck cells/samples with relatively small sequencing depths may recieve very small scaling factors, to ensure these 
-#' small scaling factors do not create outliers, genes with potential outliers are first flagged and then if necessary, their normalized expression 
-#' values are corrected. First, gene expression counts in cells/samples having the three smallest sequencing depths are flagged if they contain
-#' expression counts larger than 3 times the predicted counts (from the group regression). For each gene, if the flagged values
-#' are the largest normalized expression value, then the count is corrected to be the median of the non-zero normalized values (default = 
-#' FALSE)
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
 #' @param reportSF whether to provide a matrix of scaling counts in the output (default = FALSE).
 #' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
@@ -21,7 +16,8 @@
 #' (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.
 #' @param NCores number of cores to use, default is detectCores() - 1.
 #' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
-
+#' @param Thresh threshold to use in evaluating the suffiency of K, default is .1.
+#' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
 #' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 
@@ -36,8 +32,8 @@
 #' @author Rhonda Bacher
 
 
-SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, outlierCheck= F, Tau = .5, 
-                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1) {
+SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
+                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, ditherCounts=FALSE) {
   
   Data <- data.matrix(Data)
   if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
@@ -47,9 +43,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   if (is.null(Conditions)) {stop("Must supply conditions.")}
   if (is.null(OutputName)) {OutputName = "MyNormalizedData"}
   if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
-  if (!is.null(K)) {warning(paste0("SCnorm will normalize assuming ", K, " is the optimal number of groups. It is not advised to set this."))}
+  if (!is.null(K)) {message(paste0("SCnorm will normalize assuming, ", K, " is the optimal number of groups. It is not advised to set this."))}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
-  
+  if (ditherCounts == TRUE) {RNGkind("L'Ecuyer-CMRG");set.seed(1);message("Jittering values introduces some randomness, for reproducibility set.seed(1) has been set.")}
+	  
   Levels <- unique(Conditions) # Number of conditions
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
@@ -60,13 +57,12 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   # 	  library(EDASeq)
   # 	  withinLaneNormalization(Data, "gc", which=methodGC)
   #
-  
-  
+   
   
   SeqDepthList <- lapply(1:length(Levels), function(x) colSums(Data[,which(Conditions == Levels[x])]))
   
   # Get median quantile regr. slopes.
-  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]], SeqDepthList[[x]], Tau, NCores))
+  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]], SeqDepthList[[x]], Tau, FilterCellNum, NCores, ditherCounts))
   
   
   NumZerosList <- lapply(1:length(Levels), function(x) { apply(DataList[[x]], 1, function(c) sum(c != 0)) })
@@ -75,6 +71,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] >= FilterCellNum)))
   
   GeneFilterOUT <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] < FilterCellNum)))
+  names(GeneFilterOUT) <- paste0("GenesFilteredOutGroup", unique(Conditions))
   
   message("Gene filter is applied within each condition.")
   
@@ -86,6 +83,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
   
+  
   if(PLOT==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
     par(mfrow=c(2,2))}
   #   if k is NOT provided
@@ -96,8 +94,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
                 CondNum = Levels[x], OutputName= OutputName,
                 PLOT = PLOT,
                 PropToUse = PropToUse,
-                outlierCheck = outlierCheck,
-                Tau = Tau, NCores= NCores, Thresh = Thresh)
+                Tau = Tau, NCores= NCores, Thresh = Thresh, ditherCounts=ditherCounts)
     }) 
     
   }
@@ -110,14 +107,14 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
       NormList <- lapply(1:length(Levels), function(x) {
         SCnorm_fit(Data = DataList[[x]], 
                    SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
-                   K = K[x], NCores = NCores)
+                   K = K[x], PropToUse = PropToUse, NCores = NCores, ditherCounts=ditherCounts)
       })
     } else if (length(K) == 1) {
       K <- rep(K, length(Levels))
       NormList <- lapply(1:length(Levels), function(x) {
         SCnorm_fit(Data = DataList[[x]], 
                    SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
-                   K = K[x], NCores = NCores)
+                   K = K[x], PropToUse = PropToUse, NCores = NCores, ditherCounts=ditherCounts)
       }) 
     } else (stop("Check that the specification of K is correct!"))
   }	
@@ -129,10 +126,11 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   NORMDATA <- do.call(cbind, lapply(1:length(Levels), function(x) {NormList[[x]]$NormData}))
   
   ## plot the normalized data to screen
-  
+  message("Plotting count-depth relationship for normalized data...")
+	
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
-                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT,
-                  FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores)
+                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT, Tau=Tau,
+                  FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores, ditherCounts=ditherCounts)
   
   
   
@@ -141,10 +139,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
     
     # Scaling
     # Genes = Reduce(intersect, GeneFilterList)
-    
+    message("Scaling data between conditions...")
     ScaledNormData <- scaleNormMultCont(NormList, Data, Genes)
     names(ScaledNormData) <- c("NormalizedData", "ScaleFactors")
-    ScaledNormData <- c(ScaledNormData, GenesFilteredOut = GeneFilterOUT)
+    ScaledNormData <- c(ScaledNormData, GeneFilterOUT)
     if(reportSF == T) {
       return(ScaledNormData) 
     } else {
@@ -156,17 +154,17 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
     ScaleFactorsFull <- NormList[[1]]$ScaleFactors
     
     if(reportSF == T) {
-      FinalNorm <- list(NormalizedData = NormDataFull, ScaleFactors = ScaleFactorsFull, GenesFilteredOut = GeneFilterOUT)
+      FinalNorm <- list(NormalizedData = NormDataFull, ScaleFactors = ScaleFactorsFull, GeneFilterOUT)
       return(FinalNorm) 
     } else {
-      FinalNorm <-list(NormalizedData = NormDataFull, GenesFilteredOut = GeneFilterOUT)
+      FinalNorm <-list(NormalizedData = NormDataFull, GeneFilterOUT)
       return(FinalNorm) 
     }
   }
   
   
   
-  
+  message("Done!")
   
   
   

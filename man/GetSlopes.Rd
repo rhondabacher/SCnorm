@@ -4,7 +4,7 @@
 \alias{GetSlopes}
 \title{Estimate gene specfic count-depth relationships}
 \usage{
-GetSlopes(Data, SeqDepth, Tau)
+GetSlopes(Data, SeqDepth, FilterCellNum = 10, Tau, NCores, ditherCounts)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
@@ -12,6 +12,12 @@ GetSlopes(Data, SeqDepth, Tau)
 \item{SeqDepth}{vector of sequencing depths estimated as columns sums of un-normalized expression matrix.}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
+
+\item{NCores}{number of cores to use, default is detectCores() - 1.}
+
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
+
+\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial}
 }
 \value{
 vector of estimated slopes.

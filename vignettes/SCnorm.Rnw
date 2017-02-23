@@ -8,11 +8,12 @@
 %\usepackage{listings}
 \usepackage{moreverb}
 
-<<style-knitr, eval=TRUE, echo=FALSE, results="asis", cahce=TRUE>>=
+<<style-knitr, eval=TRUE, echo=FALSE, results=tex, cahce=TRUE>>=
   BiocStyle::latex()
 @
   
   \begin{document}
+\SweaveOpts{concordance=TRUE}
 % \SweaveOpts{concordance=TRUE}
 \title{SCnorm: a quantile-regression based approach for robust normalization of single-cell RNA-seq data}
 \author{Rhonda Bacher and Christina Kendziorski}
@@ -101,8 +102,6 @@ checkCountDepth(Data = ExampleData, NormalizedData = ExampleData.Norm,
 \caption{Evaluation of count-depth relationship in counts per million normalized example data.}
 \end{figure}
 
-
-\newpage
 Evaluating the bulk dataset included in the paper:
 <<cache=TRUE, eval=FALSE>>=
 library(SCnorm)
@@ -135,14 +134,12 @@ checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scD
 \caption{Evaluation of count-depth relationship in un-normalized H1 single cell data.}
 \end{figure}
 
-\newpage
-
 
 
 
   \subsection{SCnorm: Normalization}
 \label{sec:Normalization}
-SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum.
+SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
 <<cache=TRUE, eval=FALSE>>=
 Conditions = rep(c(1,2), each= 90)
@@ -170,11 +167,27 @@ SCnorm first fits the model for $K = 1$, and sequentially increases K until a sa
 
 In Figure 5, $K = 4$ is chosen, once all 10 slope densities have absolute value of slope mode < .1.
 
-\newpage
 
+\section{SCnorm: Multiple Conditions}
 When more than one condition is present SCnorm will first normalize each condition independently then apply a scaling procedure between the conditions. In this step the assumption is that most genes are not differentially expressed (DE) between cells, that any systematic differences in expression across the majority of genes is due to technical bias and should be removed.
 
 Generally the definition of condition will be obvious given the experimental setup. If the data are very heterogenous within an experimental setup it may be beneficial to first cluster more similar cells into groups and define these as conditions in SCnorm.
+
+\section{SCnorm: UMI data}
+SCnorm may also be applied to UMI data. It is highly recomended to check the count-depth relationship before and after normalization. In some cases, it might be desired to adjust the threshold used to decide K, the default value is .1. This means the largest slope mode must be within .1 of zero (zero indicates effective normalization), however lowering the threshold may improve results from some datasets. 
+
+If the data have -many- ties (lower coverage UMI datasets), then the option ditherCounts should be set to TRUE (default is FALSE). This introduces some randomness but results will not change if the command is rerun.
+
+For larger datasets, it may also be desired to increase the speed. One way to do this is to change the parameter PropToUse. PropToUse controls the proportion of genes to use for the group fitting, where the 25\% are chosen as those nearest to the the overall group mode. The default value is 25\%. 
+
+<<cache=TRUE, eval=FALSE>>=
+checkCountDepth(Data = umiData, Condition = Conditions, OutputName = "check_umi_scData", PLOT=TRUE,
+FilterCellProportion = .1, FilterExpression = 2)
+
+DataNorm <- SCnorm(umiData, Conditions, OutputName = "MyNormalizedUMIData",
+PLOT=TRUE, FilterCellNum = 10, PropToUse = .1, Thresh = .05, ditherCounts = TRUE)
+@
+
 
 \section{Session info}
 Here is the output of sessionInfo on the system on which this document was compiled:

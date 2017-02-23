@@ -5,8 +5,13 @@ quickreg<-function(x,InputData)
 	SeqDepth = InputData[[2]]
 	X = InputData[[3]][x]
 	Tau = InputData[[4]]
+	ditherFlag = InputData[[5]]
 	
-	slope <- rq(dither(LogData[X, ], type="symmetric", value=.1) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
+	if(ditherFlag == TRUE) {
+	slope <- rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
+	} else {
+		slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
+	}
 	names(slope) <- X
 	
 	return(slope)

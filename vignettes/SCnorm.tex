@@ -1,56 +1,6 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{SCnorm_vigette}
-\documentclass{article}\usepackage[]{graphicx}\usepackage[usenames,dvipsnames]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass{article}
 %\usepackage{fullpage}
 \usepackage{graphicx, graphics, epsfig,setspace,amsmath, amsthm}
 %\usepackage{hyperref}
@@ -60,11 +10,10 @@
 
 \RequirePackage{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/Bioconductor}
 
-\AtBeginDocument{\bibliographystyle{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/unsrturl}}
-
-
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\AtBeginDocument{\bibliographystyle{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/unsrturl}}  
+\usepackage{Sweave}
 \begin{document}
+\input{SCnorm-concordance}
 % \SweaveOpts{concordance=TRUE}
 \title{SCnorm: a quantile-regression based approach for robust normalization of single-cell RNA-seq data}
 \author{Rhonda Bacher and Christina Kendziorski}
@@ -81,40 +30,18 @@ single-cell RNA-seq data. SCnorm groups genes based on their count-depth relatio
 \section{Run SCnorm}
 \label{sec:quickstart}
 Before analysis can proceed, the SCnorm package must be installed.
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{install.packages}\hlstd{(}\hlstr{'SCnorm_x.x.x.tar.gz'}\hlstd{,} \hlkwc{repos}\hlstd{=}\hlkwa{NULL}\hlstd{,} \hlkwc{type}\hlstd{=}\hlstr{"source"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> install.packages('SCnorm_x.x.x.tar.gz', repos=NULL, type="source")
+\end{Sinput}
+\end{Schunk}
 
 After successful installation, the package must be loaded into the working space:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-  \hlkwd{library}\hlstd{(SCnorm)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: parallel}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: quantreg}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: SparseM}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'SparseM'}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:base':\\\#\# \\\#\#\ \ \ \  backsolve}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: cluster}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: moments}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: reshape2}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: ggplot2}}\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+>   library(SCnorm)
+\end{Sinput}
+\end{Schunk}
   
   \subsection{Required inputs}
 \label{sec:startgenedeinput}
@@ -128,36 +55,32 @@ estimates of gene expression. Counts of this nature may be obtained from RSEM, H
 \noindent The object \verb+ExampleData+ is a simulated data matrix containing
 5,000 rows of genes and 180 columns of cells. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data}\hlstd{(ExampleData)}
-\hlkwd{str}\hlstd{(ExampleData)}
-\end{alltt}
-\begin{verbatim}
-##  num [1:5000, 1:180] 3.81 21.7 2.13 22.68 0 ...
-##  - attr(*, "dimnames")=List of 2
-##   ..$ : chr [1:5000] "X_1" "X_2" "X_3" "X_4" ...
-##   ..$ : chr [1:180] "C1_1" "C1_2" "C1_3" "C1_4" ...
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> data(ExampleData)
+> str(ExampleData)
+\end{Sinput}
+\begin{Soutput}
+ num [1:5000, 1:180] 3.81 21.7 2.13 22.68 0 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:5000] "X_1" "X_2" "X_3" "X_4" ...
+  ..$ : chr [1:180] "C1_1" "C1_2" "C1_3" "C1_4" ...
+\end{Soutput}
+\end{Schunk}
   
   Here we simulated data as in SIM 1 (as detailed in Bacher* and Chu* {\it et al.}, {\it{submitted}}) with K = 4 (four slope groups), each condition has 90 cells and condition 2 has been 
 sequenced approximately 4 times as much as condition 1.
 
 {\bf Conditions}: The object \verb+Conditions+ should be a vector of length $S$ indicating which condition each cell belongs to. The order of this vector should match the order of the columns in the \verb+Data+ matrix.
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Conditions} \hlkwb{=} \hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{each}\hlstd{=} \hlnum{90}\hlstd{)}
-\hlkwd{str}\hlstd{(Conditions)}
-\end{alltt}
-\begin{verbatim}
-##  num [1:180] 1 1 1 1 1 1 1 1 1 1 ...
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> Conditions = rep(c(1,2), each= 90)
+> str(Conditions)
+\end{Sinput}
+\begin{Soutput}
+ num [1:180] 1 1 1 1 1 1 1 1 1 1 ...
+\end{Soutput}
+\end{Schunk}
   
   
   
@@ -166,14 +89,12 @@ sequenced approximately 4 times as much as condition 1.
 Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
 
 The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{checkCountDepth}\hlstd{(}\hlkwc{Data} \hlstd{= ExampleData,} \hlkwc{Conditions} \hlstd{= Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"check_exampleData"}\hlstd{,}
-                \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{FilterCellProportion} \hlstd{=} \hlnum{.1}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> checkCountDepth(Data = ExampleData, Conditions = Conditions, OutputName = "check_exampleData", 
++                 PLOT=TRUE, FilterCellProportion = .1)
+\end{Sinput}
+\end{Schunk}
   
 \begin{figure}[h!]
 \centering
@@ -183,18 +104,16 @@ The function below will estimate the count-depth relationship for all genes, gen
 
 \newpage
 It can also be used to evaluate data normalized by other methods:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{# Total Count normalization, Counts Per Million, CPM. }
-\hlstd{ExampleData.Norm} \hlkwb{<-} \hlkwd{t}\hlstd{((}\hlkwd{t}\hlstd{(ExampleData)} \hlopt{/} \hlkwd{colSums}\hlstd{(ExampleData))} \hlopt{*} \hlkwd{mean}\hlstd{(}\hlkwd{colSums}\hlstd{(ExampleData)))}
-
-\hlkwd{checkCountDepth}\hlstd{(}\hlkwc{Data} \hlstd{= ExampleData,} \hlkwc{NormalizedData} \hlstd{= ExampleData.Norm,}
-                \hlkwc{Condition} \hlstd{= Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"check_exampleDataNorm"}\hlstd{,} \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,}
-                \hlkwc{FilterCellProportion} \hlstd{=} \hlnum{.1}\hlstd{,} \hlkwc{FilterExpression} \hlstd{=} \hlnum{2}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> # Total Count normalization, Counts Per Million, CPM. 
+> ExampleData.Norm <- t((t(ExampleData) / colSums(ExampleData)) * mean(colSums(ExampleData))) 
+> checkCountDepth(Data = ExampleData, NormalizedData = ExampleData.Norm, 
++                 Condition = Conditions, OutputName = "check_exampleDataNorm", PLOT=TRUE, 
++                 FilterCellProportion = .1, FilterExpression = 2)
+> 
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[h!]
 \centering
@@ -202,20 +121,16 @@ It can also be used to evaluate data normalized by other methods:
 \caption{Evaluation of count-depth relationship in counts per million normalized example data.}
 \end{figure}
 
-
-\newpage
 Evaluating the bulk dataset included in the paper:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(SCnorm)}
-\hlkwd{data}\hlstd{(bulkH1data)}
-\hlstd{Conditions} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwd{dim}\hlstd{(bulkH1data)[}\hlnum{2}\hlstd{])}
-\hlkwd{checkCountDepth}\hlstd{(}\hlkwc{Data} \hlstd{= bulkH1data,} \hlkwc{Condition} \hlstd{= Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"check_bulkData"}\hlstd{,}
-                \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{FilterCellProportion} \hlstd{=} \hlnum{.1}\hlstd{,} \hlkwc{FilterExpression} \hlstd{=} \hlnum{2}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> library(SCnorm)
+> data(bulkH1data)
+> Conditions <- rep(1, dim(bulkH1data)[2])
+> checkCountDepth(Data = bulkH1data, Condition = Conditions, OutputName = "check_bulkData", 
++                 PLOT=TRUE, FilterCellProportion = .1, FilterExpression = 2)
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[h!]
 \centering
@@ -224,17 +139,16 @@ Evaluating the bulk dataset included in the paper:
 \end{figure}
 
 Evaluating the H1 single cell dataset included in the paper:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(SCnorm)}
-\hlkwd{data}\hlstd{(scH1data)}
-\hlstd{Conditions} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"1M"}\hlstd{,} \hlstr{"4M"}\hlstd{),} \hlkwc{each}\hlstd{=}\hlnum{92}\hlstd{)}
-\hlkwd{checkCountDepth}\hlstd{(}\hlkwc{Data} \hlstd{= scH1data,} \hlkwc{Condition} \hlstd{= Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"check_scData"}\hlstd{,} \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,}
-                \hlkwc{FilterCellProportion} \hlstd{=} \hlnum{.1}\hlstd{,} \hlkwc{FilterExpression} \hlstd{=} \hlnum{2}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> library(SCnorm)
+> data(scH1data)
+> Conditions <- rep(c("1M", "4M"), each=92)
+> checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", PLOT=TRUE, 
++                 FilterCellProportion = .1, FilterExpression = 2)
+> 
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[h!]
 \centering
@@ -242,25 +156,21 @@ Evaluating the H1 single cell dataset included in the paper:
 \caption{Evaluation of count-depth relationship in un-normalized H1 single cell data.}
 \end{figure}
 
-\newpage
-
 
 
 
   \subsection{SCnorm: Normalization}
 \label{sec:Normalization}
-SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum.
+SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Conditions} \hlkwb{=} \hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{each}\hlstd{=} \hlnum{90}\hlstd{)}
-\hlstd{DataNorm} \hlkwb{<-} \hlkwd{SCnorm}\hlstd{(ExampleData, Conditions,} \hlkwc{OutputName} \hlstd{=} \hlstr{"MyNormalizedData"}\hlstd{,}
-                     \hlkwc{PLOT}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{FilterCellNum} \hlstd{=} \hlnum{10}\hlstd{)}
-\hlkwd{str}\hlstd{(DataNorm)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> Conditions = rep(c(1,2), each= 90)
+> DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
++                      PLOT=TRUE, FilterCellNum = 10)
+> str(DataNorm)
+\end{Sinput}
+\end{Schunk}
   
 
 
@@ -281,44 +191,56 @@ SCnorm first fits the model for $K = 1$, and sequentially increases K until a sa
 
 In Figure 5, $K = 4$ is chosen, once all 10 slope densities have absolute value of slope mode < .1.
 
-\newpage
 
+\section{SCnorm: Multiple Conditions}
 When more than one condition is present SCnorm will first normalize each condition independently then apply a scaling procedure between the conditions. In this step the assumption is that most genes are not differentially expressed (DE) between cells, that any systematic differences in expression across the majority of genes is due to technical bias and should be removed.
 
 Generally the definition of condition will be obvious given the experimental setup. If the data are very heterogenous within an experimental setup it may be beneficial to first cluster more similar cells into groups and define these as conditions in SCnorm.
 
+\section{SCnorm: UMI data}
+SCnorm may also be applied to UMI data. It is highly recomended to check the count-depth relationship before and after normalization. In some cases, it might be desired to adjust the threshold used to decide K, the default value is .1. This means the largest slope mode must be within .1 of zero (zero indicates effective normalization), however lowering the threshold may improve results from some datasets. 
+
+If the data have -many- ties (lower coverage UMI datasets), then the option ditherCounts should be set to TRUE (default is FALSE). This introduces some randomness but results will not change if the command is rerun.
+
+For larger datasets, it may also be desired to increase the speed. One way to do this is to change the parameter PropToUse. PropToUse controls the proportion of genes to use for the group fitting, where the 25\% are chosen as those nearest to the the overall group mode. The default value is 25\%. 
+
+\begin{Schunk}
+\begin{Sinput}
+> checkCountDepth(Data = umiData, Condition = Conditions, OutputName = "check_umi_scData", PLOT=TRUE,
++ FilterCellProportion = .1, FilterExpression = 2)
+> DataNorm <- SCnorm(umiData, Conditions, OutputName = "MyNormalizedUMIData",
++ PLOT=TRUE, FilterCellNum = 10, PropToUse = .1, Thresh = .05, ditherCounts = TRUE)
+\end{Sinput}
+\end{Schunk}
+
+
 \section{Session info}
 Here is the output of sessionInfo on the system on which this document was compiled:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-  \hlkwd{print}\hlstd{(}\hlkwd{sessionInfo}\hlstd{())}
-\end{alltt}
-\begin{verbatim}
-## R version 3.3.1 (2016-06-21)
-## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.11.6 (El Capitan)
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## attached base packages:
-## [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-## [1] SCnorm_0.9     ggplot2_2.2.0  reshape2_1.4.2 moments_0.14   cluster_2.0.4 
-## [6] quantreg_5.29  SparseM_1.72   knitr_1.14    
-## 
-## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.8        magrittr_1.5       munsell_0.4.3      colorspace_1.2-6  
-##  [5] lattice_0.20-33    highr_0.6          stringr_1.1.0      plyr_1.8.4        
-##  [9] tools_3.3.1        grid_3.3.1         gtable_0.2.0       MatrixModels_0.4-1
-## [13] lazyeval_0.2.0     digest_0.6.10      assertthat_0.1     tibble_1.2        
-## [17] Matrix_1.2-6       formatR_1.4        evaluate_0.9       stringi_1.1.1     
-## [21] scales_0.4.1       BiocStyle_2.1.33
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+>   print(sessionInfo())
+\end{Sinput}
+\begin{Soutput}
+R version 3.3.2 (2016-10-31)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X El Capitan 10.11.6
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.5  quantreg_5.29 
+[6] SparseM_1.74  
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.8        lattice_0.20-34    grid_3.3.2         plyr_1.8.4        
+ [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.2      Matrix_1.2-7.1    
+ [9] BiocStyle_2.0.3    tools_3.3.2        stringr_1.1.0     
+\end{Soutput}
+\end{Schunk}
   
   \vspace{1cm}
 %\bibliographystyle{natbib}

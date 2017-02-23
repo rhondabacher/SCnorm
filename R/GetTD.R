@@ -11,13 +11,14 @@
 GetTD <- function(x, InputData) {
 
 
-	T <- InputData[[4]][x,1]
+	TauGroup <- InputData[[4]][x,1]
 	D <- InputData[[4]][x,2]
 	
 	O <- InputData[[1]]
 	Y <- InputData[[2]]
 	SeqDepth <- InputData[[3]]
 	Tau <- InputData[[5]]
+	ditherFlag <- InputData[[6]]
 	
 	polyX <- try(poly(O, degree = D, raw = FALSE), silent=T)
 	
@@ -26,8 +27,11 @@ GetTD <- function(x, InputData) {
 	
 		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 	
-		rqfit <- try(rq(dither(Y, type="symmetric", value=.1) ~ ., data = polydata, na.action = na.exclude, tau = T, method="fn"), silent=T)
-	
+		if(ditherFlag == TRUE) {
+			rqfit <- try(rq(dither(Y, type="symmetric", value=.01) ~ ., data = polydata, na.action = na.exclude, tau = TauGroup, method="fn"), silent=T)
+		} else {
+			rqfit <- try(rq(Y ~ ., data = polydata, na.action = na.exclude, tau = TauGroup, method="fn"), silent=T)
+		}
 		if(class(rqfit) != "try-error"){
 			revX <- data.frame(predict(polyX, SeqDepth))
 					

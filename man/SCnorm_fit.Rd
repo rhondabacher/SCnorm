@@ -4,7 +4,7 @@
 \alias{SCnorm_fit}
 \title{Fit group quantile regression for K groups}
 \usage{
-SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5)
+SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5, NCores)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
@@ -17,14 +17,11 @@ SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau 
 
 \item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed.}
 
-\item{outlierCheck}{cells/samples with relatively small sequencing depths may recieve very small scaling factors, to ensure these 
-small scaling factors do not create outliers, genes with potential outliers are first flagged and then if necessary, their normalized expression 
-values are corrected. First, gene expression counts in cells/samples having the three smallest sequencing depths are flagged if they contain
-expression counts larger than 3 times the predicted counts (from the group regression). For each gene, if the flagged values
-are the largest normalized expression value, then the count is corrected to be the median of the non-zero normalized values (default = 
-FALSE)}
-
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
+
+\item{NCores}{number of cores to use, default is detectCores() - 1.}
+
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
 }
 \value{
 normalized expression matrix and matrix of scaling factors.

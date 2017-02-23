@@ -1,17 +1,14 @@
 #' @title Fit group quantile regression for K groups
-#' @usage SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5)
+#' @usage SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5, NCores)
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param SeqDepth vector of sequencing depths estimated as columns sums of un-normalized expression matrix.
 #' @param Slopes vector of slopes estimates from GetSlopes().
 #' @param K number of slope groups in data, this will be estimated iteratively.
 #' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed. 
-#' @param outlierCheck cells/samples with relatively small sequencing depths may recieve very small scaling factors, to ensure these 
-#' small scaling factors do not create outliers, genes with potential outliers are first flagged and then if necessary, their normalized expression 
-#' values are corrected. First, gene expression counts in cells/samples having the three smallest sequencing depths are flagged if they contain
-#' expression counts larger than 3 times the predicted counts (from the group regression). For each gene, if the flagged values
-#' are the largest normalized expression value, then the count is corrected to be the median of the non-zero normalized values (default = 
-#' FALSE)
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
+#' @param NCores number of cores to use, default is detectCores() - 1.
+#' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.
+
 
 #' @description For each group K, a quantile regression is fit over all genes (PropToUse) for a grid of possible degree's d and quantile's tau. 
 #' For each value of tau and d, the predicted expression values are obtained and regressed against the original sequencing depths.  The optimal tau and d combination is chosen as that closest to the mode of the gene slopes.
@@ -19,7 +16,7 @@
 #' @author Rhonda Bacher
 #' @export
 
-SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5, NCores = NCores) {
+SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCores = NCores, ditherCounts) {
 	
 	SeqDepth <- data.frame(Depth = log(SeqDepth)) #use LOG
 	SeqDepth$Sample <- rownames(SeqDepth)
@@ -91,17 +88,17 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck 
 		D <- 6
 		Grid <- expand.grid(taus, seq(1:D))
 						
-		AllIter <- unlist(mclapply(X = 1:nrow(Grid), FUN = GetTD, InputData = list(O, Y, SeqDepth$Depth, Grid, Tau), mc.cores = NCores))
+		AllIter <- unlist(mclapply(X = 1:nrow(Grid), FUN = GetTD, InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts), mc.cores = NCores))
 		
 		D <- Grid[which.min(abs(PEAK - AllIter)),2]; #print(paste("Degree: ", M))
-		T <- Grid[which.min(abs(PEAK - AllIter)),1]; #print(paste("Tau: ", p))
+		TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1]; #print(paste("Tau: ", p))
 		
 		polyX <- poly(O, degree = D, raw = FALSE)
 		Xmat <- data.frame(model.matrix( ~ polyX ))
 	
 		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 
-		rqfit <- rq(Y ~ ., data = polydata, na.action = na.exclude, tau = T, method="fn")
+		rqfit <- rq(Y ~ ., data = polydata, na.action = na.exclude, tau = TauGroup, method="fn")
 	
 		revX <- data.frame(predict(polyX, SeqDepth$Depth))
 		colnames(revX) <- colnames(polydata[-1])
@@ -109,32 +106,9 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck 
 		pdvalsrq <- predict(rqfit, newdata=data.frame(revX))
 		names(pdvalsrq) <- rownames(SeqDepth)
 
-		SF_rq <- exp(pdvalsrq) / exp(quantile(Y, probs = T, na.rm = TRUE))
+		SF_rq <- exp(pdvalsrq) / exp(quantile(Y, probs = TauGroup, na.rm = TRUE))
 		
 		normdata_rq <- t(t(DataFiltered[qgenes, ]) / as.vector(SF_rq))
-		
-		#Just check the smallest three cells...
-		sfix <- rownames(SeqDepth[order(SeqDepth$Depth), ])[1:3]
-		counter = 0
-		for (s in 1:3) {
-			LowSamp <- DataFiltered[qgenes, sfix[s]]
-			FixG <- names(which(LowSamp > 3 * exp(pdvalsrq[sfix[s]])));
-			if (length(FixG) > 0) {
-				for (g in 1:length(FixG)) {
-				cells <- rownames(SeqDepth)[!(rownames(SeqDepth) %in% sfix[s])]
-				temp <- normdata_rq[FixG[g], cells]
-				temp[temp == 0] <- NA
-				repl <- median(temp, na.rm=T);repl
-					if (normdata_rq[FixG[g],sfix[s]] >= quantile(normdata_rq[FixG[g],cells], probs=1)) {
-						counter <- counter + 1
-							if(repl > 0) { normdata_rq[FixG[g],sfix[s]] <- repl
-							} else {
-								normdata_rq[FixG[g],sfix[s]] <- exp(quantile(Y, probs = .5, na.rm=TRUE)) }
-					}
-				}
-			}
-		}
-	
 
 		NormData <- rbind(NormData, normdata_rq)
 		

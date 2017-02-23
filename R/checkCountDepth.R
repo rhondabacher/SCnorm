@@ -1,6 +1,7 @@
 #' @title Evaluation the count-depth relationship before (or after) normalizing the data.
 
-#' @usage checkCountDepth(Data, Conditions, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, NumExpressionGroups = 10, NCores)
+#' @usage checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
+#'                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param NormalizedData matrix of normalized expression counts. Rows are genes and columns are samples. Only input this if evaluating already normalized data.
@@ -10,8 +11,11 @@
 #' @param PLOT whether to save the evaluation plots in addition to printing to screen.
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
 #' @param FilterCellProportion the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10. 
+#' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
 #' @param NumExpressionGroups the number of groups to split the data into, groups are split into equally sized groups based on non-zero median expression. 
 #' @param NCores number of cores to use, default is detectCores() - 1.
+#' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE. 
+
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. If multiple conditions are provided, a separate plot is provided for each. Can be used to evaluate the extent of the count-depth relationship in the dataset or can be be used to evaluate data normalized by alternative methods.
 
@@ -22,7 +26,7 @@
 
 
 checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
-                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL) {
+                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE) {
   
   Data <- data.matrix(Data)
   ## checks
@@ -32,6 +36,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   if(dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
   if(is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
   Levels <- levels(as.factor(Conditions)) # Number of conditions
+  if (ditherCounts == TRUE) {RNGkind("L'Ecuyer-CMRG");set.seed(1);message("Jittering values introduces some randomness, for reproducibility set.seed(1) has been set")}
   
   if(length(FilterCellProportion) > 1 & !is.list(FilterCellProportion)) {FilterCellProportion <- as.list(FilterCellProportion)}
   if(length(FilterCellProportion) == 1) { 
@@ -39,7 +44,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
 	  FilterCellProportion <- as.list(FilterCellProportion)
   }
 	  
-	  
+  # Can't use less then FilterCellNum = 10
  
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
@@ -65,7 +70,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   
   
   # Get median quantile regr. slopes.
-  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, NCores))
+  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum = 10, NCores, ditherCounts))
   
   
   # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau

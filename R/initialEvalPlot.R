@@ -34,21 +34,7 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups
 	  DensH[i] <- rqdens$y[peak]
   	}
 
-	# # if point mass occurs, arbitrarily 10
-# 	# this is to avoid plotting it
-# 	if(any(DensH > 10)) {
-# 		XX = which(DensH > 10)
-# 		TOKEEP <- setdiff(1:10, XX)
-#
-# 		DensH <- DensH[TOKEEP]
-# 		Mode <- Mode[TOKEEP]
-# 		colors = colors[TOKEEP]
-#
-# 		sreg <- sreg[TOKEEP]
-# 	}
-#
-	
-	YMax <- round(max(DensH), 2) + .2 #just for plotting
+	YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
 
 	plot(density(na.omit(Slopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
 		xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)

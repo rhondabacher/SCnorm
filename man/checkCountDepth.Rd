@@ -4,7 +4,8 @@
 \alias{checkCountDepth}
 \title{Evaluation the count-depth relationship before (or after) normalizing the data.}
 \usage{
-checkCountDepth(Data, Conditions, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, NumExpressionGroups = 10, NCores)
+checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
+                           FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
@@ -21,9 +22,13 @@ checkCountDepth(Data, Conditions, OutputName, PLOT = T, Tau = .5, FilterCellProp
 
 \item{FilterCellProportion}{the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10.}
 
+\item{FilterExpression}{exclude genes having median of non-zero expression below this threshold from count-depth plots.}
+
 \item{NumExpressionGroups}{the number of groups to split the data into, groups are split into equally sized groups based on non-zero median expression.}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
+
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
 }
 \value{
 outputs a plot.
