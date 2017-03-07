@@ -14,9 +14,9 @@ quickreg<-function(x,InputData)
       slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)  
     }
   } else {
-    slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
+    slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)
     if(class(slope) == "try-error"){
-      slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="br")$coef[2] 
+      slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)
     }
   }
   names(slope) <- X
