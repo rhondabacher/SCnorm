@@ -1,21 +1,29 @@
 
+
 quickreg<-function(x,InputData)
 {
-	LogData = InputData[[1]]
-	SeqDepth = InputData[[2]]
-	X = InputData[[3]][x]
-	Tau = InputData[[4]]
-	ditherFlag = InputData[[5]]
-	
-	if(ditherFlag == TRUE) {
-	slope <- rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
-	} else {
-		slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
-	}
-	names(slope) <- X
-	
-	return(slope)
+  LogData = InputData[[1]]
+  SeqDepth = InputData[[2]]
+  X = InputData[[3]][x]
+  Tau = InputData[[4]]
+  ditherFlag = InputData[[5]]
+  
+  if(ditherFlag == TRUE) {
+    slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T) 
+    if(class(slope) == "try-error"){
+      slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)  
+    }
+  } else {
+    slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2] 
+    if(class(slope) == "try-error"){
+      slope <- rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="br")$coef[2] 
+    }
+  }
+  names(slope) <- X
+  
+  return(slope)
 }
+
 
 redobox <- function(DATA, smallc) {
 

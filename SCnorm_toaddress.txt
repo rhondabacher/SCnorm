@@ -1,0 +1,20 @@
+## Stuff that we need to address in the paper:
+
+1. Several assumptions made when analyzing bulk RNA-seq data to not apply in the context of scRNA-seq 
+(e.g., that most genes are not DE between samples)
+--Assumptions that bulk methods make.
+		Less than 50% DE
+--What are our assumptions?
+		Groups are pre-defined.
+
+2. Data normalization strategies must be designed to capture sources of bias that are specific to each technology.
+--Sequencing Depth applies to all
+--Others may need to adjust for other effects.
+
+
+## Stuff to do :
+
+1. SCnorm on their simulation setup, how does it work? Is it strong enough evidence?
+
+---looks good, running now.
+
