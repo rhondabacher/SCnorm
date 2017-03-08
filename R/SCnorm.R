@@ -162,7 +162,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
     }
   }
   
-  
+  try(dev.off(), silent=TRUE)
   
   message("Done!")
   
