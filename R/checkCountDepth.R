@@ -86,6 +86,6 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
     dev.off()
   }
   
-  try(dev.off(), silent=TRUE)
+  
   
 }
