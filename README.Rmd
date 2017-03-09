@@ -14,9 +14,10 @@ To install the development version of SCnorm from Github:
 
 ```R
 library(devtools)
-devtools::install_github("rhondabacher/SCnorm", build_vignettes = TRUE)
+devtools::install_github("rhondabacher/SCnorm")
 ```
 
+Vignette is located here: [SCnorm Vignette](https://github.com/rhondabacher/SCnorm/blob/master/vignettes/SCnorm_vignette.pdf)
 
 
 ## Author
