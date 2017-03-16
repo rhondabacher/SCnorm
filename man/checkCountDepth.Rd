@@ -16,8 +16,6 @@ checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT 
 
 \item{OutputName}{specify the path and/or name of output files.}
 
-\item{PLOT}{whether to save the evaluation plots in addition to printing to screen.}
-
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
 
 \item{FilterCellProportion}{the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10.}

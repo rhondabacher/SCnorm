@@ -129,7 +129,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   message("Plotting count-depth relationship for normalized data...")
 	
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
-                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT, Tau=Tau,
+                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", Tau=Tau,
                   FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores, ditherCounts=ditherCounts)
   
   

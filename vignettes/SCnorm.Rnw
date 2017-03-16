@@ -72,9 +72,12 @@ str(Conditions)
 Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
 
 The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
+
+The evaluation plot will be saved as a PDF in the current directory with file name specified in OutputName, or the path and filename may be supplied in OutputName (e.g., OutputName = "Desktop/FavoriteData/check\_myData").
+
 <<cache=TRUE, eval=FALSE>>=
 checkCountDepth(Data = ExampleData, Conditions = Conditions, OutputName = "check_exampleData", 
-                PLOT=TRUE, FilterCellProportion = .1)
+                FilterCellProportion = .1)
 @
   
 \begin{figure}[h!]
@@ -91,7 +94,7 @@ It can also be used to evaluate data normalized by other methods:
 ExampleData.Norm <- t((t(ExampleData) / colSums(ExampleData)) * mean(colSums(ExampleData))) 
 
 checkCountDepth(Data = ExampleData, NormalizedData = ExampleData.Norm, 
-                Condition = Conditions, OutputName = "check_exampleDataNorm", PLOT=TRUE, 
+                Condition = Conditions, OutputName = "check_exampleDataNorm",  
                 FilterCellProportion = .1, FilterExpression = 2)
 
 @
@@ -108,7 +111,7 @@ library(SCnorm)
 data(bulkH1data)
 Conditions <- rep(1, dim(bulkH1data)[2])
 checkCountDepth(Data = bulkH1data, Condition = Conditions, OutputName = "check_bulkData", 
-                PLOT=TRUE, FilterCellProportion = .1, FilterExpression = 2)
+                FilterCellProportion = .1, FilterExpression = 2)
 @
 
 \begin{figure}[h!]
@@ -123,7 +126,7 @@ Evaluating the H1 single cell dataset included in the paper:
 library(SCnorm)
 data(scH1data)
 Conditions <- rep(c("1M", "4M"), each=92)
-checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", PLOT=TRUE, 
+checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", 
                 FilterCellProportion = .1, FilterExpression = 2)
 
 @
@@ -141,15 +144,25 @@ checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scD
 \label{sec:Normalization}
 SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
+If PLOT=TRUE is specified, a plot of the progess of SCnorm will be created for each value of K tried.
+
+Normalized data can be accessed by calling DataNorm\$NormalizedData.
+
 <<cache=TRUE, eval=FALSE>>=
 Conditions = rep(c(1,2), each= 90)
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
                      PLOT=TRUE, FilterCellNum = 10)
 str(DataNorm)
 @
-  
-
-
+\begin{Soutput}
+List of 3
+ $ NormalizedData        : num [1:5000, 1:180] 9.55 47.44 5.34 56.88 0 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:5000] "X_1" "X_2" "X_3" "X_4" ...
+  .. ..$ : chr [1:180] "C1_1" "C1_2" "C1_3" "C1_4" ...
+ $ GenesFilteredOutGroup1: chr(0) 
+ $ GenesFilteredOutGroup2: chr(0) 
+\end{Soutput}
 
 \subsection{Evaluate choice of \textit{K}}
 \label{sec:NormalizationK}

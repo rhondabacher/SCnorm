@@ -89,10 +89,13 @@ sequenced approximately 4 times as much as condition 1.
 Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
 
 The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
+
+The evaluation plot will be saved as a PDF in the current directory with file name specified in OutputName, or the path and filename may be supplied in OutputName (e.g., OutputName = "Desktop/FavoriteData/check\_myData").
+
 \begin{Schunk}
 \begin{Sinput}
 > checkCountDepth(Data = ExampleData, Conditions = Conditions, OutputName = "check_exampleData", 
-+                 PLOT=TRUE, FilterCellProportion = .1)
++                 FilterCellProportion = .1)
 \end{Sinput}
 \end{Schunk}
   
@@ -109,7 +112,7 @@ It can also be used to evaluate data normalized by other methods:
 > # Total Count normalization, Counts Per Million, CPM. 
 > ExampleData.Norm <- t((t(ExampleData) / colSums(ExampleData)) * mean(colSums(ExampleData))) 
 > checkCountDepth(Data = ExampleData, NormalizedData = ExampleData.Norm, 
-+                 Condition = Conditions, OutputName = "check_exampleDataNorm", PLOT=TRUE, 
++                 Condition = Conditions, OutputName = "check_exampleDataNorm",  
 +                 FilterCellProportion = .1, FilterExpression = 2)
 > 
 \end{Sinput}
@@ -128,7 +131,7 @@ Evaluating the bulk dataset included in the paper:
 > data(bulkH1data)
 > Conditions <- rep(1, dim(bulkH1data)[2])
 > checkCountDepth(Data = bulkH1data, Condition = Conditions, OutputName = "check_bulkData", 
-+                 PLOT=TRUE, FilterCellProportion = .1, FilterExpression = 2)
++                 FilterCellProportion = .1, FilterExpression = 2)
 \end{Sinput}
 \end{Schunk}
 
@@ -144,7 +147,7 @@ Evaluating the H1 single cell dataset included in the paper:
 > library(SCnorm)
 > data(scH1data)
 > Conditions <- rep(c("1M", "4M"), each=92)
-> checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", PLOT=TRUE, 
+> checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scData", 
 +                 FilterCellProportion = .1, FilterExpression = 2)
 > 
 \end{Sinput}
@@ -163,6 +166,10 @@ Evaluating the H1 single cell dataset included in the paper:
 \label{sec:Normalization}
 SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
+If PLOT=TRUE is specified, a plot of the progess of SCnorm will be created for each value of K tried.
+
+Normalized data can be accessed by calling DataNorm\$NormalizedData.
+
 \begin{Schunk}
 \begin{Sinput}
 > Conditions = rep(c(1,2), each= 90)
@@ -171,9 +178,15 @@ SCnorm will normalize across cells to remove the effect of sequencing depth on t
 > str(DataNorm)
 \end{Sinput}
 \end{Schunk}
-  
-
-
+\begin{Soutput}
+List of 3
+ $ NormalizedData        : num [1:5000, 1:180] 9.55 47.44 5.34 56.88 0 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:5000] "X_1" "X_2" "X_3" "X_4" ...
+  .. ..$ : chr [1:180] "C1_1" "C1_2" "C1_3" "C1_4" ...
+ $ GenesFilteredOutGroup1: chr(0) 
+ $ GenesFilteredOutGroup2: chr(0) 
+\end{Soutput}
 
 \subsection{Evaluate choice of \textit{K}}
 \label{sec:NormalizationK}
@@ -221,9 +234,9 @@ Here is the output of sessionInfo on the system on which this document was compi
 >   print(sessionInfo())
 \end{Sinput}
 \begin{Soutput}
-R version 3.3.2 (2016-10-31)
+R version 3.3.1 (2016-06-21)
 Platform: x86_64-apple-darwin13.4.0 (64-bit)
-Running under: OS X El Capitan 10.11.6
+Running under: OS X 10.11.6 (El Capitan)
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -232,13 +245,13 @@ attached base packages:
 [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.5  quantreg_5.29 
-[6] SparseM_1.74  
+[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.4  quantreg_5.29 
+[6] SparseM_1.72  
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.8        lattice_0.20-34    grid_3.3.2         plyr_1.8.4        
- [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.2      Matrix_1.2-7.1    
- [9] BiocStyle_2.0.3    tools_3.3.2        stringr_1.1.0     
+ [1] Rcpp_0.12.8        lattice_0.20-33    grid_3.3.1         plyr_1.8.4        
+ [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.1      Matrix_1.2-6      
+ [9] BiocStyle_2.1.33   tools_3.3.1        stringr_1.1.0     
 \end{Soutput}
 \end{Schunk}
   
