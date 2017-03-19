@@ -33,6 +33,8 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, T
 
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
 
+\item{withinSample}{a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.}
+
 \item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
 grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
 }
@@ -46,6 +48,7 @@ group.
 Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized 
 estimates of expression. If multiple conditions are provided, normalization is performed within condition and then
 normalized estimates are scaled between conditions.
+If withinSample=TRUE then the method from Risso will be implemented.
 }
 \author{
 Rhonda Bacher

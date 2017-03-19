@@ -1,7 +1,8 @@
 #' @title SCnorm
 
 #' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
-#'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, ditherCounts=FALSE)
+#'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
+#'					Thresh = .1, ditherCounts=FALSE, withinSample=NULL)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.
