@@ -18,6 +18,7 @@
 #' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
 #' @param Thresh threshold to use in evaluating the suffiency of K, default is .1.
 #' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.
+#' @param withinSample a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
 #' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 
@@ -25,6 +26,8 @@
 #' Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized 
 #' estimates of expression. If multiple conditions are provided, normalization is performed within condition and then
 #' normalized estimates are scaled between conditions.
+#' If withinSample=TRUE then the method from Risso will be implemented. 
+
 
 #' @return List containing matrix of normalized expression (and optionally a matrix of size factors if reportSF = TRUE ).
 #' @export
@@ -33,7 +36,8 @@
 
 
 SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
-                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, ditherCounts=FALSE) {
+                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, 
+				   ditherCounts=FALSE, withinSample=NULL) {
   
   Data <- data.matrix(Data)
   if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
@@ -49,16 +53,35 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
 	  
   Levels <- unique(Conditions) # Number of conditions
   
+   
+  if(!is.null(withinSample)) {
+	  if(length(withinSample) == dim(Data)[1]) {
+	  message("Using loess method described in ''GC-Content Normalization for RNA-Seq Data'', Risso et al. to perform
+	   within-sample normalization. For other options see the original publication and package EDASeq." )
+	  correctWithin <- function(y, correctFactor) {
+		  
+		useg <- which(y > 0 & y <= quantile(y, probs=0.995)) #don't use zeros or outliers
+	    X <- correctFactor[useg]
+	    Y <- log(y[useg])
+    
+	    calcL <- loess(Y ~ X)
+	    counts.fit <- predict(calcL, newdata = correctFactor)
+	    names(counts.fit) <- names(y)
+	    counts.fit[is.na(counts.fit)] <- 0
+  
+	    scaleC <- y / exp(counts.fit - median(Y)) #correct
+	    return(scaleC)
+	  } ##from EDAseq v2.8.0
+	  
+	  DataX = apply(Data, 2, correctWithin, correctFactor = withinSample)
+  	} else{
+	  message("length of withinSample should match the number of genes in Data!" )  	
+	}
+  }
+
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
   Genes <- rownames(Data) 
-  
-  #options: correctGC=FALSE, methodGC="loess", 
-  # if(correctGC==TRUE) {
-  # 	  library(EDASeq)
-  # 	  withinLaneNormalization(Data, "gc", which=methodGC)
-  #
-   
-  
+    
   SeqDepthList <- lapply(1:length(Levels), function(x) colSums(Data[,which(Conditions == Levels[x])]))
   
   # Get median quantile regr. slopes.
@@ -129,7 +152,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
   message("Plotting count-depth relationship for normalized data...")
 	
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
-                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", Tau=Tau,
+                  Conditions = Conditions, OutputName = "SCnorm_NormalizedData_FinalK", PLOT = PLOT, Tau=Tau,
                   FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores, ditherCounts=ditherCounts)
   
   
