@@ -201,6 +201,30 @@ DataNorm <- SCnorm(umiData, Conditions, OutputName = "MyNormalizedUMIData",
 PLOT=TRUE, FilterCellNum = 10, PropToUse = .1, Thresh = .05, ditherCounts = TRUE)
 @
 
+\section{Spike-ins}
+
+SCnorm does not require scpike-ins, however if high quality spike-ins are available then they may be use to perform the between condition scaling step. If useSpikes=TRUE then only the spike-ins will be used to estimate the scaling factors. If the spike-ins do not span the full range of expression, SCnorm will issue a warning and will need to be rerun with the option useSpikes=FALSE.
+<<cache=TRUE, eval=FALSE>>=
+DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
+                     PLOT=TRUE, FilterCellNum = 10, useSpikes=TRUE)
+@
+
+\section{Within-sample normalization}
+
+SCnorm allows correction of gene-specific features prior to the between-sample normalization. We implement the regression based procedure from Risso et al., 2011. To use this feature you must set withinSample equal to a vector of gene-specific features, one per gene. This can be anything, but is often GC-content of gene length.
+
+For evaluation whether to correct for these features or other options for correctton, see: Risso, D., Schwartz, K., Sherlock, G. \& Dudoit, S. GC-content normalization for RNA-Seq data. BMC Bioinformatics 12, 480 (2011).
+
+<<cache=TRUE, eval=FALSE>>=
+DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
+                     PLOT=TRUE, FilterCellNum = 10, withinSample = GC)
+
+DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
+                     PLOT=TRUE, FilterCellNum = 10, withinSample = GeneLength)
+@
+
+
+
 
 \section{Session info}
 Here is the output of sessionInfo on the system on which this document was compiled:

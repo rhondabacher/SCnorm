@@ -226,6 +226,33 @@ For larger datasets, it may also be desired to increase the speed. One way to do
 \end{Sinput}
 \end{Schunk}
 
+\section{Spike-ins}
+
+SCnorm does not require scpike-ins, however if high quality spike-ins are available then they may be use to perform the between condition scaling step. If useSpikes=TRUE then only the spike-ins will be used to estimate the scaling factors. If the spike-ins do not span the full range of expression, SCnorm will issue a warning and will need to be rerun with the option useSpikes=FALSE.
+\begin{Schunk}
+\begin{Sinput}
+> DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
++                      PLOT=TRUE, FilterCellNum = 10, useSpikes=TRUE)
+\end{Sinput}
+\end{Schunk}
+
+\section{Within-sample normalization}
+
+SCnorm allows correction of gene-specific features prior to the between-sample normalization. We implement the regression based procedure from Risso et al., 2011. To use this feature you must set withinSample equal to a vector of gene-specific features, one per gene. This can be anything, but is often GC-content of gene length.
+
+For evaluation whether to correct for these features or other options for correctton, see: Risso, D., Schwartz, K., Sherlock, G. \& Dudoit, S. GC-content normalization for RNA-Seq data. BMC Bioinformatics 12, 480 (2011).
+
+\begin{Schunk}
+\begin{Sinput}
+> DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
++                      PLOT=TRUE, FilterCellNum = 10, withinSample = GC)
+> DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
++                      PLOT=TRUE, FilterCellNum = 10, withinSample = GeneLength)
+\end{Sinput}
+\end{Schunk}
+
+
+
 
 \section{Session info}
 Here is the output of sessionInfo on the system on which this document was compiled:
@@ -234,9 +261,9 @@ Here is the output of sessionInfo on the system on which this document was compi
 >   print(sessionInfo())
 \end{Sinput}
 \begin{Soutput}
-R version 3.3.1 (2016-06-21)
+R version 3.3.2 (2016-10-31)
 Platform: x86_64-apple-darwin13.4.0 (64-bit)
-Running under: OS X 10.11.6 (El Capitan)
+Running under: OS X El Capitan 10.11.6
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -245,13 +272,13 @@ attached base packages:
 [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.4  quantreg_5.29 
-[6] SparseM_1.72  
+[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.5  quantreg_5.29 
+[6] SparseM_1.74  
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.8        lattice_0.20-33    grid_3.3.1         plyr_1.8.4        
- [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.1      Matrix_1.2-6      
- [9] BiocStyle_2.1.33   tools_3.3.1        stringr_1.1.0     
+ [1] Rcpp_0.12.8        lattice_0.20-34    grid_3.3.2         plyr_1.8.4        
+ [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.2      Matrix_1.2-7.1    
+ [9] BiocStyle_2.0.3    tools_3.3.2        stringr_1.1.0     
 \end{Soutput}
 \end{Schunk}
   
