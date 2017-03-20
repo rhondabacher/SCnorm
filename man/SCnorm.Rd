@@ -4,9 +4,9 @@
 \alias{SCnorm}
 \title{SCnorm}
 \usage{
-SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
+SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .25, Tau = .5, 
                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
-				Thresh = .1, ditherCounts=FALSE, withinSample=NULL)
+				Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
@@ -17,14 +17,13 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, T
 
 \item{PLOT}{whether to save all output the evaluation plots while determining the optimal K.}
 
-\item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed.}
+\item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed.}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
 
 \item{reportSF}{whether to provide a matrix of scaling counts in the output (default = FALSE).}
 
-\item{K}{the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of K
-(recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.}
+\item{K}{the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of #' K (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
 
@@ -36,8 +35,10 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, T
 
 \item{withinSample}{a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.}
 
-\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
-grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
+\item{useSpikes}{whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
+
+\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting 
+(default = 10). The initial grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
 }
 \value{
 List containing matrix of normalized expression (and optionally a matrix of size factors if reportSF = TRUE ).

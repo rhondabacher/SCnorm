@@ -3,6 +3,7 @@
 #' @param NormData list of matrices of normalized expression counts and scale factors for each condition. Matrix rows are genes and columns are samples. 
 #' @param OrigData list of matrices of un-normalized expression counts. Matrix rows are genes and columns are samples. Each item in list is a different condition.
 #' @param Genes vector of genes that will be used to scale conditions, only want to use genes that were normalized.
+#' @param useSpikes whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
 
 #' @description After conditions are independtly normalized with the 
 #' count-depth 
@@ -14,7 +15,7 @@
 #' @author Rhonda Bacher
 #' @export
 
-scaleNormMultCont <- function(NormData, OrigData, Genes)
+scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes)
 {
 sreg <- list()
 NumCond <- length(NormData)
@@ -38,9 +39,16 @@ for(i in 1:NumCond){
 	
 	for(r in 1:groups){
 		 qgenes <- names(sreg[[r]])
+		 scalegenes <- qgenes
+		 if(useSpikes==TRUE) {
+			 scalegenes <- qgenes[grep("ERCC-", qgenes)] #which are spikes
+			 if(length(scalegenes) <= 5) {
+			 	stop("Not enough spike-ins or spike-ins do not span range of expression to perform reasonably well.")
+			 }
+		 }
 
-		 ss1 <- apply(C1[qgenes,], 1, function(x) mean(x[x != 0]))
-		 os <- apply(OC[qgenes,], 1, function(x) mean(x[x != 0]))
+		 ss1 <- apply(C1[scalegenes,], 1, function(x) mean(x[x != 0]))
+		 os <- apply(OC[scalegenes,], 1, function(x) mean(x[x != 0]))
 	
 		 rr <- median(ss1/os, na.rm=T); #print(rr)
 		 C1[qgenes,] <- round((C1[qgenes,] / rr),2 )

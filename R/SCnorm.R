@@ -1,25 +1,25 @@
 #' @title SCnorm
 
-#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
+#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .25, Tau = .5, 
 #'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
-#'					Thresh = .1, ditherCounts=FALSE, withinSample=NULL)
+#'					Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.
 #' @param OutputName specify the path and/or name of output files.
 #' @param PLOT whether to save all output the evaluation plots while determining the optimal K.
-#' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed. 
+#' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed. 
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
 #' @param reportSF whether to provide a matrix of scaling counts in the output (default = FALSE).
-#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting (default = 10). The initial 
-#' grouping fits a quantile regression to each gene, making this value too low gives unstable fits.
-#' @param K the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of K
-#' (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.
+#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting 
+#' (default = 10). The initial grouping fits a quantile regression to each gene, making this value too low gives unstable fits.
+#' @param K the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of #' K (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.
 #' @param NCores number of cores to use, default is detectCores() - 1.
 #' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
 #' @param Thresh threshold to use in evaluating the suffiency of K, default is .1.
 #' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.
 #' @param withinSample a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.
+#' @param useSpikes whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
 #' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 
@@ -36,9 +36,9 @@
 #' @author Rhonda Bacher
 
 
-SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropToUse = .25, Tau = .5, 
+SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, PropToUse = .25, Tau = .5, 
                    reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, 
-				   ditherCounts=FALSE, withinSample=NULL) {
+				   ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE) {
   
   Data <- data.matrix(Data)
   if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
@@ -164,7 +164,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = T, PropTo
     # Scaling
     # Genes = Reduce(intersect, GeneFilterList)
     message("Scaling data between conditions...")
-    ScaledNormData <- scaleNormMultCont(NormList, Data, Genes)
+    ScaledNormData <- scaleNormMultCont(NormList, Data, Genes, useSpikes)
     names(ScaledNormData) <- c("NormalizedData", "ScaleFactors")
     ScaledNormData <- c(ScaledNormData, GeneFilterOUT)
     if(reportSF == T) {

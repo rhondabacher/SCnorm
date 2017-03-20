@@ -12,6 +12,8 @@ scaleNormMultCont(NormData, OrigData, Genes)
 \item{OrigData}{list of matrices of un-normalized expression counts. Matrix rows are genes and columns are samples. Each item in list is a different condition.}
 
 \item{Genes}{vector of genes that will be used to scale conditions, only want to use genes that were normalized.}
+
+\item{useSpikes}{whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
 }
 \value{
 matrix of normalized and scaled expression values for all conditions.
