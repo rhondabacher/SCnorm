@@ -33,6 +33,9 @@ Before analysis can proceed, the SCnorm package must be installed.
 \begin{Schunk}
 \begin{Sinput}
 > install.packages('SCnorm_x.x.x.tar.gz', repos=NULL, type="source")
+> #OR
+> library(devtools)
+> devtools::install_github("rhondabacher/SCnorm")
 \end{Sinput}
 \end{Schunk}
 
@@ -261,9 +264,9 @@ Here is the output of sessionInfo on the system on which this document was compi
 >   print(sessionInfo())
 \end{Sinput}
 \begin{Soutput}
-R version 3.3.2 (2016-10-31)
+R version 3.3.1 (2016-06-21)
 Platform: x86_64-apple-darwin13.4.0 (64-bit)
-Running under: OS X El Capitan 10.11.6
+Running under: OS X 10.11.6 (El Capitan)
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -272,13 +275,13 @@ attached base packages:
 [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.5  quantreg_5.29 
-[6] SparseM_1.74  
+[1] SCnorm_1.1.0   reshape2_1.4.2 moments_0.14   cluster_2.0.4  quantreg_5.29 
+[6] SparseM_1.72  
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.8        lattice_0.20-34    grid_3.3.2         plyr_1.8.4        
- [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.2      Matrix_1.2-7.1    
- [9] BiocStyle_2.0.3    tools_3.3.2        stringr_1.1.0     
+ [1] Rcpp_0.12.8        lattice_0.20-33    grid_3.3.1         plyr_1.8.4        
+ [5] MatrixModels_0.4-1 magrittr_1.5       stringi_1.1.1      Matrix_1.2-6      
+ [9] BiocStyle_2.1.33   tools_3.3.1        stringr_1.1.0     
 \end{Soutput}
 \end{Schunk}
   

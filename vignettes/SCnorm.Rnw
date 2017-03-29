@@ -32,6 +32,9 @@ single-cell RNA-seq data. SCnorm groups genes based on their count-depth relatio
 Before analysis can proceed, the SCnorm package must be installed.
 <<cache=TRUE, eval=FALSE, echo=TRUE>>=
 install.packages('SCnorm_x.x.x.tar.gz', repos=NULL, type="source")
+#OR
+library(devtools)
+devtools::install_github("rhondabacher/SCnorm")
 @
 
 After successful installation, the package must be loaded into the working space:
