@@ -1,6 +1,6 @@
 #' @title SCnorm
 
-#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .25, Tau = .5, 
+#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, PropToUse = .25, Tau = .5, 
 #'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
 #'					Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
 
