@@ -2,12 +2,12 @@
 
 #' @description This function iteratively normalizes using K groups and then evaluates whether K is sufficient. If the maximum mode received 
 #' from the GetK() function is larger than .1, K is increased to K + 1. Uses params sent from SCnorm.
-#' @return matrix of normalized and scaled expression values for all conditions. If PLOT = TRUE then the evaluation plots are 
+#' @return matrix of normalized and scaled expression values for all conditions and the evaluation plots are 
 #' output for each attempted value of K.
 #' @author Rhonda Bacher
 #' @export
 
-Normalize <- function(Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, OutputName = OutputName, PropToUse, Tau, NCores, Thresh, ditherCounts) {
+Normalize <- function(Data, SeqDepth, Slopes, CondNum, OutputName = OutputName, PropToUse, Tau, NCores, Thresh, ditherCounts) {
 	# Set up
 	GetMax = 1
 	i = 0
@@ -21,7 +21,7 @@ Normalize <- function(Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, OutputName =
 			
 			NAME = paste0("Condition: ", CondNum, "\n K = ", i)
 		
-			GetMax <- GetK(NormDataList$NormData, SeqDepth, Data, Slopes, NAME, PLOT = PLOT, Tau=Tau, NCores = NCores, ditherCounts=ditherCounts)
+			GetMax <- GetK(NormDataList$NormData, SeqDepth, Data, Slopes, NAME, Tau=Tau, NCores = NCores, ditherCounts=ditherCounts)
 			
 			
 		}

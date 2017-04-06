@@ -5,7 +5,7 @@
 #' @param Genes vector of genes that will be used to scale conditions, only want to use genes that were normalized.
 #' @param useSpikes whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
 
-#' @description After conditions are independtly normalized with the 
+#' @description After conditions are independently normalized with the 
 #' count-depth 
 #' effect removed, conditions need to be additionally scaled prior to further analysis. Genes that were normalized in both
 #' conditions are split into quartiles based on their un-normalized non-zero medians. Genes in each quartile are scaled to the 

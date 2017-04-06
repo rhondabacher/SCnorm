@@ -19,7 +19,7 @@ scaleNormMultCont(NormData, OrigData, Genes)
 matrix of normalized and scaled expression values for all conditions.
 }
 \description{
-After conditions are independtly normalized with the 
+After conditions are independently normalized with the 
 count-depth 
 effect removed, conditions need to be additionally scaled prior to further analysis. Genes that were normalized in both
 conditions are split into quartiles based on their un-normalized non-zero medians. Genes in each quartile are scaled to the 

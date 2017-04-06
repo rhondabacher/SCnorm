@@ -1,4 +1,4 @@
-#' @title Estimate gene specfic count-depth relationships
+#' @title Estimate gene specific count-depth relationships
 #' @usage GetSlopes(Data, SeqDepth, FilterCellNum = 10, Tau, NCores, ditherCounts)
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param SeqDepth vector of sequencing depths estimated as columns sums of un-normalized expression matrix.

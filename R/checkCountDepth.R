@@ -1,6 +1,6 @@
 #' @title Evaluation the count-depth relationship before (or after) normalizing the data.
 
-#' @usage checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
+#' @usage checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, SavePDF = TRUE, Tau = .5, FilterCellProportion = .10, 
 #'                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
@@ -9,6 +9,7 @@
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix. If not provided data is assumed to come from same condition/batch.
 #' @param OutputName specify the path and/or name of output files.
 #' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
+#' @param SavePDF whether to automatically write and save the output plot as a PDF (default is TRUE).
 #' @param FilterCellProportion the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10. 
 #' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
 #' @param NumExpressionGroups the number of groups to split the data into, groups are split into equally sized groups based on non-zero median expression. 
@@ -24,7 +25,7 @@
 #' @author Rhonda Bacher
 
 
-checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, OutputName=NULL, Tau = .5, PLOT=TRUE, FilterCellProportion = .10, 
+checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, OutputName=NULL, Tau = .5, SavePDF=TRUE, FilterCellProportion = .10, 
                             FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE) {
   
   Data <- data.matrix(Data)
@@ -32,8 +33,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   if(is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
   if(is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
   if(is.null(Conditions)) {Conditions <- rep("1", dim(Data)[2])}
-  if (is.null(OutputName)) {OutputName = "count-depth_relationship_mydata"}
-  if(PLOT==FALSE) {message("Plot set to FALSE is no longer an option, calls to this function will always save a PDF of the output.")}
+  if (is.null(OutputName)) {OutputName = "count-depth-relationship.pdf"}
   if(dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
   if(is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
   Levels <- levels(as.factor(Conditions)) # Number of conditions
@@ -73,16 +73,14 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   # Get median quantile regr. slopes.
   SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum = 10, NCores, ditherCounts))
   
-  ROWS <- max(1,round(length(Levels) / 2))
 
-  pdf(paste0(OutputName, "_count-depth_evaluation.pdf"), height=5*ROWS, width=10)
-  par(mfrow=c(ROWS,2))
+  if (SavePDF == TRUE) { pdf(paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=5) }
   lapply(1:length(Levels), function(x) {
     initialEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], SeqDepth = SeqDepthList[[x]], 
                     Slopes = SlopesList[[x]], Name = Levels[[x]], NumExpressionGroups, BeforeNorm = BeforeNorm)
   })
   
-  dev.off()
+  if (SavePDF == TRUE){  dev.off() }
   
   
   

@@ -24,5 +24,9 @@ Vignette is located here: [SCnorm Vignette](https://github.com/rhondabacher/SCno
 
 Rhonda Bacher <rhonda.bacher@gmail.com>
 
+## Latest Update:
+
+The latest update removes the prior option of PLOT and replaces it with option of SavePDF. SCnorm will automatically generate evaluation plots and by default (SavePDF = TRUE) these are written and saved to the current or given directory. Turning SavePDF=FALSE will print plots to screen or current device.
+
 
 

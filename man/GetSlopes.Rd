@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetSlopes.R
 \name{GetSlopes}
 \alias{GetSlopes}
-\title{Estimate gene specfic count-depth relationships}
+\title{Estimate gene specific count-depth relationships}
 \usage{
 GetSlopes(Data, SeqDepth, FilterCellNum = 10, Tau, NCores, ditherCounts)
 }

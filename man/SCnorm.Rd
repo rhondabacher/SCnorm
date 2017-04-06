@@ -4,8 +4,8 @@
 \alias{SCnorm}
 \title{SCnorm}
 \usage{
-SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .25, Tau = .5, 
-                  reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
+SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, PropToUse = .25, Tau = .5,
+                  reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
 				Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
 }
 \arguments{
@@ -15,7 +15,7 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .2
 
 \item{OutputName}{specify the path and/or name of output files.}
 
-\item{PLOT}{whether to save all output the evaluation plots while determining the optimal K.}
+\item{SavePDF}{whether to automatically write and save the output plot as a PDF (default is TRUE).}
 
 \item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed.}
 
@@ -29,7 +29,7 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .2
 
 \item{FilterExpression}{exclude genes having median of non-zero expression below this threshold from count-depth plots.}
 
-\item{Thresh}{threshold to use in evaluating the suffiency of K, default is .1.}
+\item{Thresh}{threshold to use in evaluating the sufficiency of K, default is .1.}
 
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
 
@@ -37,7 +37,7 @@ SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TTRUE, PropToUse = .2
 
 \item{useSpikes}{whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
 
-\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting 
+\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting
 (default = 10). The initial grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
 }
 \value{
@@ -45,14 +45,11 @@ List containing matrix of normalized expression (and optionally a matrix of size
 }
 \description{
 Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
-with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 
-group. 
-Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized 
+with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each
+group.
+Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized
 estimates of expression. If multiple conditions are provided, normalization is performed within condition and then
 normalized estimates are scaled between conditions.
 If withinSample=TRUE then the method from Risso will be implemented.
-}
-\author{
-Rhonda Bacher
 }
 

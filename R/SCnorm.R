@@ -1,42 +1,42 @@
 #' @title SCnorm
 
-#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, PropToUse = .25, Tau = .5, 
-#'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
+#' @usage SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, PropToUse = .25, Tau = .5,
+#'                   reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
 #'					Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
 
 #' @param Data matrix of un-normalized expression counts. Rows are genes and columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.
 #' @param OutputName specify the path and/or name of output files.
-#' @param PLOT whether to save all output the evaluation plots while determining the optimal K.
-#' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed. 
-#' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ). 
+#' @param SavePDF whether to automatically write and save the output plot as a PDF (default is TRUE).
+#' @param PropToUse proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed.
+#' @param Tau value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).
 #' @param reportSF whether to provide a matrix of scaling counts in the output (default = FALSE).
-#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting 
+#' @param FilterCellNumber the number of non-zero expression estimate required to include the genes into the SCnorm fitting
 #' (default = 10). The initial grouping fits a quantile regression to each gene, making this value too low gives unstable fits.
 #' @param K the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of #' K (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.
 #' @param NCores number of cores to use, default is detectCores() - 1.
 #' @param FilterExpression exclude genes having median of non-zero expression below this threshold from count-depth plots.
-#' @param Thresh threshold to use in evaluating the suffiency of K, default is .1.
+#' @param Thresh threshold to use in evaluating the sufficiency of K, default is .1.
 #' @param ditherCounts whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.
 #' @param withinSample a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.
 #' @param useSpikes whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
 
 #' @description Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
-#' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each 
-#' group. 
-#' Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized 
+#' with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each
+#' group.
+#' Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized
 #' estimates of expression. If multiple conditions are provided, normalization is performed within condition and then
 #' normalized estimates are scaled between conditions.
-#' If withinSample=TRUE then the method from Risso will be implemented. 
+#' If withinSample=TRUE then the method from Risso will be implemented.
 
 
 #' @return List containing matrix of normalized expression (and optionally a matrix of size factors if reportSF = TRUE ).
 #' @export
 
-#' @author Rhonda Bacher
+# ' @author Rhonda Bacher
 
 
-SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, PropToUse = .25, Tau = .5, 
+SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, PropToUse = .25, Tau = .5, 
                    reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, 
 				   ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE) {
   
@@ -46,7 +46,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, Pro
   if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", paste0, 1:dim(Data)[1]))}
   if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
   if (is.null(Conditions)) {stop("Must supply conditions.")}
-  if (is.null(OutputName)) {OutputName = "MyNormalizedData"}
+  if (is.null(OutputName)) {OutputName = "MyData"}
   if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in expression matrix must match length of conditions vector!")}
   if (!is.null(K)) {message(paste0("SCnorm will normalize assuming, ", K, " is the optimal number of groups. It is not advised to set this."))}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
@@ -104,19 +104,16 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, Pro
          " non-zero values.")))
   
   message("A list of these genes can be accessed in output, see vignette for example.") 
-  
-  # Data, SeqDepth, Slopes, CondNum, PLOT = TRUE, PropToUse, outlierCheck, Tau
-  
-  
-  if(PLOT==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
+    
+  if(SavePDF==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
     par(mfrow=c(2,2))}
+  
   #   if k is NOT provided
   if (is.null(K)) {
     NormList <- lapply(1:length(Levels), function(x) {
       Normalize(Data = DataList[[x]], 
                 SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
                 CondNum = Levels[x], OutputName= OutputName,
-                PLOT = PLOT,
                 PropToUse = PropToUse,
                 Tau = Tau, NCores= NCores, Thresh = Thresh, ditherCounts=ditherCounts)
     }) 
@@ -143,7 +140,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, Pro
     } else (stop("Check that the specification of K is correct!"))
   }	
   
-  if (PLOT==TRUE) {  dev.off() }
+  if (SavePDF==TRUE) {  dev.off() }
   
   FilterCellProportion = lapply(1:length(Levels), function(x) FilterCellNum / dim(DataList[[x]])[2])
   
@@ -153,7 +150,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, PLOT = TRUE, Pro
   message("Plotting count-depth relationship for normalized data...")
 	
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
-                  Conditions = Conditions, OutputName = paste0(OutputName, "_SCnorm_NormalizedData_FinalK"), PLOT = PLOT, Tau=Tau,
+                  Conditions = Conditions, OutputName = paste0(OutputName, "_SCnorm_count-depth-relationship.pdf"), SavePDF = SavePDF, Tau=Tau,
                   FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores, ditherCounts=ditherCounts)
   
   

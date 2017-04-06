@@ -6,19 +6,18 @@
 #' @param Slopes vector of slopes estimated in the GetSlopes() function. Only used here to obtain the names of genes considered in the
 #' normalization.
 #' @param Name plot title
-#' @param PLOT whether to output the evaluation plots.
 
-#' @description Median quantile regresion is fit for each gene using the normalized gene expression values. 
+#' @description Median quantile regression is fit for each gene using the normalized gene expression values. 
 #' A slope near zero indicate the sequencing depth effect has been successfully removed. 
 #' Genes are divided into ten equally sized groups based on their non-zero median expression. Slope densities are plot for each 
-#' group (if PLOT = TRUE) and estimated modes are calculated. If any of the ten group modes is larger than .1, the K is not sufficient
+#' group and estimated modes are calculated. If any of the ten group modes is larger than .1, the K is not sufficient
 #' to normalize the data.
-#' @return value of largest mode and (if PLOT = TRUE) a plot of the ten normalized slope densities. 
+#' @return value of largest mode and a plot of the ten normalized slope densities. 
 #' @author Rhonda Bacher
 #' @export
 
 
-GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau, NCores, ditherCounts) {
+GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau, NCores, ditherCounts) {
 	
 	sreg <- list()
 	
@@ -47,14 +46,14 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE, Tau, NCore
   	}
 
 	YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
-	if(PLOT == TRUE) {	
+
 		plot(density(na.omit(NormSlopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
 			xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
 		for (i in 1:length(sreg)) {
 			useg <- names(sreg[[i]])
 			lines(density(na.omit(NormSlopes[useg]), from=-3, to=3, adjust=1), lwd=3, col=colors[i])
 		}
-		abline(v=0, lwd=3, col="black") }
+		abline(v=0, lwd=3, col="black") 
 
 	MAX <- max(abs(Mode))
 	return(MAX)

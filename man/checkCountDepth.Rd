@@ -4,7 +4,7 @@
 \alias{checkCountDepth}
 \title{Evaluation the count-depth relationship before (or after) normalizing the data.}
 \usage{
-checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT = T, Tau = .5, FilterCellProportion = .10, 
+checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, SavePDF = TRUE, Tau = .5, FilterCellProportion = .10, 
                            FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, ditherCounts = FALSE)
 }
 \arguments{
@@ -17,6 +17,8 @@ checkCountDepth(Data, NormalizedData= NULL, Conditions = NULL, OutputName, PLOT 
 \item{OutputName}{specify the path and/or name of output files.}
 
 \item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
+
+\item{SavePDF}{whether to automatically write and save the output plot as a PDF (default is TRUE).}
 
 \item{FilterCellProportion}{the proportion of non-zero expression estimates required to include the genes into the evaluation. Default is .10.}
 

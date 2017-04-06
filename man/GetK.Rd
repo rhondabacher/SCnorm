@@ -17,17 +17,15 @@ GetK(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE)
 normalization.}
 
 \item{Name}{plot title}
-
-\item{PLOT}{whether to output the evaluation plots.}
 }
 \value{
-value of largest mode and (if PLOT = TRUE) a plot of the ten normalized slope densities.
+value of largest mode and a plot of the ten normalized slope densities.
 }
 \description{
-Median quantile regresion is fit for each gene using the normalized gene expression values. 
+Median quantile regression is fit for each gene using the normalized gene expression values. 
 A slope near zero indicate the sequencing depth effect has been successfully removed. 
 Genes are divided into ten equally sized groups based on their non-zero median expression. Slope densities are plot for each 
-group (if PLOT = TRUE) and estimated modes are calculated. If any of the ten group modes is larger than .1, the K is not sufficient
+group and estimated modes are calculated. If any of the ten group modes is larger than .1, the K is not sufficient
 to normalize the data.
 }
 \author{

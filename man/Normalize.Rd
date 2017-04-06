@@ -4,11 +4,11 @@
 \alias{Normalize}
 \title{Iteratively fit group regression and evaluate to choose optimal K}
 \usage{
-Normalize(Data, SeqDepth, Slopes, CondNum, PLOT = TRUE,
-  OutputName = OutputName, PropToUse, Tau, NCores, Thresh, ditherCounts)
+Normalize(Data, SeqDepth, Slopes, CondNum, OutputName = OutputName, PropToUse,
+  Tau, NCores, Thresh, ditherCounts)
 }
 \value{
-matrix of normalized and scaled expression values for all conditions. If PLOT = TRUE then the evaluation plots are 
+matrix of normalized and scaled expression values for all conditions and the evaluation plots are 
 output for each attempted value of K.
 }
 \description{

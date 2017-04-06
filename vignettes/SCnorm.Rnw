@@ -72,9 +72,9 @@ str(Conditions)
   
   \subsection{SCnorm: Check count-depth relationship}
 \label{sec:checkData}
-Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recomend proceding with the normalization provided by SCnorm. 
+Before normalizing using SCnorm, it is advised to check the count-depth relationship in your data. If all genes have a similar relationship then a global strategy such as median-by-ratio in the DESeq package or TMM in edgeR will be adequate. However, in our paper we show that a count-depth relationship that varies among genes leads to poor normalization when using global scaling strategies, in which case we strongly recommend proceeding with the normalization provided by SCnorm. 
 
-The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recomend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
+The function below will estimate the count-depth relationship for all genes, genes are first divided into groups based on their non-zero median expression, then the density of slopes for each group is plot. We recommend checking a variety of filter options, in case you find that only genes expressed in very few cells or very low expressors are the main concern.
 
 The evaluation plot will be saved as a PDF in the current directory with file name specified in OutputName, or the path and filename may be supplied in OutputName (e.g., OutputName = "Desktop/FavoriteData/check\_myData").
 
@@ -147,14 +147,14 @@ checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scD
 \label{sec:Normalization}
 SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
-If PLOT=TRUE is specified, a plot of the progess of SCnorm will be created for each value of K tried.
+If SavePD=TRUE is specified, the plots of the progress of SCnorm will be created and saved to the directly and file names given to MyNormalizedData for each value of K tried. Setting SavePDF=FALSE will print plots to screen or current device.
 
 Normalized data can be accessed by calling DataNorm\$NormalizedData.
 
 <<cache=TRUE, eval=FALSE>>=
 Conditions = rep(c(1,2), each= 90)
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
-                     PLOT=TRUE, FilterCellNum = 10)
+                     SavePDF=TRUE, FilterCellNum = 10)
 str(DataNorm)
 @
 \begin{Soutput}
@@ -170,7 +170,7 @@ List of 3
 \subsection{Evaluate choice of \textit{K}}
 \label{sec:NormalizationK}
 
-SCnorm first fits the model for $K = 1$, and sequentially increases K until a satisfactory stopping point is reached. For each value of $K$, SCnorm will estimate the count-depth relationship on the normalized counts. Gene evaluation groups are formed by splitting genes into 10 groups based on their non-zero median un-normalized expression and for each group the mode of the normalized count-depth relationship is estimated. If the absolute value of the maximum mode is < .1, then $K$ is selected, otherwise $K$ is increase by one.
+SCnorm first fits the model for $K = 1$, and sequentially increases K until a satisfactory stopping point is reached. For each value of $K$, SCnorm will estimate the count-depth relationship on the normalized counts. Gene evaluation groups are formed by splitting genes into 10 groups based on their non-zero median un-normalized expression and for each group the mode of the normalized count-depth relationship is estimated. If the absolute value of the maximum mode is < .1, then $K$ is selected, otherwise $K$ is increased by one.
 
 
 \begin{figure}[h!]
@@ -190,40 +190,40 @@ When more than one condition is present SCnorm will first normalize each conditi
 Generally the definition of condition will be obvious given the experimental setup. If the data are very heterogenous within an experimental setup it may be beneficial to first cluster more similar cells into groups and define these as conditions in SCnorm.
 
 \section{SCnorm: UMI data}
-SCnorm may also be applied to UMI data. It is highly recomended to check the count-depth relationship before and after normalization. In some cases, it might be desired to adjust the threshold used to decide K, the default value is .1. This means the largest slope mode must be within .1 of zero (zero indicates effective normalization), however lowering the threshold may improve results from some datasets. 
+SCnorm may also be applied to UMI data. It is highly recommended to check the count-depth relationship before and after normalization. In some cases, it might be desired to adjust the threshold used to decide K, the default value is .1. This means the largest slope mode must be within .1 of zero (zero indicates effective normalization), however lowering the threshold may improve results from some datasets. 
 
-If the data have -many- ties (lower coverage UMI datasets), then the option ditherCounts should be set to TRUE (default is FALSE). This introduces some randomness but results will not change if the command is rerun.
+If the data have -many- ties (lower coverage UMI datasets), then then consider setting the option ditherCounts to TRUE (default is FALSE). This introduces some randomness but results will not change if the command is rerun.
 
 For larger datasets, it may also be desired to increase the speed. One way to do this is to change the parameter PropToUse. PropToUse controls the proportion of genes to use for the group fitting, where the 25\% are chosen as those nearest to the the overall group mode. The default value is 25\%. 
 
 <<cache=TRUE, eval=FALSE>>=
-checkCountDepth(Data = umiData, Condition = Conditions, OutputName = "check_umi_scData", PLOT=TRUE,
+checkCountDepth(Data = umiData, Condition = Conditions, OutputName = "check_umi_scData",
 FilterCellProportion = .1, FilterExpression = 2)
 
 DataNorm <- SCnorm(umiData, Conditions, OutputName = "MyNormalizedUMIData",
-PLOT=TRUE, FilterCellNum = 10, PropToUse = .1, Thresh = .05, ditherCounts = TRUE)
+FilterCellNum = 10, PropToUse = .1, Thresh = .05, ditherCounts = TRUE)
 @
 
 \section{Spike-ins}
 
-SCnorm does not require scpike-ins, however if high quality spike-ins are available then they may be use to perform the between condition scaling step. If useSpikes=TRUE then only the spike-ins will be used to estimate the scaling factors. If the spike-ins do not span the full range of expression, SCnorm will issue a warning and will need to be rerun with the option useSpikes=FALSE.
+SCnorm does not require spike-ins, however if high quality spike-ins are available then they may be use to perform the between condition scaling step. If useSpikes=TRUE then only the spike-ins will be used to estimate the scaling factors. If the spike-ins do not span the full range of expression, SCnorm will issue a warning and will need to be rerun with the option useSpikes=FALSE.
 <<cache=TRUE, eval=FALSE>>=
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
-                     PLOT=TRUE, FilterCellNum = 10, useSpikes=TRUE)
+                     FilterCellNum = 10, useSpikes=TRUE)
 @
 
 \section{Within-sample normalization}
 
 SCnorm allows correction of gene-specific features prior to the between-sample normalization. We implement the regression based procedure from Risso et al., 2011. To use this feature you must set withinSample equal to a vector of gene-specific features, one per gene. This can be anything, but is often GC-content of gene length.
 
-For evaluation whether to correct for these features or other options for correctton, see: Risso, D., Schwartz, K., Sherlock, G. \& Dudoit, S. GC-content normalization for RNA-Seq data. BMC Bioinformatics 12, 480 (2011).
+For evaluation whether to correct for these features or other options for correction, see: Risso, D., Schwartz, K., Sherlock, G. \& Dudoit, S. GC-content normalization for RNA-Seq data. BMC Bioinformatics 12, 480 (2011).
 
 <<cache=TRUE, eval=FALSE>>=
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
-                     PLOT=TRUE, FilterCellNum = 10, withinSample = GC)
+                     FilterCellNum = 10, withinSample = GC)
 
 DataNorm <- SCnorm(ExampleData, Conditions, OutputName = "MyNormalizedData",
-                     PLOT=TRUE, FilterCellNum = 10, withinSample = GeneLength)
+                     FilterCellNum = 10, withinSample = GeneLength)
 @
 
 
