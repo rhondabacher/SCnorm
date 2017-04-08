@@ -150,7 +150,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
   message("Plotting count-depth relationship for normalized data...")
 	
   checkCountDepth(Data = Data, NormalizedData = NORMDATA,
-                  Conditions = Conditions, OutputName = paste0(OutputName, "_SCnorm_count-depth-relationship.pdf"), SavePDF = SavePDF, Tau=Tau,
+                  Conditions = Conditions, OutputName = OutputName, SavePDF = SavePDF, Tau=Tau,
                   FilterCellProportion = FilterCellProportion, FilterExpression = FilterExpression, NCores = NCores, ditherCounts=ditherCounts)
   
   
