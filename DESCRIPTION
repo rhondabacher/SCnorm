@@ -1,6 +1,6 @@
 Package: SCnorm
 Title: Normalization of single cell RNA-seq data
-Version: 1.1.1
+Version: 1.1.2
 Authors: Rhonda Bacher, email = rbacher@wisc.com
 Description: Normalization of single cell RNA-seq data
 Depends:
