@@ -23,7 +23,7 @@ GetTD <- function(x, InputData) {
 	polyX <- try(poly(O, degree = D, raw = FALSE), silent=T)
 	
 	if(!is.null(dim(polyX))){
-		Xmat <- data.frame(model.matrix( ~ polyX ))
+		Xmat <- data.table(model.matrix( ~ polyX ))
 	
 		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 	
@@ -45,7 +45,6 @@ GetTD <- function(x, InputData) {
 			} else {S <- -50}
 		} else {S <- -50}	
 	} else {S <- -50}
-
 
 return(as.numeric(S))
 }

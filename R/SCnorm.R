@@ -40,6 +40,8 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
                    reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, Thresh = .1, 
 				   ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE) {
   
+  if (any(colSums(Data) == 0)) {stop("Data contains at least one column will all zeros. Please remove these columns before calling SCnorm(). Quality control on data is highly recommended prior to running SCnorm!")}
+  
   Data <- data.matrix(Data)
   if(anyNA(Data)) {stop("Data contains at least one value of NA. Unsure how to proceed.")}
   ## checks
@@ -74,7 +76,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
 	    return(scaleC)
 	  } ##from EDAseq v2.8.0
 	  
-	  DataX = apply(Data, 2, correctWithin, correctFactor = withinSample)
+	  Data = apply(Data, 2, correctWithin, correctFactor = withinSample)
   	} else{
 	  message("length of withinSample should match the number of genes in Data!" )  	
 	}
@@ -85,13 +87,8 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
     
   SeqDepthList <- lapply(1:length(Levels), function(x) colSums(Data[,which(Conditions == Levels[x])]))
   
-  # Get median quantile regr. slopes.
-  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]], SeqDepthList[[x]], Tau, FilterCellNum, NCores, ditherCounts))
-  
-  
   NumZerosList <- lapply(1:length(Levels), function(x) { apply(DataList[[x]], 1, function(c) sum(c != 0)) })
-  
-  
+    
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] >= FilterCellNum)))
   
   GeneFilterOUT <- lapply(1:length(Levels), function(x) names(which(NumZerosList[[x]] < FilterCellNum)))
@@ -99,12 +96,19 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
   
   message("Gene filter is applied within each condition.")
   
-  lapply(1:length(Levels), function(x) message(paste0(length(GeneFilterOUT[[x]]), 
+  NM<-lapply(1:length(Levels), function(x) message(paste0(length(GeneFilterOUT[[x]]), 
          " genes were not included in the normalization due to having less than ", FilterCellNum, 
          " non-zero values.")))
   
   message("A list of these genes can be accessed in output, see vignette for example.") 
     
+	
+	
+  # Get median quantile regr. slopes.
+  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum, NCores, ditherCounts))
+  
+  
+	
   if(SavePDF==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
     par(mfrow=c(2,2))}
   

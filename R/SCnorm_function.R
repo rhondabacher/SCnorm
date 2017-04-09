@@ -18,13 +18,12 @@
 
 SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCores = NCores, ditherCounts) {
 	
-	SeqDepth <- data.frame(Depth = log(SeqDepth)) #use LOG
-	SeqDepth$Sample <- rownames(SeqDepth)
-	
+
+	SeqDepth <- data.table(Depth = log(SeqDepth), Sample = names(SeqDepth)) #use LOG
 	
 	Genes <- rownames(Data)
-	DataFiltered <- Data[names(Slopes), ]
-	logData <- redobox(DataFiltered, 0) #use LOG data
+	DataFiltered <- Data[names(Slopes),]
+	logData <- data.table(Gene = rownames(DataFiltered), redobox(DataFiltered[,-1], 0)) # use LOG
 	
 	
 	sreg <- list()
@@ -73,20 +72,18 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCo
 	
 		NumToSub <- ceiling(length(qgenes) * PropToUse) # use 25% of data near mode, faster
 		ModalGenes <- names(head(sort(abs(PEAK - Slopes[qgenes])), NumToSub))
-		InData <- as.matrix(logData[ModalGenes, ])
-
-
-		Melted <- reshape2:::melt.matrix(InData)
-		Melted <- Melted[order(Melted$Var1, Melted$Var2), ]
+		
+		InData <- subset(logData, Gene %in% ModalGenes)
+		Melted <- data.table::melt(InData, id="Gene")
 		colnames(Melted) <- c("Gene", "Sample", "Counts")
 
 		LongData <- merge(Melted, SeqDepth, by="Sample")
 		O <- LongData$Depth
 		Y <- LongData$Counts
-
+		
 		taus <- seq(.05, .95, by=.05)
 		D <- 6
-		Grid <- expand.grid(taus, seq(1:D))
+		Grid <- expand.grid(taus, seq(1:6))
 						
 		AllIter <- unlist(mclapply(X = 1:nrow(Grid), FUN = GetTD, InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts), mc.cores = NCores))
 		
@@ -94,8 +91,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCo
 		TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1]; #print(paste("Tau: ", p))
 		
 		polyX <- poly(O, degree = D, raw = FALSE)
-		Xmat <- data.frame(model.matrix( ~ polyX ))
-	
+		Xmat <- data.table(model.matrix( ~ polyX ))
 		polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 
 		rqfit <- rq(Y ~ ., data = polydata, na.action = na.exclude, tau = TauGroup, method="fn")
@@ -109,6 +105,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCo
 		SF_rq <- exp(pdvalsrq) / exp(quantile(Y, probs = TauGroup, na.rm = TRUE))
 		
 		normdata_rq <- t(t(DataFiltered[qgenes, ]) / as.vector(SF_rq))
+		rownames(normdata_rq) <- qgenes
 
 		NormData <- rbind(NormData, normdata_rq)
 		

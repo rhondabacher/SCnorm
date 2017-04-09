@@ -147,7 +147,7 @@ checkCountDepth(Data = scH1data, Condition = Conditions, OutputName = "check_scD
 \label{sec:Normalization}
 SCnorm will normalize across cells to remove the effect of sequencing depth on the counts and return the normalized expression counts, a list of genes which were not considered in the normalization due to filter options, and optionally an additional matrix of scale factors (default = FALSE).The default filter for SCnorm only considers genes having at least 10 non-zero expression value. The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. Names of filtered genes are in DataNorm\$GenesFilteredOutGroupX, where X depends on the values in the Condition vector.
 
-If SavePD=TRUE is specified, the plots of the progress of SCnorm will be created and saved to the directly and file names given to MyNormalizedData for each value of K tried. Setting SavePDF=FALSE will print plots to screen or current device.
+If SavePDF=TRUE is specified, the plots of the progress of SCnorm will be created and saved to the directly and file names given to MyNormalizedData for each value of K tried. Setting SavePDF=FALSE will print plots to screen or current device.
 
 Normalized data can be accessed by calling DataNorm\$NormalizedData.
 
