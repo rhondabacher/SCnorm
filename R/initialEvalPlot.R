@@ -28,7 +28,7 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups
 	DensH <- c()
 	for (i in 1:NumExpressionGroups) {
 	  useg <- names(sreg[[i]])
-	  rqdens <- density(Slopes[useg])
+	  rqdens <- density(na.omit(Slopes[useg]))
 	  peak <- which.max(rqdens$y)
 	  Mode[i] <- rqdens$x[peak]
 	  DensH[i] <- rqdens$y[peak]

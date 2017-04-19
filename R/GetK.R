@@ -39,7 +39,7 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau, NCores, ditherCoun
 	DensH <- c()
 	for (i in 1:10) {
 	  useg <- names(sreg[[i]])
-	  rqdens <- density(NormSlopes[useg])
+	  rqdens <- density(na.omit(NormSlopes[useg]))
 	  peak <- which.max(rqdens$y)
 	  Mode[i] <- rqdens$x[peak]
 	  DensH[i] <- rqdens$y[peak]

@@ -68,7 +68,8 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   }
   
   GeneFilterList <- lapply(1:length(Levels), function(x) names(which(PropZerosList[[x]] >= FilterCellProportion[[x]] & MedExprAll >= FilterExpression)))
-  
+  NM <- unlist(lapply(1:length(Levels), function(x) length(GeneFilterList[[x]])))
+  if(any(NM) == 0) {stop("No genes pass the genes filter specified! Try lowering thresholds or perform more QC on your data.")}
   
   # Get median quantile regr. slopes.
   SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum = 10, NCores, ditherCounts))
