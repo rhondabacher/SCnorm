@@ -107,13 +107,14 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
   # Get median quantile regr. slopes.
   SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum, NCores, ditherCounts))
   
-  
-	
+ 
+  #   if k is NOT provided
+  if (is.null(K)) {
+
   if(SavePDF==TRUE) {  pdf(paste0(OutputName, "_k_evaluation.pdf"), height=10, width=10)
     par(mfrow=c(2,2))}
   
-  #   if k is NOT provided
-  if (is.null(K)) {
+  
     NormList <- lapply(1:length(Levels), function(x) {
       Normalize(Data = DataList[[x]], 
                 SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
@@ -122,6 +123,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
                 Tau = Tau, NCores= NCores, Thresh = Thresh, ditherCounts=ditherCounts)
     }) 
     
+	if (SavePDF==TRUE) {  dev.off() }	
   }
   
   
@@ -144,7 +146,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
     } else (stop("Check that the specification of K is correct!"))
   }	
   
-  if (SavePDF==TRUE) {  dev.off() }
+  
   
   FilterCellProportion = lapply(1:length(Levels), function(x) FilterCellNum / dim(DataList[[x]])[2])
   
