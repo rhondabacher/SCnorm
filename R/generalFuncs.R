@@ -12,11 +12,17 @@ quickreg<-function(x,InputData)
     slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T) 
     if(class(slope) == "try-error"){
       slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)  
-    }
+      if(class(slope) == "try-error"){
+		slope <- NA
+	  }	
+	} 
   } else {
     slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)
     if(class(slope) == "try-error"){
       slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)
+      if(class(slope) == "try-error"){
+		slope <- NA
+	  }	
     }
   }
   names(slope) <- X
