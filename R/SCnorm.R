@@ -53,7 +53,12 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, 
   if (!is.null(K)) {message(paste0("SCnorm will normalize assuming, ", K, " is the optimal number of groups. It is not advised to set this."))}
   if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
   if (ditherCounts == TRUE) {RNGkind("L'Ecuyer-CMRG");set.seed(1);message("Jittering values introduces some randomness, for reproducibility set.seed(1) has been set.")}
-	  
+
+	if (.Platform$OS.type == "windows") {
+		NCores = 1
+	}
+
+
   Levels <- unique(Conditions) # Number of conditions
   
    

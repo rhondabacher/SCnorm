@@ -46,7 +46,9 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL, Outpu
   }
 	  
   # Can't use less then FilterCellNum = 10
- 
+if (.Platform$OS.type == "windows") {
+	NCores = 1
+}
   
   DataList <- lapply(1:length(Levels), function(x) Data[,which(Conditions == Levels[x])]) # split conditions
   

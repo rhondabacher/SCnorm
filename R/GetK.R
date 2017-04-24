@@ -24,7 +24,11 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau, NCores, ditherCoun
 	Genes <- names(Slopes) #Genes for normalizing
 	
 	LogData <- redobox(Data, 0) #LOG data
-		
+	
+	if (.Platform$OS.type == "windows") {
+		NCores = 1
+	}
+	
 	NormSlopes <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, 
 					InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts), mc.cores = NCores))
 	
