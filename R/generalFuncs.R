@@ -9,17 +9,17 @@ quickreg<-function(InputData)
   ditherFlag = InputData[[5]]
   
   if(ditherFlag == TRUE) {
-    slope <- try(rq(dither(LogData, type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T) 
+    slope <- try(rq(dither(LogData, type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T) 
     if(class(slope) == "try-error"){
-      slope <- try(rq(dither(LogData, type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)  
+      slope <- try(rq(dither(LogData, type="symmetric", value=.01) ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)  
       if(class(slope) == "try-error"){
 		slope <- NA
 	  }	
 	} 
   } else {
-    slope <- try(rq(LogData ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)
+    slope <- try(rq(LogData ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)
     if(class(slope) == "try-error"){
-      slope <- try(rq(LogData ~ log(SeqDepth), tau = Tau, method="br")$coef[2], silent=T)
+      slope <- try(rq(LogData ~ log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=T)
       if(class(slope) == "try-error"){
 		slope <- NA
 	  }	
