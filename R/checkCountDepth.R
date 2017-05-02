@@ -74,7 +74,7 @@ if (.Platform$OS.type == "windows") {
   if(any(NM == 0)) {stop("No genes pass the filter specified! Try lowering thresholds or perform more QC on your data.")}
   
   # Get median quantile regr. slopes.
-  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(DataList[[x]][GeneFilterList[[x]],], SeqDepthList[[x]], Tau, FilterCellNum = 10, NCores, ditherCounts))
+  SlopesList <- lapply(1:length(Levels), function(x) GetSlopes(Data = DataList[[x]][GeneFilterList[[x]],], SeqDepth = SeqDepthList[[x]], Tau, FilterCellNum = 10, NCores, ditherCounts))
   
 
   if (SavePDF == TRUE) { pdf(paste0(OutputName, "_count-depth_evaluation.pdf"), height=5, width=5) }

@@ -52,4 +52,3 @@ estimates of expression. If multiple conditions are provided, normalization is p
 normalized estimates are scaled between conditions.
 If withinSample=TRUE then the method from Risso will be implemented.
 }
-

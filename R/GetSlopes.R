@@ -28,7 +28,8 @@ GetSlopes <- function(Data, SeqDepth = 0, Tau = .5, FilterCellNum = 10, NCores, 
 		NCores = 1
 	}
 	
-	AllReg <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts), mc.cores = NCores))
+	AllReg <- unlist(mclapply(1:length(Genes), function(x) {
+        quickreg(InputData = list(LogData[Genes[x],], SeqDepth, Genes[x], Tau, ditherCounts))}, mc.cores = NCores))
 	
 	return(AllReg)
 }

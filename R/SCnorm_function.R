@@ -73,7 +73,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCo
 		NumToSub <- ceiling(length(qgenes) * PropToUse) # use 25% of data near mode, faster
 		ModalGenes <- names(head(sort(abs(PEAK - Slopes[qgenes])), NumToSub))
 		
-		InData <- subset(logData, Gene %in% ModalGenes)
+		InData <- subset(logData, logData$Gene %in% ModalGenes)
 		Melted <- data.table::melt(InData, id="Gene")
 		colnames(Melted) <- c("Gene", "Sample", "Counts")
 
@@ -81,11 +81,9 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, NCo
 		O <- LongData$Depth
 		Y <- LongData$Counts
 		
-		taus <- seq(.05, .95, by=.05)
-		D <- 6
-		Grid <- expand.grid(taus, seq(1:6))
-						
-		AllIter <- unlist(mclapply(X = 1:nrow(Grid), FUN = GetTD, InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts), mc.cores = NCores))
+    
+    Grid <- expand.grid(seq(.05,.95, by =.05), seq(1:6))
+		AllIter <- unlist(mclapply(X = 1:6, FUN = GetTD, InputData = list(O, Y, SeqDepth$Depth, Tau, ditherCounts), mc.cores = NCores))
 		
 		D <- Grid[which.min(abs(PEAK - AllIter)),2]; #print(paste("Degree: ", M))
 		TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1]; #print(paste("Tau: ", p))

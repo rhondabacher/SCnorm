@@ -20,7 +20,7 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups
 		
 	colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), bias=2)(n = NumExpressionGroups)
 		
-	splitby <- sort(MedExpr)
+	splitby <- sort(MedExpr[intersect(names(MedExpr), names(Slopes))])
 	grps <- length(splitby) / NumExpressionGroups
 	sreg <- split(splitby, ceiling(seq_along(splitby) / grps))
 		

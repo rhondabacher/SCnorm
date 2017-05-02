@@ -33,4 +33,3 @@ For each value of tau and d, the predicted expression values are obtained and re
 \author{
 Rhonda Bacher
 }
-

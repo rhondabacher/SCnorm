@@ -29,4 +29,3 @@ This is the gene-specific fitting function, where a median (Tau =
 \author{
 Rhonda Bacher
 }
-

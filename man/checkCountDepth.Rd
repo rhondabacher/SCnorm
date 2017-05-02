@@ -39,4 +39,3 @@ Quantile regression is used to estimate the dependence of read counts on sequenc
 \author{
 Rhonda Bacher
 }
-

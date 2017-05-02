@@ -15,4 +15,3 @@ H1 single cell data from paper, same cells sequenced to an average of 1 million 
 data(scH1data)
 }
 \keyword{datasets}
-

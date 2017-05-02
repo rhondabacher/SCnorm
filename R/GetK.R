@@ -29,8 +29,8 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau, NCores, ditherCoun
 		NCores = 1
 	}
 	
-	NormSlopes <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, 
-					InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts), mc.cores = NCores))
+	NormSlopes <- unlist(mclapply(1:length(Genes), function(x) {
+        quickreg(InputData = list(LogData[Genes[x],], SeqDepth, Genes[x], Tau, ditherCounts))}, mc.cores = NCores))
 	
 	colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), bias=2)(n = 10)
 		

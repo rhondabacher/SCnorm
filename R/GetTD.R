@@ -11,14 +11,14 @@
 GetTD <- function(x, InputData) {
 
 
-	TauGroup <- InputData[[4]][x,1]
-	D <- InputData[[4]][x,2]
+	TauGroup <- seq(.05, .95, by =.05)
+	D <- x
 	
 	O <- InputData[[1]]
 	Y <- InputData[[2]]
 	SeqDepth <- InputData[[3]]
-	Tau <- InputData[[5]]
-	ditherFlag <- InputData[[6]]
+	Tau <- InputData[[4]]
+	ditherFlag <- InputData[[5]]
 	
 	polyX <- try(poly(O, degree = D, raw = FALSE), silent=T)
 	
@@ -37,14 +37,15 @@ GetTD <- function(x, InputData) {
 					
 			colnames(revX) <- colnames(polydata[-1])
 			pdvalsrq <- predict(rqfit, newdata=data.frame(revX))
-
-			names(pdvalsrq) <- colnames(SeqDepth)
+			rownames(pdvalsrq) <- colnames(SeqDepth)
 	
-			if (min(pdvalsrq) > 0) { 
-				S <- rq(pdvalsrq ~ SeqDepth, tau = Tau)$coef[2]
-			} else {S <- -50}
-		} else {S <- -50}	
-	} else {S <- -50}
+			checkS <- apply(pdvalsrq, 2, function(y) {
+						if (min(y) > 0) {
+								S <- rq(y ~ SeqDepth, tau = Tau)$coef[2]
+							} else {S <- -50} })
+		} else {checkS <- rep(-50, length(TauGroup)) }
+	} else {checkS <- rep(-50, length(TauGroup))}
 
-return(as.numeric(S))
+return(as.numeric(checkS))
 }
+

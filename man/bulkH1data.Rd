@@ -15,4 +15,3 @@ H1 bulk data from paper, samples were multiplexed at 48 per lane.
 data(bulkH1data)
 }
 \keyword{datasets}
-

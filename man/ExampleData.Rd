@@ -15,4 +15,3 @@ Data generated as in SIM I with K = 4
 data(ExampleData)
 }
 \keyword{datasets}
-

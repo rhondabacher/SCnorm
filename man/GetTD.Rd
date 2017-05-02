@@ -18,4 +18,3 @@ This is an internal fitting of the group regression. For a single combination of
 \author{
 Rhonda Bacher
 }
-

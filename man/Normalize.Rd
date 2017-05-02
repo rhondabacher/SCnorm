@@ -18,4 +18,3 @@ from the GetK() function is larger than .1, K is increased to K + 1. Uses params
 \author{
 Rhonda Bacher
 }
-

@@ -31,4 +31,3 @@ to normalize the data.
 \author{
 Rhonda Bacher
 }
-
