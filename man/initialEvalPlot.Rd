@@ -4,26 +4,31 @@
 \alias{initialEvalPlot}
 \title{Evaluate data before normalization.}
 \usage{
-initialEvalPlot(Data, SeqDepth, Slopes, Name, NumExpressionGroups = 10)
+initialEvalPlot(MedExpr, SeqDepth, Slopes, Name, 
+   NumExpressionGroups = 10, BeforeNorm = TRUE)
 }
 \arguments{
-\item{SeqDepth}{vector of sequencing depths estimated as columns sums of un-normalized expression matrix.}
+\item{MedExpr}{non-zero median expression for all genes.}
 
-\item{Slopes}{vector of slopes estimated in the GetSlopes() function.}
+\item{SeqDepth}{sequencing depth for each cell/sample.}
 
-\item{Name}{plot title}
+\item{Slopes}{per gene estimates of the count-depth relationship.}
 
-\item{NumExpressionGroups}{number of (non-zero median) expression groups to split the slope densities into.}
+\item{Name}{name for plot title.}
 
-\item{BeforeNorm}{whether data are already normalized or not.}
+\item{NumExpressionGroups}{the number of groups to split the data into,
+groups are split into equally sized groups based on non-zero median
+expression.}
 
-\item{Data}{matrix of normalized expression counts. Rows are genes and columns are samples.}
+\item{BeforeNorm}{whether dat have already been normalized.}
 }
 \value{
 a plot of the un-normalized slope densities.
 }
 \description{
-Genes are divided into NumExpressionGroups = 10 equally sized groups based on their non-zero median expression. Slope densities are plot for each group.
+Genes are divided into NumExpressionGroups = 10 equally sized
+   groups based on their non-zero median expression. Slope densities are plot
+   for each group.
 }
 \author{
 Rhonda Bacher

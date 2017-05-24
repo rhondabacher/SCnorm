@@ -4,25 +4,34 @@
 \alias{scaleNormMultCont}
 \title{Scale multiple conditions}
 \usage{
-scaleNormMultCont(NormData, OrigData, Genes)
+scaleNormMultCont(NormData, OrigData, Genes, useSpikes)
 }
 \arguments{
-\item{NormData}{list of matrices of normalized expression counts and scale factors for each condition. Matrix rows are genes and columns are samples.}
+\item{NormData}{list of matrices of normalized expression counts and scale
+factors for each condition. Matrix rows are genes and 
+columns are samples.}
 
-\item{OrigData}{list of matrices of un-normalized expression counts. Matrix rows are genes and columns are samples. Each item in list is a different condition.}
+\item{OrigData}{list of matrices of un-normalized expression counts. Matrix
+rows are genes and columns are samples. Each item in list is a different
+condition.}
 
-\item{Genes}{vector of genes that will be used to scale conditions, only want to use genes that were normalized.}
+\item{Genes}{vector of genes that will be used to scale conditions, only
+want to use genes that were normalized.}
 
-\item{useSpikes}{whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
+\item{useSpikes}{whether to use spike-ins to perform between condition
+scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
 }
 \value{
-matrix of normalized and scaled expression values for all conditions.
+matrix of normalized and scaled expression values for all
+   conditions.
 }
 \description{
 After conditions are independently normalized with the 
 count-depth 
-effect removed, conditions need to be additionally scaled prior to further analysis. Genes that were normalized in both
-conditions are split into quartiles based on their un-normalized non-zero medians. Genes in each quartile are scaled to the 
+effect removed, conditions need to be additionally scaled prior to further
+   analysis. Genes that were normalized in both
+conditions are split into quartiles based on their un-normalized non-zero
+   medians. Genes in each quartile are scaled to the 
 median fold change of 
 condition specific gene means and overall gene means.
 }

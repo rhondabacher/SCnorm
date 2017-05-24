@@ -9,11 +9,20 @@ GetTD(x, InputData)
 \arguments{
 \item{x}{specifies a column of the grid matrix of tau and d.}
 
-\item{InputData}{contains the expression values, sequencing depths to fit the group regression, and the quantile used in the individual 
+\item{InputData}{contains the expression values, sequencing depths to fit 
+the group regression, and the quantile used in the individual 
 gene regression for grouping.}
 }
+\value{
+estimated count-depth relationship of predicted values for one
+value of tau and degree.
+}
 \description{
-This is an internal fitting of the group regression. For a single combination of possible tau and d values the group regression is fist fit, then predicted values are obtained and regressed against the original sequencing depths. The estimates slope is passed back to the SCnorm_fit() function.
+This is an internal fitting of the group regression. For a
+single combination of possible tau and d values the group regression is
+fist fit, then predicted values are obtained and regressed against the
+original sequencing depths. The estimates slope is passed back to the
+SCnorm_fit() function.
 }
 \author{
 Rhonda Bacher

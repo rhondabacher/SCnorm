@@ -1,21 +1,29 @@
 Package: SCnorm
 Title: Normalization of single cell RNA-seq data
-Version: 1.1.3
-Authors: Rhonda Bacher, email = rbacher@wisc.com
-Description: Normalization of single cell RNA-seq data
+Version: 0.99.0
+Author: Rhonda Bacher
+Maintainer: Rhonda Bacher <rbacher@wisc.edu>
+Description: This package implements, SCnorm, a method to normalize single-cell
+	RNA-seq data.
 Depends:
-    R (>= 3.2.0),
-    parallel,
-    quantreg,
-    cluster,
-    moments,
-    data.table,
-    reshape2
+	R (>= 3.4.0),
+Imports:
+	stats,
+	graphics,
+	grDevices,
+    	parallel,
+	quantreg,
+	cluster,
+	moments,
+	data.table
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Suggests:
-    knitr,
-    rmarkdown
+	BiocStyle,
+	knitr,
+	rmarkdown,
+	devtools
 VignetteBuilder: knitr
+biocViews: Normalization, RNASeq, SingleCell

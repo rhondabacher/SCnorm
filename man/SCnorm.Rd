@@ -4,51 +4,86 @@
 \alias{SCnorm}
 \title{SCnorm}
 \usage{
-SCnorm(Data=NULL, Conditions=NULL, OutputName=NULL, SavePDF = TRUE, PropToUse = .25, Tau = .5,
-                  reportSF = F, FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
-				Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE)
+SCnorm(Data = NULL, Conditions = NULL, OutputName = NULL, 
+   SavePDF = TRUE, PropToUse = .25, Tau = .5, reportSF = FALSE, 
+   FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
+   Thresh = .1, ditherCounts = FALSE, withinSample = NULL, 
+   useSpikes = FALSE)
 }
 \arguments{
-\item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
+\item{Data}{matrix of un-normalized expression counts. Rows are genes and
+columns are samples.}
 
-\item{Conditions}{vector of condition labels, this should correspond to the columns of the un-normalized expression matrix.}
+\item{Conditions}{vector of condition labels, this should correspond to
+the columns of the un-normalized expression matrix.}
 
 \item{OutputName}{specify the path and/or name of output files.}
 
-\item{SavePDF}{whether to automatically write and save the output plot as a PDF (default is TRUE).}
+\item{SavePDF}{whether to automatically write and save the output plot as
+a PDF (default is TRUE).}
 
-\item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number #' mainly affects speed.}
+\item{PropToUse}{proportion of genes closest to the slope mode used for
+the group fitting, default is set at .25. This number #' mainly affects
+speed.}
 
-\item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
+\item{Tau}{value of quantile for the quantile regression used to estimate
+gene-specific slopes (default is median, Tau = .5 ).}
 
-\item{reportSF}{whether to provide a matrix of scaling counts in the output (default = FALSE).}
+\item{reportSF}{whether to provide a matrix of scaling counts in the
+output (default = FALSE).}
 
-\item{K}{the number of groups for normalizing. If left unspecified, an evaluation procedure will determine the optimal value of #' K (recommended). If you're sure about specifiyng K, then a vector equal to the number of conditions may be used.}
+\item{FilterCellNum}{the number of non-zero expression estimate required
+   to include the genes into the SCnorm fitting
+(default = 10). The initial grouping fits a quantile regression to each
+   gene, making this value too low gives unstable fits.}
+
+\item{K}{the number of groups for normalizing. If left unspecified, an
+evaluation procedure will determine the optimal value of K
+(recommended). If you're sure about specifiyng K, then a vector equal to
+the number of conditions may be used.}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
 
-\item{FilterExpression}{exclude genes having median of non-zero expression below this threshold from count-depth plots.}
+\item{FilterExpression}{exclude genes having median of non-zero expression
+below this threshold from count-depth plots.}
 
-\item{Thresh}{threshold to use in evaluating the sufficiency of K, default is .1.}
+\item{Thresh}{threshold to use in evaluating the sufficiency of K, default
+is .1.}
 
-\item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for
+data with many ties, default is FALSE.}
 
-\item{withinSample}{a vector of gene-specific features to correct counts within a sample prior to SCnorm. If NULL(default) then no correction will be performed. Examples of gene-specific features are GC content or gene length.}
+\item{withinSample}{a vector of gene-specific features to correct counts
+within a sample prior to SCnorm. If NULL(default) then no correction will
+be performed. Examples of gene-specific features are GC content or gene
+length.}
 
-\item{useSpikes}{whether to use spike-ins to perform between condition scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
-
-\item{FilterCellNumber}{the number of non-zero expression estimate required to include the genes into the SCnorm fitting
-(default = 10). The initial grouping fits a quantile regression to each gene, making this value too low gives unstable fits.}
+\item{useSpikes}{whether to use spike-ins to perform between condition
+scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
 }
 \value{
-List containing matrix of normalized expression (and optionally a matrix of size factors if reportSF = TRUE ).
+List containing matrix of normalized expression (and optionally a
+   matrix of size factors if reportSF = TRUE ).
 }
 \description{
-Quantile regression is used to estimate the dependence of read counts on sequencing depth for every gene. Genes
-with similar dependence are then grouped, and a second quantile regression is used to estimate scale factors within each
-group.
-Within-group adjustment for sequencing depth is then performed using the estimated scale factors to provide normalized
-estimates of expression. If multiple conditions are provided, normalization is performed within condition and then
-normalized estimates are scaled between conditions.
-If withinSample=TRUE then the method from Risso will be implemented.
+Quantile regression is used to estimate the dependence of
+   read counts on sequencing depth for every gene. Genes with similar
+    dependence are then grouped, and a second quantile regression is used to
+   estimate scale factors within each group. Within-group adjustment for
+   sequencing depth is then performed using the estimated scale factors to
+   provide normalized estimates of expression. If multiple conditions are
+   provided, normalization is performed within condition and then
+normalized estimates are scaled between conditions. If withinSample=TRUE
+   then the method from Risso et al. 2011 will be implemented.
+}
+\examples{
+ 
+ data(ExampleData)
+   Conditions = rep(c(1,2), each= 90)
+   #DataNorm <- SCnorm(ExampleData, Conditions, 
+   #OutputName = "MyNormalizedData", SavePDF=TRUE, FilterCellNum = 10)
+   #str(DataNorm)
+}
+\author{
+Rhonda Bacher
 }

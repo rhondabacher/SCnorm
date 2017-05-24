@@ -4,29 +4,45 @@
 \alias{GetK}
 \title{Evaluate normalization using K slope groups}
 \usage{
-GetK(Data, SeqDepth, OrigData, Slopes, Name, PLOT = TRUE)
+GetK(Data, SeqDepth, OrigData, Slopes, Name, Tau, NCores,
+   ditherCounts)
 }
 \arguments{
-\item{Data}{matrix of normalized expression counts. Rows are genes and columns are samples.}
+\item{Data}{matrix of normalized expression counts. Rows are genes and
+columns are samples.}
 
-\item{SeqDepth}{vector of sequencing depths estimated as columns sums of un-normalized expression matrix.}
+\item{SeqDepth}{vector of sequencing depths estimated as columns sums of
+un-normalized expression matrix.}
 
-\item{OrigData}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
+\item{OrigData}{matrix of un-normalized expression counts. Rows are genes
+and columns are samples.}
 
-\item{Slopes}{vector of slopes estimated in the GetSlopes() function. Only used here to obtain the names of genes considered in the
+\item{Slopes}{vector of slopes estimated in the GetSlopes() function. Only
+   used here to obtain the names of genes considered in the
 normalization.}
 
 \item{Name}{plot title}
+
+\item{Tau}{value of quantile for the quantile regression used to estimate
+gene-specific slopes (default is median, Tau = .5 ).}
+
+\item{NCores}{number of cores to use, default is detectCores() - 1.}
+
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for
+data with many ties, default is FALSE.}
 }
 \value{
-value of largest mode and a plot of the ten normalized slope densities.
+value of largest mode and a plot of the ten normalized slope
+   densities.
 }
 \description{
-Median quantile regression is fit for each gene using the normalized gene expression values. 
-A slope near zero indicate the sequencing depth effect has been successfully removed. 
-Genes are divided into ten equally sized groups based on their non-zero median expression. Slope densities are plot for each 
-group and estimated modes are calculated. If any of the ten group modes is larger than .1, the K is not sufficient
-to normalize the data.
+Median quantile regression is fit for each gene using the
+   normalized gene expression values. A slope near zero indicate the
+   sequencing depth effect has been successfully removed. 
+ Genes are divided into ten equally sized groups based on their non-zero
+   median expression. Slope densities are plot for each group and estimated
+   modes are calculated. If any of the ten group modes is larger than .1, the
+   K is not sufficient to normalize the data.
 }
 \author{
 Rhonda Bacher

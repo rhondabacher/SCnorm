@@ -1,49 +1,56 @@
 #' @title Evaluate data before normalization.
-#' @usage initialEvalPlot(Data, SeqDepth, Slopes, Name, NumExpressionGroups = 10)
-#' @param Data matrix of normalized expression counts. Rows are genes and columns are samples.
-#' @param SeqDepth vector of sequencing depths estimated as columns sums of un-normalized expression matrix.
-#' @param Slopes vector of slopes estimated in the GetSlopes() function. 
-#' @param Name plot title
-#' @param NumExpressionGroups number of (non-zero median) expression groups to split the slope densities into. 
-#' @param BeforeNorm whether data are already normalized or not.
+#' @usage initialEvalPlot(MedExpr, SeqDepth, Slopes, Name, 
+#'    NumExpressionGroups = 10, BeforeNorm = TRUE)
 
+#' @inheritParams checkCountDepth
+#' @param MedExpr non-zero median expression for all genes.
+#' @param SeqDepth sequencing depth for each cell/sample.
+#' @param Slopes per gene estimates of the count-depth relationship.
+#' @param Name name for plot title.
+#' @param BeforeNorm whether dat have already been normalized.
 
-#' @description Genes are divided into NumExpressionGroups = 10 equally sized groups based on their non-zero median expression. Slope densities are plot for each group. 
+#' @description Genes are divided into NumExpressionGroups = 10 equally sized
+#'    groups based on their non-zero median expression. Slope densities are plot
+#'    for each group. 
 #' @return a plot of the un-normalized slope densities. 
 #' @author Rhonda Bacher
-#' @export
+#' 
+#' @importFrom grDevices colorRampPalette
 
+initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, 
+    NumExpressionGroups = 10, BeforeNorm = TRUE) {
+    
+    sreg <- list()
+        
+    colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), 
+                bias=2)(n = NumExpressionGroups)
+        
+    splitby <- sort(MedExpr[intersect(names(MedExpr), names(Slopes))])
+    grps <- length(splitby) / NumExpressionGroups
+    sreg <- split(splitby, ceiling(seq_along(splitby) / grps))
+        
+    Mode <- c()
+    DensH <- c()
+    for (i in 1:NumExpressionGroups) {
+      useg <- names(sreg[[i]])
+      rqdens <- density(na.omit(Slopes[useg]))
+      peak <- which.max(rqdens$y)
+      Mode[i] <- rqdens$x[peak]
+      DensH[i] <- rqdens$y[peak]
+      }
 
-initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, NumExpressionGroups = 10, BeforeNorm = TRUE) {
-	
-	sreg <- list()
-		
-	colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), bias=2)(n = NumExpressionGroups)
-		
-	splitby <- sort(MedExpr[intersect(names(MedExpr), names(Slopes))])
-	grps <- length(splitby) / NumExpressionGroups
-	sreg <- split(splitby, ceiling(seq_along(splitby) / grps))
-		
-	Mode <- c()
-	DensH <- c()
-	for (i in 1:NumExpressionGroups) {
-	  useg <- names(sreg[[i]])
-	  rqdens <- density(na.omit(Slopes[useg]))
-	  peak <- which.max(rqdens$y)
-	  Mode[i] <- rqdens$x[peak]
-	  DensH[i] <- rqdens$y[peak]
-  	}
+    YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
 
-	YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
-
-	plot(density(na.omit(Slopes), from = -3, to = 3), xlim = c(-3,3), ylim = c(0,YMax), lwd = 3, col = "white", 
-		xlab = "Slope",	cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
-	for (i in 1:length(sreg)) {
-		useg <- names(sreg[[i]])
-		lines(density(na.omit(Slopes[useg]), from=-3, to=3, adjust=1), lwd=3, col=colors[i])
-	}
-	if(BeforeNorm == TRUE) {abline(v=1, lwd=3, col="black")}
-	if(BeforeNorm == FALSE) {abline(v=0, lwd=3, col="black")}
+    plot(density(na.omit(Slopes), from = -3, to = 3), xlim = c(-3,3), 
+                ylim = c(0,YMax), lwd = 3, col = "white", xlab = "Slope",
+                cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
+    for (i in 1:length(sreg)) {
+        useg <- names(sreg[[i]])
+        lines(density(na.omit(Slopes[useg]), from=-3, to=3, adjust=1), 
+                    lwd=3, col=colors[i])
+    }
+    if(BeforeNorm == TRUE) {abline(v=1, lwd=3, col="black")}
+    if(BeforeNorm == FALSE) {abline(v=0, lwd=3, col="black")}
 
 }
-	
+    

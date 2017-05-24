@@ -4,31 +4,44 @@
 \alias{SCnorm_fit}
 \title{Fit group quantile regression for K groups}
 \usage{
-SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse = .25, outlierCheck = TRUE, Tau = .5, NCores)
+SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse, 
+Tau, NCores, ditherCounts)
 }
 \arguments{
-\item{Data}{matrix of un-normalized expression counts. Rows are genes and columns are samples.}
+\item{Data}{matrix of un-normalized expression counts. Rows are genes and
+columns are samples.}
 
-\item{SeqDepth}{vector of sequencing depths estimated as columns sums of un-normalized expression matrix.}
+\item{SeqDepth}{sequencing depth for each cell/sample.}
 
-\item{Slopes}{vector of slopes estimates from GetSlopes().}
+\item{Slopes}{per gene estimates of the count-depth relationship.}
 
-\item{K}{number of slope groups in data, this will be estimated iteratively.}
+\item{K}{the number of groups for normalizing. If left unspecified, an
+evaluation procedure will determine the optimal value of K
+(recommended). If you're sure about specifiyng K, then a vector equal to
+the number of conditions may be used.}
 
-\item{PropToUse}{proportion of genes closest to the slope mode used for the group fitting, default is set at .25. This number mainly affects speed.}
+\item{PropToUse}{proportion of genes closest to the slope mode used for
+the group fitting, default is set at .25. This number #' mainly affects
+speed.}
 
-\item{Tau}{value of quantile for the quantile regression used to estimate gene-specific slopes (default is median, Tau = .5 ).}
+\item{Tau}{value of quantile for the quantile regression used to estimate
+gene-specific slopes (default is median, Tau = .5 ).}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
 
-\item{ditherCounts}{whether to dither/jitter the counts, may be used for data with many ties, default is FALSE.}
+\item{ditherCounts}{whether to dither/jitter the counts, may be used for
+data with many ties, default is FALSE.}
 }
 \value{
 normalized expression matrix and matrix of scaling factors.
 }
 \description{
-For each group K, a quantile regression is fit over all genes (PropToUse) for a grid of possible degree's d and quantile's tau. 
-For each value of tau and d, the predicted expression values are obtained and regressed against the original sequencing depths.  The optimal tau and d combination is chosen as that closest to the mode of the gene slopes.
+For each group K, a quantile regression is fit over all genes
+   (PropToUse) for a grid of possible degree's d and quantile's tau. 
+For each value of tau and d, the predicted expression values are obtained
+   and regressed against the original sequencing depths.  The optimal tau
+   and d combination is chosen as that closest to the mode of the gene
+   slopes.
 }
 \author{
 Rhonda Bacher
