@@ -116,7 +116,7 @@ OutputName
 <<, eval=TRUE>>=
 checkCountDepth(Data = ExampleData, Conditions = Conditions, 
                 OutputName = "check_exampleData", 
-                FilterCellProportion = .1, NCores=2)
+                FilterCellProportion = .1, NCores=3)
 @
   
 \begin{figure}[h!]
@@ -138,7 +138,7 @@ checkCountDepth(Data = ExampleData,
                 Condition = Conditions, 
                 OutputName = "check_exampleDataNorm",  
                 FilterCellProportion = .1, 
-                FilterExpression = 2, NCores=2)
+                FilterExpression = 2, NCores=3)
 
 @
 
@@ -148,44 +148,6 @@ checkCountDepth(Data = ExampleData,
 \caption{Evaluation of count-depth relationship in counts per million 
 normalized example data.}
 \end{figure}
-
-Evaluating the bulk dataset included in the paper:
-<<, eval=TRUE>>=
-library(SCnorm)
-data(bulkH1data)
-Conditions <- rep(1, dim(bulkH1data)[2])
-checkCountDepth(Data = bulkH1data, Condition = Conditions, 
-                OutputName = "check_bulkData", 
-                FilterCellProportion = .1, 
-                FilterExpression = 2, NCores=2)
-@
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=.7\textwidth]{check_bulkData_count-depth_evaluation.pdf}
-\caption{Evaluation of count-depth relationship in un-normalized bulk H1 data.}
-\end{figure}
-
-Evaluating the H1 single cell dataset included in the paper:
-<<, eval=TRUE>>=
-
-library(SCnorm)
-data(scH1data)
-Conditions <- rep(c("1M", "4M"), each=92)
-checkCountDepth(Data = scH1data, Condition = Conditions, 
-                OutputName = "check_scData", 
-                FilterCellProportion = .1, 
-                FilterExpression = 2, NCores=2)
-
-@
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=.7\textwidth]{check_scData_count-depth_evaluation.pdf}
-\caption{Evaluation of count-depth relationship in un-normalized H1 single 
-  cell data.}
-\end{figure}
-
 
 
 
@@ -219,7 +181,7 @@ DataNorm <- SCnorm(ExampleData, Conditions,
                    OutputName = "MyNormalizedData",
                    SavePDF=TRUE, 
                    FilterCellNum = 10,
-                   NCores=2)
+                   NCores=3)
 str(DataNorm)
 @
 

@@ -87,6 +87,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL,
     if(anyNA(Data)) {stop("Data contains at least one value of NA. 
       Unsure how to proceed.")}
     ## checks
+    if (.Platform$OS.type == "windows") {
+        NCores = 1
+    }
+    
     if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", 
        paste0, 1:dim(Data)[1]))}
     if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
