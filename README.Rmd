@@ -17,7 +17,7 @@ library(devtools)
 devtools::install_github("rhondabacher/SCnorm")
 ```
 
-Vignette is located here: [SCnorm Vignette](https://github.com/rhondabacher/SCnorm/blob/master/vignettes/SCnorm.pdf)
+Vignette is located here: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm.pdf)
 
 
 ## Author
