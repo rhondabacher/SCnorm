@@ -15,6 +15,7 @@
 #' @author Rhonda Bacher
 #' @importFrom cluster clara
 #' @importFrom moments skewness
+#' @importFrom data.table data.table melt
 
 SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, 
       NCores = NCores, ditherCounts) {
@@ -26,7 +27,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
     Genes <- rownames(Data)
     DataFiltered <- Data[names(Slopes),]
     logData <- data.table(Gene = rownames(DataFiltered),
-        redobox(DataFiltered[,-1], 0)) # use LOG
+        redobox(DataFiltered, 0)) # use LOG
   
   
     sreg <- list()
@@ -78,7 +79,7 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
       NumToSub <- ceiling(length(qgenes) * PropToUse) 
       ModalGenes <- names(sort(abs(PEAK - Slopes[qgenes]))[1:NumToSub])
       
-      InData <- subset(logData, Gene %in% ModalGenes)
+      InData <- subset(logData, logData$Gene %in% ModalGenes)
       Melted <- data.table::melt(InData, id="Gene")
       colnames(Melted) <- c("Gene", "Sample", "Counts")
 
@@ -87,18 +88,16 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
       Y <- LongData$Counts
       
       taus <- seq(.05, .95, by=.05)
-      D <- 6
       Grid <- expand.grid(taus, seq(1:6))
                       
-      AllIter <- unlist(mclapply(X = 1:nrow(Grid), FUN = GetTD, 
-          InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts),
-           mc.cores = NCores))
+      AllIter <- unlist(bplapply(X = 1:nrow(Grid), FUN = GetTD, 
+          InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts)))
       
-      D <- Grid[which.min(abs(PEAK - AllIter)),2]; 
+      DG <- Grid[which.min(abs(PEAK - AllIter)),2]; 
       
       TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1];
       
-      polyX <- poly(O, degree = D, raw = FALSE)
+      polyX <- poly(O, degree = DG, raw = FALSE)
       Xmat <- data.table(model.matrix( ~ polyX ))
       polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 

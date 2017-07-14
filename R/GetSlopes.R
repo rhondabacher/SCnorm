@@ -19,9 +19,10 @@
 #' @author Rhonda Bacher
 #' @export
 #' @importFrom quantreg rq
+#' @importFrom BiocParallel bplapply
 #' @examples 
 #'  data(ExampleData)
-#'  #myslopes <- GetSlopes(ExampleData)
+#'  myslopes <- GetSlopes(ExampleData)
 
 GetSlopes <- function(Data, SeqDepth = 0, Tau = .5, FilterCellNum = 10, 
     NCores = 1, ditherCounts=FALSE) {
@@ -34,13 +35,8 @@ GetSlopes <- function(Data, SeqDepth = 0, Tau = .5, FilterCellNum = 10,
     Genes <- names(which(NumNonZeros >= FilterCellNum)) ##filter for now    
     LogData <- redobox(Data, 0) #log data
     
-    if (.Platform$OS.type == "windows") {
-        NCores = 1
-    }
-    
-    AllReg <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, 
-                InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts),
-                mc.cores = NCores))
+    AllReg <- unlist(bplapply(X = 1:length(Genes), FUN = quickreg, 
+                InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts)))
     
     return(AllReg)
 }

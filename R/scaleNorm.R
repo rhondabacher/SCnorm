@@ -1,5 +1,5 @@
 #' @title Scale multiple conditions
-#' @usage scaleNormMultCont(NormData, OrigData, Genes, useSpikes)
+#' @usage scaleNormMultCont(NormData, OrigData, Genes, useSpikes, useZerosToScale)
 #' @param NormData list of matrices of normalized expression counts and scale
 #'    factors for each condition. Matrix rows are genes and 
 #'    columns are samples. 
@@ -10,7 +10,8 @@
 #'    want to use genes that were normalized.
 #' @param useSpikes whether to use spike-ins to perform between condition
 #'    scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
-
+#' @param useZerosToScale whether to use zeros when scaling across conditions (default=FALSE).
+#'
 #' @description After conditions are independently normalized with the 
 #' count-depth 
 #' effect removed, conditions need to be additionally scaled prior to further
@@ -25,7 +26,7 @@
 
 
 
-scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes) {
+scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToScale) {
     sreg <- list()
     NumCond <- length(NormData)
     AllGenes <- Genes
@@ -54,14 +55,19 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes) {
              if(useSpikes==TRUE) {
                  scalegenes <- qgenes[grep("ERCC-", qgenes)] #which are spikes
                  if(length(scalegenes) <= 5) {
-                     stop("Not enough spike-ins or spike-ins do not 
-                     span range of expression to perform reasonably well.")
+                     warnings("Not enough spike-ins or spike-ins do not 
+                     span range of expression to perform reasonably well. Using all genes instead.")
+                     scalegenes <- qgenes
                  }
              }
 
-             ss1 <- apply(C1[scalegenes,], 1, function(x) mean(x[x != 0]))
-             os <- apply(OC[scalegenes,], 1, function(x) mean(x[x != 0]))
-    
+             if(useZerosToScale) {
+               ss1 <- apply(C1[scalegenes,], 1, function(x) mean(x))
+               os <- apply(OC[scalegenes,], 1, function(x) mean(x))
+             } else {
+               ss1 <- apply(C1[scalegenes,], 1, function(x) mean(x[x != 0]))
+               os <- apply(OC[scalegenes,], 1, function(x) mean(x[x != 0]))
+             }
              rr <- median(ss1/os, na.rm=TRUE); #print(rr)
              C1[qgenes,] <- round((C1[qgenes,] / rr),2 )
              SF[qgenes,] <- SF[qgenes,] * rr

@@ -40,11 +40,16 @@
 #' @export
 
 #' @author Rhonda Bacher
-#' @importFrom parallel detectCores mclapply
-#' @import stats
+#' @importFrom parallel detectCores
 #' @import graphics
-#' @importFrom grDevices colorRampPalette
-#' @importFrom parallel detectCores mclapply
+#' @import grDevices
+#' @importFrom BiocParallel bplapply  
+#' @importFrom BiocParallel register
+#' @importFrom BiocParallel MulticoreParam
+#' @importFrom BiocParallel bpparam
+#' @importFrom parallel detectCores
+#' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @examples 
 #'  
 #' data(ExampleData)
@@ -57,6 +62,14 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
     FilterExpression = 0, NumExpressionGroups = 10, NCores=NULL, 
     ditherCounts = FALSE) {
       
+    if("SummarizedExperiment" %in% class(Data)) {
+    if(is.null( SummarizedExperiment::assayNames(Data)) ||  SummarizedExperiment::assayNames(Data)[1] != "Counts") {
+        message("renaming the first element in assays(Data) to 'Counts'")
+        SummarizedExperiment::assayNames(Data)[1] <- "Counts"
+    }
+
+    Data = SCnorm::getCounts(Data)
+    }
       
     Data <- data.matrix(Data)
     if(anyNA(Data)) {stop("Data contains at least one value of NA. 
@@ -64,7 +77,11 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
     
     ## checks
     if (.Platform$OS.type == "windows") {
-        NCores = 1
+      prll=BiocParallel::SnowParam(workers=NCores)
+      BiocParallel::register(BPPARAM = prll, default=TRUE)
+    } else {   
+      prll=BiocParallel::MulticoreParam(workers=NCores)
+      BiocParallel::register(BPPARAM = prll, default=TRUE)
     }
     
     if(is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", 
@@ -79,7 +96,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
     if (ditherCounts == TRUE) {RNGkind("L'Ecuyer-CMRG");set.seed(1);
          message("Jittering values introduces some randomness, for 
            reproducibility set.seed(1) has been set")}
-
+  
     if(length(FilterCellProportion) > 1 & !is.list(FilterCellProportion)) {
          FilterCellProportion <- as.list(FilterCellProportion)}
     if(length(FilterCellProportion) == 1) { 
@@ -88,6 +105,7 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
   
     # Can't use less then FilterCellNum = 10
 
+    Levels <- unique(Conditions)
 
     DataList <- lapply(1:length(Levels), function(x) {
         Data[,which(Conditions == Levels[x])]}) # split conditions
@@ -141,4 +159,4 @@ checkCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
 
     if (SavePDF == TRUE){  dev.off() }
 
-    }
+}

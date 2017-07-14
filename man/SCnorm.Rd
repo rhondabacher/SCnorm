@@ -8,7 +8,7 @@ SCnorm(Data = NULL, Conditions = NULL, OutputName = NULL,
    SavePDF = TRUE, PropToUse = .25, Tau = .5, reportSF = FALSE, 
    FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
    Thresh = .1, ditherCounts = FALSE, withinSample = NULL, 
-   useSpikes = FALSE)
+   useSpikes = FALSE, useZerosToScale=FALSE)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and
@@ -58,8 +58,10 @@ within a sample prior to SCnorm. If NULL(default) then no correction will
 be performed. Examples of gene-specific features are GC content or gene
 length.}
 
-\item{useSpikes}{whether to use spike-ins to perform between condition
+\item{useSpikes}{whether to use spike-ins to perform across condition
 scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
+
+\item{useZerosToScale}{whether to use zeros when scaling across conditions (default=FALSE).}
 }
 \value{
 List containing matrix of normalized expression (and optionally a

@@ -33,15 +33,9 @@
 GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau, 
     NCores, ditherCounts) {
     
-    sreg <- list()
-    
+
     Genes <- names(Slopes) #Genes for normalizing
-    
-    LogData <- redobox(Data, 0) #LOG data
-        
-    NormSlopes <- unlist(mclapply(X = 1:length(Genes), FUN = quickreg, 
-                    InputData = list(LogData, SeqDepth, Genes, Tau, 
-                        ditherCounts), mc.cores = NCores))
+    NormSlopes <- GetSlopes(Data[Genes,], SeqDepth, Tau=.5, FilterCellNum = 0, ditherCounts)
     
     colors <- colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), 
             bias=2)(n = 10)
@@ -63,16 +57,16 @@ GetK <- function(Data, SeqDepth, OrigData, Slopes, Name, Tau,
 
     YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
 
-        plot(density(na.omit(NormSlopes), from = -3, to = 3), xlim = c(-3,3),
-                    ylim = c(0,YMax), lwd = 3, col = "white", xlab = "Slope",
-                    cex.axis = 2, main = paste0(Name), cex.lab = 2, 
-                    cex.main = 2)
-        for (i in 1:length(sreg)) {
-            useg <- names(sreg[[i]])
-            lines(density(na.omit(NormSlopes[useg]), from=-3, to=3, adjust=1), 
-            lwd=3, col=colors[i])
-        }
-        abline(v=0, lwd=3, col="black") 
+    plot(density(na.omit(NormSlopes), from = -3, to = 3), xlim = c(-3,3),
+                ylim = c(0,YMax), lwd = 3, col = "white", xlab = "Slope",
+                cex.axis = 1.5, main = paste0(Name), cex.lab = 1.5, 
+                cex.main = 1.7)
+    for (i in 1:length(sreg)) {
+        useg <- names(sreg[[i]])
+        lines(density(na.omit(NormSlopes[useg]), from=-3, to=3, adjust=1), 
+        lwd=3, col=colors[i])
+    }
+    abline(v=0, lwd=3, col="black") 
 
     MAX <- max(abs(Mode))
     return(MAX)

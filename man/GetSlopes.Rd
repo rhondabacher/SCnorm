@@ -34,7 +34,7 @@ This is the gene-specific fitting function, where a median
 }
 \examples{
  data(ExampleData)
- #myslopes <- GetSlopes(ExampleData)
+ myslopes <- GetSlopes(ExampleData)
 }
 \author{
 Rhonda Bacher

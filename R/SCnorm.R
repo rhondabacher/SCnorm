@@ -1,11 +1,11 @@
 #' @title SCnorm
-
+#'
 #' @usage SCnorm(Data = NULL, Conditions = NULL, OutputName = NULL, 
 #'    SavePDF = TRUE, PropToUse = .25, Tau = .5, reportSF = FALSE, 
 #'    FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
 #'    Thresh = .1, ditherCounts = FALSE, withinSample = NULL, 
-#'    useSpikes = FALSE)
-
+#'    useSpikes = FALSE, useZerosToScale=FALSE)
+#'
 #' @param Data matrix of un-normalized expression counts. Rows are genes and
 #'    columns are samples.
 #' @param Conditions vector of condition labels, this should correspond to
@@ -39,9 +39,11 @@
 #'    within a sample prior to SCnorm. If NULL(default) then no correction will
 #'    be performed. Examples of gene-specific features are GC content or gene
 #'    length.
-#' @param useSpikes whether to use spike-ins to perform between condition
+#' @param useSpikes whether to use spike-ins to perform across condition
 #'    scaling (default=FALSE). Assumes spike-in names start with "ERCC-".
-
+#' @param useZerosToScale whether to use zeros when scaling across conditions (default=FALSE).
+#'
+#'
 #' @description Quantile regression is used to estimate the dependence of
 #'    read counts on sequencing depth for every gene. Genes with similar
 #'     dependence are then grouped, and a second quantile regression is used to
@@ -58,12 +60,17 @@
 #' @export
 
 
-#' @importFrom parallel detectCores mclapply
-#' @import stats
+#' @importFrom parallel detectCores
 #' @import graphics
-#' @importFrom grDevices colorRampPalette
-#' @importFrom parallel detectCores mclapply
 #' @import grDevices
+#' @import stats
+#' @importFrom BiocParallel bplapply  
+#' @importFrom BiocParallel register
+#' @importFrom BiocParallel MulticoreParam
+#' @importFrom BiocParallel bpparam
+#' @importFrom parallel detectCores
+#' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @author Rhonda Bacher
 #' @examples 
 #'  
@@ -74,32 +81,64 @@
 #'    #str(DataNorm)
 
 SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL, 
-    SavePDF = TRUE, PropToUse = .25, Tau = .5, reportSF = FALSE, 
-    FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0, 
-    Thresh = .1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE) {
+    SavePDF=TRUE, PropToUse=.25, Tau=.5, reportSF=FALSE, 
+    FilterCellNum=10, K=NULL, NCores=NULL, FilterExpression=0, 
+    Thresh=.1, ditherCounts=FALSE, withinSample=NULL, useSpikes=FALSE, useZerosToScale=FALSE) {
   
-    if (any(colSums(Data) == 0)) {stop("Data contains at least one 
-      column will all zeros. Please remove these columns before 
-        calling SCnorm(). Quality control on data is highly recommended prior
-      to running SCnorm!")}
-  
-    Data <- data.matrix(Data)
-    if(anyNA(Data)) {stop("Data contains at least one value of NA. 
-      Unsure how to proceed.")}
-    ## checks
-    if (.Platform$OS.type == "windows") {
-        NCores = 1
-    }
-    
-    if (is.null(rownames(Data))) {rownames(Data) <- as.vector(sapply("X_", 
-       paste0, 1:dim(Data)[1]))}
-    if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
     if (is.null(Conditions)) {stop("Must supply conditions.")}
     if (is.null(OutputName)) {OutputName = "MyData"}
-    if (dim(Data)[2] != length(Conditions)) {stop("Number of columns in 
+  
+  
+    if("SummarizedExperiment" %in% class(Data)) {
+      if(is.null(  SummarizedExperiment::assayNames(Data)) ||   SummarizedExperiment::assayNames(Data)[1] != "Counts") {
+        message("renaming the first element in assays(Data) to 'Counts'")
+          SummarizedExperiment::assayNames(Data)[1] <- "Counts"
+  
+      if (is.null(colnames(SCnorm::getCounts(Data)))) {stop("Must supply sample/cell names!")}
+      if (is.null(SummarizedExperiment::colData(Data))){
+        SummarizedExperiment::colData(Data)[["Conditions"]] <- Conditions
+      }
+      }
+    }
+    
+      
+    if(!("SummarizedExperiment" %in% class(Data))){
+      Data <- data.matrix(Data)
+      Data <- SummarizedExperiment(assays=list("Counts"=Data),
+                                      colData=data.frame(colnames(Data)))
+     }
+       
+    
+    ## Checks
+    
+    if(any(colSums(SCnorm::getCounts(Data)) == 0)) {stop("Data contains at least one 
+      column will all zeros. Please remove these columns before 
+        calling SCnorm(). Performing quality control on your data is highly recommended prior
+      to running SCnorm!")}
+      
+    if(anyNA(SCnorm::getCounts(Data))) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
+    
+    message(paste0("Setting up parallel compution using ", 
+                      NCores, " cores" ))
+    if (.Platform$OS.type == "windows") {
+      prll=BiocParallel::SnowParam(workers=NCores)
+      BiocParallel::register(BPPARAM = prll, default=TRUE)
+    } else {   
+      prll=BiocParallel::MulticoreParam(workers=NCores)
+      BiocParallel::register(BPPARAM = prll, default=TRUE)
+    }
+    
+    if(is.null(rownames(SCnorm::getCounts(Data)))) {rownames(SCnorm::getCounts(Data)) <- as.vector(sapply("X_", 
+                 paste0, 1:dim(SCnorm::getCounts(Data))[1]))}
+    
+    if(is.null(colnames(SCnorm::getCounts(Data)))) {stop("Must supply sample/cell names!")}
+
+    if(dim(SCnorm::getCounts(Data))[2] != length(Conditions)) {stop("Number of columns in 
       expression matrix must match length of conditions vector!")}
-    if (!is.null(K)) {message(paste0("SCnorm will normalize assuming, ", 
+    
+    if (!is.null(K)) {message(paste0("SCnorm will normalize assuming ",
       K, " is the optimal number of groups. It is not advised to set this."))}
+    
     if (is.null(NCores)) {NCores <- max(1, detectCores() - 1)}
     if (ditherCounts == TRUE) {RNGkind("L'Ecuyer-CMRG");
       set.seed(1);message("Jittering values introduces some randomness, 
@@ -107,9 +146,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL,
       
     Levels <- unique(Conditions) # Number of conditions
   
-   
+  
+    # Option to normalize within samples:
     if(!is.null(withinSample)) {
-        if(length(withinSample) == dim(Data)[1]) {
+        if(length(withinSample) == dim(SCnorm::getCounts(Data))[1]) {
           message("Using loess method described in ''GC-Content Normalization 
           for RNA-Seq Data'', Risso et al. to perform within-sample 
           normalization. For other options see the original publication and 
@@ -130,30 +170,52 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL,
           scaleC <- y / exp(counts.fit - median(Y)) #correct
           return(scaleC)
         } ##from EDAseq v2.8.0
-      
-        Data = apply(Data, 2, correctWithin, correctFactor = withinSample)
+        
+        S4Vectors::metadata(Data)[["OriginalData"]] <- Data
+        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, correctWithin, correctFactor = withinSample)
+        
         } else{
-          message("length of withinSample should match the number of 
+          message("Length of withinSample should match the number of 
             genes in Data!")
         }
     }
 
     DataList <- lapply(1:length(Levels), function(x) {
-        Data[,which(Conditions == Levels[x])]}) # split conditions
-    Genes <- rownames(Data) 
+        SCnorm::getCounts(Data)[,which(Conditions == Levels[x])]}) # split conditions
+    Genes <- rownames(SCnorm::getCounts(Data)) 
     
     SeqDepthList <- lapply(1:length(Levels), function(x) {
-        colSums(Data[,which(Conditions == Levels[x])])})
+        colSums(SCnorm::getCounts(Data)[,which(Conditions == Levels[x])])})
+
+    checkSeqDepth <- colSums(SCnorm::getCounts(Data))
+    if(any(checkSeqDepth <= 10000)) {
+       warning("At least one cell/sample has less than 10,000 counts total. 
+       Check the quality of your data or filtering criteria. 
+       SCnorm may not be appropriate for your data (see vignette for details).")
+     }
   
+     checkDetectionRate <- apply(SCnorm::getCounts(Data), 2, function(x) sum(x!=0))
+     if(any(checkDetectionRate <= 100)) {
+        warning("At least one cell/sample has less than 100 genes detected (non-zero). 
+        Check the quality of your data or filtering criteria. 
+        SCnorm may not be appropriate for your data (see vignette for details).")
+      }
+      
     NumZerosList <- lapply(1:length(Levels), function(x) {
         apply(DataList[[x]], 1, function(c) sum(c != 0)) })
     
     GeneFilterList <- lapply(1:length(Levels), function(x) {
         names(which(NumZerosList[[x]] >= FilterCellNum))})
   
+    checkGeneFilter <- sapply(1:length(Levels), function(x) {
+        length(which(NumZerosList[[x]] >= FilterCellNum))})
+    if(any(checkGeneFilter < 100)) {
+       stop("Data has less then 100 genes after applying filter. Check the quality of your data or filtering criteria. 
+       SCnorm may not be appropriate for your data (see vignette for details).")
+     }
+       
     GeneFilterOUT <- lapply(1:length(Levels), function(x) {
         names(which(NumZerosList[[x]] < FilterCellNum))})
-      
     names(GeneFilterOUT) <- paste0("GenesFilteredOutGroup", unique(Conditions))
   
     message("Gene filter is applied within each condition.")
@@ -225,7 +287,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL,
     ## plot the normalized data to screen
     message("Plotting count-depth relationship for normalized data...")
     
-    checkCountDepth(Data = Data, NormalizedData = NORMDATA,
+    checkCountDepth(Data = SCnorm::getCounts(Data), NormalizedData = NORMDATA,
                     Conditions = Conditions, OutputName = OutputName, 
                     SavePDF = SavePDF, Tau=Tau,
                      FilterCellProportion = FilterCellProportion, 
@@ -240,34 +302,30 @@ SCnorm <- function(Data=NULL, Conditions=NULL, OutputName=NULL,
       # Scaling
       # Genes = Reduce(intersect, GeneFilterList)
       message("Scaling data between conditions...")
-      ScaledNormData <- scaleNormMultCont(NormList, Data, Genes, useSpikes)
+      ScaledNormData <- scaleNormMultCont(NormList, SCnorm::getCounts(Data), Genes, useSpikes, useZerosToScale)
       names(ScaledNormData) <- c("NormalizedData", "ScaleFactors")
-      ScaledNormData <- c(ScaledNormData, GeneFilterOUT)
-      if(reportSF == TRUE) {
-        return(ScaledNormData) 
+      
+      NormDataFull <- ScaledNormData$NormalizedData
+      ScaleFactorsFull <- ScaledNormData$ScaleFactors
+
       } else {
-        ScaledNormData$ScaleFactors <- NULL
-        return(ScaledNormData) 
-      }
-    } else {
-      NormDataFull <- NormList[[1]]$NormData
-      ScaleFactorsFull <- NormList[[1]]$ScaleFactors
+        NormDataFull <- NormList[[1]]$NormData
+        ScaleFactorsFull <- NormList[[1]]$ScaleFactors
     
-      if(reportSF == TRUE) {
-        FinalNorm <- list(NormalizedData = NormDataFull, 
-            ScaleFactors = ScaleFactorsFull, GeneFilterOUT)
-        return(FinalNorm) 
-      } else {
-        FinalNorm <-list(NormalizedData = NormDataFull, GeneFilterOUT)
-        return(FinalNorm) 
+        if(reportSF == FALSE) {
+          ScaleFactorsFull <- NULL
+        }
       }
-    }
-  
-    try(dev.off(), silent=TRUE)
+    
+    # Return 
+    S4Vectors::metadata(Data)[["NormalizedData"]] <- NormDataFull
+    S4Vectors::metadata(Data)[["ScaleFactors"]] <- ScaleFactorsFull
+    S4Vectors::metadata(Data)[["GenesFilteredOut"]] <- GeneFilterOUT
+
   
     message("Done!")
   
-  
+return(Data)  
   
 }
 

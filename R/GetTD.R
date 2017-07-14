@@ -19,7 +19,7 @@ GetTD <- function(x, InputData) {
 
 
     TauGroup <- InputData[[4]][x,1]
-    D <- InputData[[4]][x,2]
+    DG <- InputData[[4]][x,2]
     
     O <- InputData[[1]]
     Y <- InputData[[2]]
@@ -27,7 +27,7 @@ GetTD <- function(x, InputData) {
     Tau <- InputData[[5]]
     ditherFlag <- InputData[[6]]
     
-    polyX <- try(poly(O, degree = D, raw = FALSE), silent=TRUE)
+    polyX <- try(poly(O, degree = DG, raw = FALSE), silent=TRUE)
     
     if(!is.null(dim(polyX))){
         Xmat <- data.table(model.matrix( ~ polyX ))

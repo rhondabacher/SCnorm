@@ -4,7 +4,7 @@
 \alias{scaleNormMultCont}
 \title{Scale multiple conditions}
 \usage{
-scaleNormMultCont(NormData, OrigData, Genes, useSpikes)
+scaleNormMultCont(NormData, OrigData, Genes, useSpikes, useZerosToScale)
 }
 \arguments{
 \item{NormData}{list of matrices of normalized expression counts and scale
@@ -20,6 +20,8 @@ want to use genes that were normalized.}
 
 \item{useSpikes}{whether to use spike-ins to perform between condition
 scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
+
+\item{useZerosToScale}{whether to use zeros when scaling across conditions (default=FALSE).}
 }
 \value{
 matrix of normalized and scaled expression values for all

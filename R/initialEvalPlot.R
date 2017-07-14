@@ -15,7 +15,7 @@
 #' @return a plot of the un-normalized slope densities. 
 #' @author Rhonda Bacher
 #' 
-#' @importFrom grDevices colorRampPalette
+#' @import grDevices
 
 initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name, 
     NumExpressionGroups = 10, BeforeNorm = TRUE) {
@@ -43,7 +43,7 @@ initialEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name,
 
     plot(density(na.omit(Slopes), from = -3, to = 3), xlim = c(-3,3), 
                 ylim = c(0,YMax), lwd = 3, col = "white", xlab = "Slope",
-                cex.axis = 2, main = paste0(Name), cex.lab = 2, cex.main = 2)
+                cex.axis = 1.5, main = paste0(Name), cex.lab = 1.5, cex.main = 1.7)
     for (i in 1:length(sreg)) {
         useg <- names(sreg[[i]])
         lines(density(na.omit(Slopes[useg]), from=-3, to=3, adjust=1), 
