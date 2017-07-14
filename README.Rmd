@@ -10,7 +10,7 @@ Details of SCnorm may be found in the vignette.
 
 ## Installation
 
-To install the development version of SCnorm from Github:
+Make sure to use the latest version of SCnorm by installing it from GitHub:
 
 ```R
 library(devtools)
@@ -23,7 +23,7 @@ Vignette is located here: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzi
 
 Rhonda Bacher <rhonda.bacher@gmail.com>
 
-## Latest Update:
-SCnorm has been updated for Bioconductor submission, along with more details for usage -- please see vignette for complete updates.
+## Latest Update: v0.99.4 
+SCnorm has been updated for Bioconductor submission, along with other updates and more details for usage -- please see vignette for complete updates.
 
 
