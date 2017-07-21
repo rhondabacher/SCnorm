@@ -31,7 +31,7 @@ getSlopes <- function(Data, SeqDepth = 0, Tau = .5, FilterCellNum = 10, ditherCo
     Genes <- names(which(NumNonZeros >= FilterCellNum)) ##filter for now    
     LogData <- redoBox(Data, 0) #log data
     
-    AllReg <- unlist(BiocParallel::bplapply(X = seq_len(length(Genes)), FUN = quickReg, 
+    AllReg <- unlist(mclapply(X = seq_len(length(Genes)), FUN = quickReg, 
                 InputData = list(LogData, SeqDepth, Genes, Tau, ditherCounts)))
     
     return(AllReg)

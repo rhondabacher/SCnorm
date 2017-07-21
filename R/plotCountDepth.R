@@ -85,14 +85,9 @@ plotCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
                             Unsure how to proceed.")}
 
     if (is.null(NCores)) {NCores <- max(1, parallel::detectCores() - 1)}
-    if (.Platform$OS.type == "windows") {
-      prll=BiocParallel::SnowParam(workers=NCores)
-      BiocParallel::register(BPPARAM = prll, default=TRUE)
-    } else {   
-      prll=BiocParallel::MulticoreParam(workers=NCores)
-      BiocParallel::register(BPPARAM = prll, default=TRUE)
-    }
-    
+    if (.Platform$OS.type == "windows") {NCores = 1}
+    options(mc.cores = NCores)
+     
     if (is.null(rownames(Data))) {stop("Must supply gene/row names!")}
     if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
 

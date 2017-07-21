@@ -120,16 +120,11 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     if(anyNA(SCnorm::getCounts(Data))) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
      
     if (is.null(NCores)) {NCores <- max(1, parallel::detectCores() - 1)}
-    
+    if (.Platform$OS.type == "windows") {NCores = 1}
+    options(mc.cores = NCores)
     message(paste0("Setting up parallel computation using ", 
                       NCores, " cores" ))
-    if (.Platform$OS.type == "windows") {
-      prll=BiocParallel::SnowParam(workers=NCores)
-      BiocParallel::register(BPPARAM = prll, default=TRUE)
-    } else {   
-      prll=BiocParallel::MulticoreParam(workers=NCores)
-      BiocParallel::register(BPPARAM = prll, default=TRUE)
-    }
+
     
     if (is.null(rownames(SCnorm::getCounts(Data)))) {stop("Must supply gene/row names!")}
     if (is.null(colnames(SCnorm::getCounts(Data)))) {stop("Must supply sample/cell names!")}

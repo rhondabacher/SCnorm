@@ -5,8 +5,6 @@ Author: Rhonda Bacher
 Maintainer: Rhonda Bacher <rbacher@wisc.edu>
 Description: This package implements SCnorm — a method to normalize single-cell
 	RNA-seq data.
-Depends:
-	R (>= 3.4.0),
 Imports:
 	stats,
 	graphics,
@@ -16,7 +14,6 @@ Imports:
 	cluster,
 	moments,
 	data.table,
-	BiocParallel,
 	SummarizedExperiment,
 	S4Vectors,
 	ggplot2,

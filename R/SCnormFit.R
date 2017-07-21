@@ -84,7 +84,7 @@ SCnormFit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, dith
       taus <- seq(.05, .95, by=.05)
       Grid <- expand.grid(taus, seq_len(6))
                       
-      AllIter <- unlist(BiocParallel::bplapply(X = seq_len(nrow(Grid)), FUN = GetTD, 
+      AllIter <- unlist(mclapply(X = seq_len(nrow(Grid)), FUN = GetTD, 
           InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts)))
       
       DG <- Grid[which.min(abs(PEAK - AllIter)),2]
