@@ -4,30 +4,33 @@
 \alias{SCnorm}
 \title{SCnorm}
 \usage{
-SCnorm(Data = NULL, Conditions = NULL, OutputName = NULL, 
-   SavePDF = TRUE, PropToUse = .25, Tau = .5, reportSF = FALSE, 
-   FilterCellNum = 10, K = NULL, NCores = NULL, FilterExpression = 0,
-   Thresh = .1, ditherCounts = FALSE, withinSample = NULL, 
-   useSpikes = FALSE, useZerosToScale=FALSE)
+SCnorm(Data = NULL, Conditions = NULL, PrintProgressPlots = FALSE,
+  reportSF = FALSE, FilterCellNum = 10, FilterExpression = 0,
+  Thresh = 0.1, K = NULL, NCores = NULL, ditherCounts = FALSE,
+  PropToUse = 0.25, Tau = 0.5, withinSample = NULL, useSpikes = FALSE,
+  useZerosToScale = FALSE)
 }
 \arguments{
-\item{Data}{matrix of un-normalized expression counts. Rows are genes and
-columns are samples.}
+\item{Data}{can be a matrix of single-cell expression with cells
+where rows are genes and columns are samples. Gene names should
+not be a column in this matrix, but should be assigned to rownames(Data).
+Data can also be an object of class \code{SummarizedExperiment} that contains 
+the single-cell expression matrix and other metadata. The \code{assays} 
+slot contains the expression matrix and is named \code{"Counts"}.  
+This matrix should have one row for each gene and one sample for each column.  
+The \code{colData} slot should contain a data.frame with one row per 
+sample and columns that contain metadata for each sample.  This data.frame
+should contain a variable that represents biological condition 
+in the same order as the columns of \code{NormCounts}). 
+Additional information about the experiment can be contained in the
+\code{metadata} slot as a list.}
 
 \item{Conditions}{vector of condition labels, this should correspond to
-the columns of the un-normalized expression matrix.}
+the columns of the expression matrix.}
 
-\item{OutputName}{specify the path and/or name of output files.}
-
-\item{SavePDF}{whether to automatically write and save the output plot as
-a PDF (default is TRUE).}
-
-\item{PropToUse}{proportion of genes closest to the slope mode used for
-the group fitting, default is set at .25. This number #' mainly affects
-speed.}
-
-\item{Tau}{value of quantile for the quantile regression used to estimate
-gene-specific slopes (default is median, Tau = .5 ).}
+\item{PrintProgressPlots}{whether to automatically produce plot as SCnorm 
+determines the optimal number of groups (default is FALSE, highly 
+suggest using TRUE). Plots will be printed to the current device.}
 
 \item{reportSF}{whether to provide a matrix of scaling counts in the
 output (default = FALSE).}
@@ -37,6 +40,12 @@ output (default = FALSE).}
 (default = 10). The initial grouping fits a quantile regression to each
    gene, making this value too low gives unstable fits.}
 
+\item{FilterExpression}{exclude genes having median of non-zero expression
+below this threshold from count-depth plots.}
+
+\item{Thresh}{threshold to use in evaluating the sufficiency of K, default
+is .1.}
+
 \item{K}{the number of groups for normalizing. If left unspecified, an
 evaluation procedure will determine the optimal value of K
 (recommended). If you're sure about specifiyng K, then a vector equal to
@@ -44,14 +53,15 @@ the number of conditions may be used.}
 
 \item{NCores}{number of cores to use, default is detectCores() - 1.}
 
-\item{FilterExpression}{exclude genes having median of non-zero expression
-below this threshold from count-depth plots.}
-
-\item{Thresh}{threshold to use in evaluating the sufficiency of K, default
-is .1.}
-
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for
 data with many ties, default is FALSE.}
+
+\item{PropToUse}{proportion of genes closest to the slope mode used for
+the group fitting, default is set at .25. This number #' mainly affects
+speed.}
+
+\item{Tau}{value of quantile for the quantile regression used to estimate
+gene-specific slopes (default is median, Tau = .5 ).}
 
 \item{withinSample}{a vector of gene-specific features to correct counts
 within a sample prior to SCnorm. If NULL(default) then no correction will
@@ -59,7 +69,7 @@ be performed. Examples of gene-specific features are GC content or gene
 length.}
 
 \item{useSpikes}{whether to use spike-ins to perform across condition
-scaling (default=FALSE). Assumes spike-in names start with "ERCC-".}
+scaling (default=FALSE). SCnorm will assume spike-in names start with "ERCC-".}
 
 \item{useZerosToScale}{whether to use zeros when scaling across conditions (default=FALSE).}
 }

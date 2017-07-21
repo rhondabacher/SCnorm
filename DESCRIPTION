@@ -32,3 +32,5 @@ Suggests:
 	devtools
 VignetteBuilder: knitr
 biocViews: Normalization, RNASeq, SingleCell
+URL: https://github.com/rhondabacher/SCnorm
+BugReports: https://github.com/rhondabacher/SCnorm/issues

@@ -1,5 +1,4 @@
 #' @title Fit group regression for specific quantile and degree
-#' @usage GetTD(x, InputData)
 #' @param x specifies a column of the grid matrix of tau and d.
 #' @param InputData contains the expression values, sequencing depths to fit 
 #'  the group regression, and the quantile used in the individual 
@@ -30,28 +29,27 @@ GetTD <- function(x, InputData) {
     polyX <- try(poly(O, degree = DG, raw = FALSE), silent=TRUE)
     
     if(!is.null(dim(polyX))){
-        Xmat <- data.table(model.matrix( ~ polyX ))
+        Xmat <- data.table::data.table(model.matrix( ~ polyX ))
     
         polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
     
         if(ditherFlag == TRUE) {
-            rqfit <- try(rq(dither(Y, type="symmetric", value=.01) ~ ., 
+            rqfit <- try(quantreg::rq(dither(Y, type="symmetric", value=.01) ~ ., 
             data = polydata, na.action = na.exclude, tau = TauGroup, 
             method="fn"), silent=TRUE)
         } else {
-            rqfit <- try(rq(Y ~ ., data = polydata, na.action = na.exclude,
+            rqfit <- try(quantreg::rq(Y ~ ., data = polydata, na.action = na.exclude,
                  tau = TauGroup, method="fn"), silent=TRUE)
         }
-        if(class(rqfit) != "try-error"){
+        if(!is(rqfit, "try-error")){
             revX <- data.frame(predict(polyX, SeqDepth))
                     
             colnames(revX) <- colnames(polydata[-1])
             pdvalsrq <- predict(rqfit, newdata=data.frame(revX))
-
             names(pdvalsrq) <- colnames(SeqDepth)
     
             if (min(pdvalsrq) > 0) { 
-                S <- rq(pdvalsrq ~ SeqDepth, tau = Tau)$coef[2]
+                S <- quantreg::rq(pdvalsrq ~ SeqDepth, tau = Tau)$coef[2]
             } else {S <- -50}
         } else {S <- -50}    
     } else {S <- -50}

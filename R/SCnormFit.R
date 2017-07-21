@@ -1,9 +1,6 @@
 #' @title Fit group quantile regression for K groups
-#' @usage SCnorm_fit(Data, SeqDepth, Slopes, K, PropToUse, 
-#' Tau, NCores, ditherCounts)
-
 #' @inheritParams SCnorm
-#' @inheritParams Normalize
+#' @inheritParams normWrapper
 
 #' @description For each group K, a quantile regression is fit over all genes
 #'    (PropToUse) for a grid of possible degree's d and quantile's tau. 
@@ -17,22 +14,19 @@
 #' @importFrom moments skewness
 #' @importFrom data.table data.table melt
 
-SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, 
-      NCores = NCores, ditherCounts) {
+SCnormFit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, ditherCounts) {
 
     
-    SeqDepth <- data.table(Depth = log(SeqDepth), Sample = names(SeqDepth))
-      #use LOG
+    SeqDepth <- data.table::data.table(Depth = log(SeqDepth), Sample = names(SeqDepth))
 
     Genes <- rownames(Data)
     DataFiltered <- Data[names(Slopes),]
-    logData <- data.table(Gene = rownames(DataFiltered),
-        redobox(DataFiltered, 0)) # use LOG
+    logData <- data.table::data.table(Gene = rownames(DataFiltered), redoBox(DataFiltered, 0))
   
   
     sreg <- list()
-    grouping <- clara(as.matrix(Slopes), K)
-    for(i in 1:K) {
+    grouping <- cluster::clara(as.matrix(Slopes), K)
+    for(i in seq_len(K)) {
         sreg[[i]] <- Slopes[names(which(grouping$clustering == i))] }
 
     #merge small clusters together, groups with less than 100 genes.
@@ -53,18 +47,18 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
     K = length(sreg) # update k
 
 
-    NormData <- c()
-    ScaleFactors <- c()
-
-    ##normalize within each group
-    if (.Platform$OS.type == "windows") {
-      NCores = 1
-    }
-
-    for(i in 1:K) {
+    NormData <- matrix(NA, nrow=nrow(Data), ncol=ncol(Data))
+    rownames(NormData) <- Genes
+    colnames(NormData) <- colnames(Data)
+    ScaleFactors <- matrix(NA, nrow=nrow(Data), ncol=ncol(Data))
+    rownames(ScaleFactors) <- Genes
+    colnames(ScaleFactors) <- colnames(Data)
+    
+    
+    for(i in seq_len(K)) {
       qgenes <- names(sreg[[i]])
     
-      try(dskew <- skewness(sreg[[i]])) 
+      try(dskew <- moments::skewness(sreg[[i]])) 
 
       ##only want to use modal genes for speed
       rqdens <- density(Slopes[qgenes], from = min(Slopes[qgenes], 
@@ -75,9 +69,9 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
           PEAK <- rqdens$x[peak]
           } else { PEAK <- mean(sreg[[i]])}
   
-  # use 25% of data near mode, faster
+ 
       NumToSub <- ceiling(length(qgenes) * PropToUse) 
-      ModalGenes <- names(sort(abs(PEAK - Slopes[qgenes]))[1:NumToSub])
+      ModalGenes <- names(sort(abs(PEAK - Slopes[qgenes]))[seq_len(NumToSub)])
       
       InData <- subset(logData, logData$Gene %in% ModalGenes)
       Melted <- data.table::melt(InData, id="Gene")
@@ -88,21 +82,21 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
       Y <- LongData$Counts
       
       taus <- seq(.05, .95, by=.05)
-      Grid <- expand.grid(taus, seq(1:6))
+      Grid <- expand.grid(taus, seq_len(6))
                       
-      AllIter <- unlist(bplapply(X = 1:nrow(Grid), FUN = GetTD, 
+      AllIter <- unlist(BiocParallel::bplapply(X = seq_len(nrow(Grid)), FUN = GetTD, 
           InputData = list(O, Y, SeqDepth$Depth, Grid, Tau, ditherCounts)))
       
-      DG <- Grid[which.min(abs(PEAK - AllIter)),2]; 
+      DG <- Grid[which.min(abs(PEAK - AllIter)),2]
       
-      TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1];
+      TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1]
       
       polyX <- poly(O, degree = DG, raw = FALSE)
-      Xmat <- data.table(model.matrix( ~ polyX ))
+      Xmat <- data.table::data.table(model.matrix( ~ polyX ))
       polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
 
-      rqfit <- rq(Y ~ ., data = polydata, na.action = na.exclude, 
-              tau = TauGroup, method="fn")
+      rqfit <- quantreg::rq(Y ~ ., data = polydata, na.action = na.exclude, 
+                  tau = TauGroup, method="fn")
   
       revX <- data.frame(predict(polyX, SeqDepth$Depth))
       colnames(revX) <- colnames(polydata[-1])
@@ -110,40 +104,34 @@ SCnorm_fit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5,
       pdvalsrq <- predict(rqfit, newdata=data.frame(revX))
       names(pdvalsrq) <- rownames(SeqDepth)
 
-      SF_rq <- exp(pdvalsrq) / exp(quantile(Y, probs = TauGroup, 
-                  na.rm = TRUE))
+      SF_rq <- exp(pdvalsrq) / exp(quantile(Y, probs = TauGroup, na.rm = TRUE))
       
       normdata_rq <- t(t(DataFiltered[qgenes, ]) / as.vector(SF_rq))
       rownames(normdata_rq) <- qgenes
 
-      NormData <- rbind(NormData, normdata_rq)
+      NormData[qgenes,] <- normdata_rq
       
-      SFmat <- matrix(rep(SF_rq, length(qgenes)), nrow = length(qgenes), 
-                  byrow = TRUE)
+      SFmat <- matrix(rep(SF_rq, length(qgenes)), nrow = length(qgenes), byrow = TRUE)
       rownames(SFmat) <- qgenes
       colnames(SFmat) <- names(SF_rq)
       
-      ScaleFactors <- rbind(ScaleFactors, SFmat)
+      ScaleFactors[qgenes,] <- SFmat
 
     }
 
 
 
-    toput1 <- setdiff(Genes, rownames(NormData));
+    toput1 <- names(which(is.na(rowSums(NormData))))
     if(length(toput1) > 0) {
     
-      NormData <- rbind(NormData, Data[toput1,]);
-      rownames(NormData)[which(rownames(NormData)=="")] <- toput1
+      NormData[toput1,] <- Data[toput1,]
     
-      SFones <- matrix(rep(rep(1,dim(Data)[2]), length(toput1)), 
-                    nrow=length(toput1), byrow=TRUE)
-        rownames(SFones) <- toput1
-        colnames(SFones) <- colnames(ScaleFactors)
-        ScaleFactors <- rbind(ScaleFactors, SFones); 
+      SFones <- matrix(rep(rep(1,ncol(Data)), length(toput1)), nrow=length(toput1), byrow=TRUE)
+      rownames(SFones) <- toput1
+      colnames(SFones) <- colnames(ScaleFactors)
+      ScaleFactors[toput1,] <- SFones
     }
-    NormData <- NormData[Genes, ]
-    ScaleFactors <- ScaleFactors[Genes, ]
 
-    NORM = list(NormData = NormData, ScaleFactors = ScaleFactors)
-    return(NORM)
+    normSlots = list(NormData = NormData, ScaleFactors = ScaleFactors)
+    return(normSlots)
 }

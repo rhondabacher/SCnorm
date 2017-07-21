@@ -1,4 +1,4 @@
-#' quickreg
+#' quickReg
 #'
 #' Perform the single gene regressions using quantile regression.
 #' 
@@ -10,8 +10,8 @@
 #' @return gene slope.
 
 
-quickreg<-function(x,InputData)
-{
+quickReg <- function(x,InputData) {
+  
     LogData = InputData[[1]]
     SeqDepth = InputData[[2]]
     X = InputData[[3]][x]
@@ -19,22 +19,22 @@ quickreg<-function(x,InputData)
     ditherFlag = InputData[[5]]
 
     if(ditherFlag == TRUE) {
-      slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+      slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
                   log(SeqDepth), tau = Tau, method="br")$coef[2], silent=TRUE)
-      if(class(slope) == "try-error"){
-        slope <- try(rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+      if(is(slope, "try-error")){
+        slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
                     log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=TRUE)
-        if(class(slope) == "try-error"){
+        if(is(slope, "try-error")){
           slope <- NA
         }    
       } 
     } else {
-      slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
+      slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
               method="br")$coef[2], silent=TRUE)
-      if(class(slope) == "try-error"){
-        slope <- try(rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
+      if(is(slope, "try-error")){
+        slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
                 method="fn")$coef[2], silent=TRUE)
-        if(class(slope) == "try-error"){
+        if(is(slope, "try-error")){
           slope <- NA
         }    
       }
@@ -44,7 +44,7 @@ quickreg<-function(x,InputData)
     return(slope)
 }
 
-#' redobox
+#' redoBox
 #' 
 #' @details Function to log data and turn zeros to NA to mask/ignore in 
 #'  functions.
@@ -55,7 +55,7 @@ quickreg<-function(x,InputData)
 #' @return the dataset has been logged with values below smallc masked. 
 
 
-redobox <- function(DATA, smallc) {
+redoBox <- function(DATA, smallc) {
 
     DATA[DATA <= smallc] <- NA #truncate some values first, usually just zero
     y <- log(DATA)
@@ -63,6 +63,46 @@ redobox <- function(DATA, smallc) {
     return(y)
 }
 
+#' splitGroups
+#' 
+#' @details helper function to get split a vector into a specified number of groups
+#' 
+#' @param DATA vector to be splot.
+#' @param NumGroups number of groups
+#'   
+#' @return list, length is equal to NumGroups
+
+splitGroups <- function(DATA, NumGroups=10) {
+  splitby <- sort(DATA) 
+  grps <- length(splitby) / NumGroups
+  sreg <- split(splitby, ceiling(seq_along(splitby) / grps))
+  return(sreg)
+}
+
+#' getDens
+#' 
+#' @details get density of slopes in different expression groups
+#' 
+#' @param ExprGroups expression groups already split.
+#' @param byGroup factor (usually slopes) to get density based on ExprGroups.
+#' @param RETURN whether to return Mode or Height of density.
+#' 
+#' @return list, length is equal to NumGroups
+
+getDens <- function(ExprGroups, byGroup, RETURN=c("Mode", "Height")) {
+ NumExpressionGroups <- length(ExprGroups)
+ Mode <- rep(NA, NumExpressionGroups)
+ Height <- rep(NA, NumExpressionGroups)
+ for (i in seq_len(NumExpressionGroups)) {
+   useg <- names(ExprGroups[[i]])
+   rqdens <- density(na.omit(byGroup[useg]))
+   peak <- which.max(rqdens$y)
+   Mode[i] <- rqdens$x[peak]
+   Height[i] <- rqdens$y[peak]
+  }
+  RETURN <- eval(parse(text = match.arg(RETURN)))
+  return(RETURN)
+}
 
 #' @title getCounts
 #' 
@@ -92,10 +132,7 @@ getCounts <- function(DATA){
 
 
 
-#' @title getResults
-#'
-#' @usage getResults(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut"))
-#'
+#' @title results
 #'   
 #' @param DATA An object of class \code{SummarizedExperiment} that contains 
 #' normalized single-cell expression and other metadata, and the output of the
@@ -103,7 +140,7 @@ getCounts <- function(DATA){
 #' 
 #' @param type A character variable specifying which output is desired, 
 #'  with possible values "NormalizedData", "ScaleFactors", and "GenesFilteredOut". 
-#'  By default getResults() will
+#'  By default results() will
 #'  return type="NormalizedData", which is the matrix of normalized counts from SCnorm.
 #'  By specifiying type="ScaleFactors" a matrix of scale factors (only returned if 
 #'  reportSF=TRUE when running \code{SCnorm()}) can be obtained.
@@ -129,7 +166,39 @@ getCounts <- function(DATA){
 #' #runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
 #' #normData <- getresults(runNorm)
 
-getResults <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
+results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
   type <- match.arg(type)
   return(S4Vectors::metadata(DATA)[[type]])
 }
+
+
+
+
+#' correctWithin
+#'
+#' Perform the correction within each sample (See loess normalization in 
+#' original publication Risso et al., 2011 (BMC Bioinformatics)).
+#' Similar to function in EDAseq v2.8.0.
+#'  
+#' @details Performs within sample normalization.
+#' 
+#' @param x gene to perform the regression on.
+#' @param InputData list of data needed for the regression.
+#'   
+#' @return within-cell normalized expression estimates
+
+correctWithin <- function(y, correctFactor) {
+  
+  #don't use zeros or outliers
+  useg <- which(y > 0 & y <= quantile(y, probs=0.995)) 
+  X <- correctFactor[useg]
+  Y <- log(y[useg])
+
+  calcL <- loess(Y ~ X)
+  counts.fit <- predict(calcL, newdata = correctFactor)
+  names(counts.fit) <- names(y)
+  counts.fit[is.na(counts.fit)] <- 0
+
+  scaleC <- y / exp(counts.fit - median(Y)) #correct
+  return(scaleC)
+} ##from EDAseq v2.8.0
