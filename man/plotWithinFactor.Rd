@@ -8,8 +8,19 @@ plotWithinFactor(Data, withinSample = NULL, Conditions = NULL,
   FilterExpression = 0, NumExpressionGroups = 4)
 }
 \arguments{
-\item{Data}{matrix of un-normalized expression counts. Rows are genes
-and columns are samples.}
+\item{Data}{can be a matrix of single-cell expression with cells
+where rows are genes and columns are samples. Gene names should
+not be a column in this matrix, but should be assigned to rownames(Data).
+Data can also be an object of class \code{SummarizedExperiment} that contains 
+the single-cell expression matrix and other metadata. The \code{assays} 
+slot contains the expression matrix and is named \code{"Counts"}.  
+This matrix should have one row for each gene and one sample for each column.  
+The \code{colData} slot should contain a data.frame with one row per 
+sample and columns that contain metadata for each sample.  This data.frame
+should contain a variable that represents biological condition 
+in the same order as the columns of \code{NormCounts}). 
+Additional information about the experiment can be contained in the
+\code{metadata} slot as a list.}
 
 \item{withinSample}{a vector of gene-specific features.}
 

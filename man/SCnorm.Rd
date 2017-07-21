@@ -41,17 +41,18 @@ output (default = FALSE).}
    gene, making this value too low gives unstable fits.}
 
 \item{FilterExpression}{exclude genes having median of non-zero expression
-below this threshold from count-depth plots.}
+from the normalization.}
 
 \item{Thresh}{threshold to use in evaluating the sufficiency of K, default
 is .1.}
 
 \item{K}{the number of groups for normalizing. If left unspecified, an
 evaluation procedure will determine the optimal value of K
-(recommended). If you're sure about specifiyng K, then a vector equal to
-the number of conditions may be used.}
+(recommended).}
 
-\item{NCores}{number of cores to use, default is detectCores() - 1.}
+\item{NCores}{number of cores to use, default is detectCores() - 1. 
+This will be used to set up a parallel environment using either MulticoreParam (Linux, Mac) 
+or SnowParam (Windows) with NCores using the package BiocParallel.}
 
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for
 data with many ties, default is FALSE.}
@@ -85,7 +86,7 @@ Quantile regression is used to estimate the dependence of
    sequencing depth is then performed using the estimated scale factors to
    provide normalized estimates of expression. If multiple conditions are
    provided, normalization is performed within condition and then
-normalized estimates are scaled between conditions. If withinSample=TRUE
+   normalized estimates are scaled between conditions. If withinSample=TRUE
    then the method from Risso et al. 2011 will be implemented.
 }
 \examples{
@@ -93,7 +94,7 @@ normalized estimates are scaled between conditions. If withinSample=TRUE
  data(ExampleData)
    Conditions = rep(c(1,2), each= 90)
    #DataNorm <- SCnorm(ExampleData, Conditions, 
-   #OutputName = "MyNormalizedData", SavePDF=TRUE, FilterCellNum = 10)
+   #FilterCellNum = 10)
    #str(DataNorm)
 }
 \author{
