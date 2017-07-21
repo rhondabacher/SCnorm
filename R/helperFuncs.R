@@ -164,7 +164,7 @@ getCounts <- function(DATA){
 #' data(ExampleData)
 #' Conditions = rep(c(1), each= 90)
 #' #runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
-#' #normData <- getresults(runNorm)
+#' #normData <- results(runNorm)
 
 results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
   type <- match.arg(type)

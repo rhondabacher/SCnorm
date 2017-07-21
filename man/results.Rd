@@ -36,5 +36,5 @@ convenience function by calling \code{metadata(DataNorm)}.
 data(ExampleData)
 Conditions = rep(c(1), each= 90)
 #runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
-#normData <- getresults(runNorm)
+#normData <- results(runNorm)
 }
