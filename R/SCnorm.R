@@ -10,7 +10,7 @@
 #'   The \code{colData} slot should contain a data.frame with one row per 
 #'   sample and columns that contain metadata for each sample.  This data.frame
 #'   should contain a variable that represents biological condition 
-#'   in the same order as the seq_alongcolumns of \code{NormCounts}). 
+#'   in the same order as the columns of \code{NormCounts}). 
 #'   Additional information about the experiment can be contained in the
 #'   \code{metadata} slot as a list.
 #' @param Conditions vector of condition labels, this should correspond to
