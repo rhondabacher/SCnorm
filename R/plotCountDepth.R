@@ -95,46 +95,46 @@ plotCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
            reproducibility set.seed(1) has been set")}
   
     Levels <- unique(Conditions)
-    DataList <- lapply(seq_len(Levels), function(x) {
+    DataList <- lapply(seq_along(Levels), function(x) {
                       Data[,which(Conditions == Levels[x])]}) # split conditions
 
     # Restrict this to not go below less than 10 cells/samples
-    FilterCellProportion <-  lapply(seq_len(Levels), function(x) {
+    FilterCellProportion <-  lapply(seq_along(Levels), function(x) {
         max(FilterCellProportion, 10 / dim(DataList[[x]])[2])})
 
-    SeqDepthList <- lapply(seq_len(Levels), function(x) {
+    SeqDepthList <- lapply(seq_along(Levels), function(x) {
         colSums(Data[,which(Conditions == Levels[x])])})
 
-    PropZerosList <- lapply(seq_len(Levels), function(x) {
+    PropZerosList <- lapply(seq_along(Levels), function(x) {
          rowSums(DataList[[x]] != 0) / ncol(DataList[[x]])})
      
-    MedExprList <- lapply(seq_len(Levels), function(x) {
+    MedExprList <- lapply(seq_along(Levels), function(x) {
         apply(DataList[[x]], 1, function(c) median(c[c != 0])) })
 
     BeforeNorm <- TRUE
     # Switch to the normalized data:
     if(!is.null(NormalizedData)) {  
-       DataList <- lapply(seq_len(Levels), function(x) {
+       DataList <- lapply(seq_along(Levels), function(x) {
           NormalizedData[,which(Conditions == Levels[x])]})
        BeforeNorm <- FALSE
     }
 
-    GeneFilterList <- lapply(seq_len(Levels), function(x) {
-        names(which(PropZerosList[[x]] >= FilterCellProportion & 
+    GeneFilterList <- lapply(seq_along(Levels), function(x) {
+        names(which(PropZerosList[[x]] >= FilterCellProportion[[x]] & 
           MedExprList[[x]] >= FilterExpression))})
-    NM <- unlist(lapply(seq_len(Levels), function(x) {
+    NM <- unlist(lapply(seq_along(Levels), function(x) {
             length(GeneFilterList[[x]] )}))
    if(any(NM < 100)) {stop("Less than 100 genes pass the filter specified! 
                Try lowering thresholds or perform more QC on your data.")}
 
     # Get median quantile regr. slopes.
-    SlopesList <- lapply(seq_len(Levels), function(x) {
+    SlopesList <- lapply(seq_along(Levels), function(x) {
           getSlopes(Data = DataList[[x]][GeneFilterList[[x]],], 
                     SeqDepth = SeqDepthList[[x]], 
                     Tau = Tau, FilterCellNum = 10,
                     ditherCounts = ditherCounts)})
 
-    plotSlots <- lapply(seq_len(Levels), function(x) {
+    plotSlots <- lapply(seq_along(Levels), function(x) {
             generateEvalPlot(MedExpr = MedExprList[[x]][GeneFilterList[[x]]], 
                              SeqDepth = SeqDepthList[[x]], 
                              Slopes = SlopesList[[x]], 

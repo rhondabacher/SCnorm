@@ -103,7 +103,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     }
     
       
-    if (!(is(Data, "SummarizedExperiment"))) {
+    if (!(methods::is(Data, "SummarizedExperiment"))) {
       Data <- data.matrix(Data)
       Data <- SummarizedExperiment(assays=list("Counts"=Data))
      }
@@ -160,11 +160,11 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
         }
     }
 
-    DataList <- lapply(seq_len(Levels), function(x) {
+    DataList <- lapply(seq_along(Levels), function(x) {
         SCnorm::getCounts(Data)[,which(Conditions == Levels[x])]}) # split conditions
     Genes <- rownames(SCnorm::getCounts(Data)) 
     
-    SeqDepthList <- lapply(seq_len(Levels), function(x) {
+    SeqDepthList <- lapply(seq_along(Levels), function(x) {
         colSums(SCnorm::getCounts(Data)[,which(Conditions == Levels[x])])})
 
     if(any(do.call(c, SeqDepthList) <= 10000)) {
@@ -173,7 +173,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
        SCnorm may not be appropriate for your data (see vignette for details).")
      }
   
-     NumZerosCellList <- lapply(seq_len(Levels), function(x) {
+     NumZerosCellList <- lapply(seq_along(Levels), function(x) {
          colSums(DataList[[x]]!= 0) })
      if(any(do.call(c, NumZerosCellList) <= 100)) {
         warning("At least one cell/sample has less than 100 genes detected (non-zero). 
@@ -182,14 +182,14 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       }
       
     message("Gene filter is applied within each condition.")
-    GeneZerosList <- lapply(seq_len(Levels), function(x) {
+    GeneZerosList <- lapply(seq_along(Levels), function(x) {
          rowSums(DataList[[x]]!= 0) })
-    MedExprList <- lapply(seq_len(Levels), function(x) {
+    MedExprList <- lapply(seq_along(Levels), function(x) {
         apply(DataList[[x]], 1, function(c) median(c[c != 0])) })
-    GeneFilterList <- lapply(seq_len(Levels), function(x) {
+    GeneFilterList <- lapply(seq_along(Levels), function(x) {
         names(which(GeneZerosList[[x]] >= FilterCellNum & MedExprList[[x]] >= FilterExpression))})
   
-    checkGeneFilter <- vapply(seq_len(Levels), function(x) {
+    checkGeneFilter <- vapply(seq_along(Levels), function(x) {
              length(GeneFilterList[[x]])}, FUN.VALUE=numeric(1))
     if(any(checkGeneFilter < 100)) {
        stop("At least one condition has less then 100 genes that pass the specified filter. Check the quality of your data or filtering criteria. 
@@ -197,12 +197,12 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
      }
        
 
-    GeneFilterOUT <- lapply(seq_len(Levels), function(x) {
+    GeneFilterOUT <- lapply(seq_along(Levels), function(x) {
         names(which(GeneZerosList[[x]] < FilterCellNum | MedExprList[[x]] < FilterExpression))})
     names(GeneFilterOUT) <- paste0("GenesFilteredOutGroup", unique(Conditions))
   
  
-    NM <- lapply(seq_len(Levels), function(x) {
+    NM <- lapply(seq_along(Levels), function(x) {
         message(paste0(length(GeneFilterOUT[[x]]), 
            " genes in condition ", Levels[x]," will not be included in the normalization due to 
              the specified filter criteria."))})
@@ -211,7 +211,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     see vignette for example.") 
     
     # Get median quantile regr. slopes.
-    SlopesList <- lapply(seq_len(Levels), function(x) {
+    SlopesList <- lapply(seq_along(Levels), function(x) {
             getSlopes(Data = DataList[[x]][GeneFilterList[[x]],], 
                       SeqDepth = SeqDepthList[[x]], 
                       Tau=Tau, 
@@ -221,7 +221,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
  
     # If k is NOT provided
     if (is.null(K)) {
-        NormList <- lapply(seq_len(Levels), function(x) {
+        NormList <- lapply(seq_along(Levels), function(x) {
           normWrapper(Data = DataList[[x]], 
                       SeqDepth = SeqDepthList[[x]], 
                       Slopes = SlopesList[[x]],
@@ -237,7 +237,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     # If length of K is less than number of conditions, assume the same K.
     if (!is.null(K) ) {
       if (length(K) == length(Levels)) {
-        NormList <- lapply(seq_len(Levels), function(x) {
+        NormList <- lapply(seq_along(Levels), function(x) {
           SCnormFit(Data = DataList[[x]], 
                     SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
                     K = K[x], PropToUse = PropToUse, 
@@ -245,7 +245,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
         })
       } else if (length(K) == 1) {
         K <- rep(K, length(Levels))
-        NormList <- lapply(seq_len(Levels), function(x) {
+        NormList <- lapply(seq_along(Levels), function(x) {
           SCnormFit(Data = DataList[[x]], 
                     SeqDepth = SeqDepthList[[x]], Slopes = SlopesList[[x]],
                     K = K[x], PropToUse = PropToUse,
@@ -254,10 +254,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       } else (stop("Check that the specification of K is correct!"))
     }    
   
-   FilterCellProportion = lapply(seq_len(Levels), function(x) {
+   FilterCellProportion = lapply(seq_along(Levels), function(x) {
         FilterCellNum / ncol(DataList[[x]])})
   
-    NORMDATA <- do.call(cbind, lapply(seq_len(Levels), function(x) {
+    NORMDATA <- do.call(cbind, lapply(seq_along(Levels), function(x) {
         NormList[[x]]$NormData}))
   
    
