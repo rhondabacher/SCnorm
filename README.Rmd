@@ -18,6 +18,7 @@ devtools::install_github("rhondabacher/SCnorm", ref="devel")
 
 Rhonda Bacher <rhonda.bacher@gmail.com>
 
+## Cite
 Please cite SCnorm if you use it in your research:
 
 > Bacher R, Chu LF, Leng N, Gasch AP, Thomson JA, Stewart RM, Newton M, 
