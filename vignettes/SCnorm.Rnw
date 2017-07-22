@@ -50,22 +50,23 @@ and tag "SCnorm". This will notify the package maintainers and benefit other use
 Before analysis can proceed, the SCnorm package must be installed.
 There are three ways to download SCnorm (shown below).
 
-The first option is most useful if using a previous version of SCnorm (which can be found at
+The first option is most useful if using a previous version of SCnorm 
+
+(which can be found at
 https://github.com/rhondabacher/SCnorm/releases).
 
 The second option is to download the most recent development version of SCnorm. This version may be used with versions of R below 3.4. This version
 includes use of summarizedExperiment, but parallel computation is maintained using the parallel package.
 
-The third option is the version accepted by BioConductor and requires having at least R version 3.4.0 and makes use of summarizedExperiment 
-and BiocParallel.
+The third option is the to download the most recent version under review for BioConductor. It requires having at least R version 3.4.0 and makes use of SummarizedExperiment classes and BiocParallel.
 <<eval=FALSE, echo=TRUE>>=
 install.packages("SCnorm_x.x.x.tar.gz", repos=NULL, type="source")
 #OR
 library(devtools)
 devtools::install_github("rhondabacher/SCnorm", ref="develop")
 #OR
-source("https://bioconductor.org/biocLite.R")
-biocLite("SCnorm")
+library(devtools)
+devtools::install_github("rhondabacher/SCnorm")
 @
 
 After successful installation, the package must be loaded into the working
@@ -430,7 +431,7 @@ DataNorm <- SCnorm(Data = BigData,
                   NCores=3, useZerosToScale=TRUE)
 @
 
-{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?})
+{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?}
 
 This parameter is only used when specifying multiple conditions in SCnorm. The \Robject{useZerosToScale} parameter 
 will determine whether zeros are used in estimating the condition based scaling factors. 
