@@ -1,29 +1,28 @@
 # SCnorm: robust normalization of single-cell RNA-seq data
 
-SCnorm is an R package which can be used to normalize single-cell RNA-seq data. 
+This is the development branch of SCnorm currently v0.99.5.
+This version does not require R version >= 3.4 and uses parallel instead of BiocParallel.
 
 Details of SCnorm may be found in the vignette located here: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm.pdf)
 
 ## Installation
 
-Make sure to use the latest version of SCnorm by installing it from GitHub:
+This version of SCnorm can be installed by:
 
 ```R
 library(devtools)
-devtools::install_github("rhondabacher/SCnorm")
+devtools::install_github("rhondabacher/SCnorm", ref="devel")
 ```
-To access a version of SCnorm that does not require R version >= 3.4 you can 
-download the SCnorm from the development branch here: 
-[develop branch](https://github.com/rhondabacher/SCnorm/tree/develop)
-
 
 ## Author
 
 Rhonda Bacher <rhonda.bacher@gmail.com>
 
-## Latest Update: v0.99.4 
-SCnorm has been updated for Bioconductor submission, along with other updates and more details for usage -- please see vignette for complete updates. 
+Please cite SCnorm if you use it in your research:
 
-
-
+> Bacher R, Chu LF, Leng N, Gasch AP, Thomson JA, Stewart RM, Newton M, 
+Kendziorski C. SCnorm: robust normalization of single-cell
+RNA-seq data. nature methods. 2017 Jun 1;14(6):584-6.
+[https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html]
+(https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
