@@ -8,6 +8,7 @@ Description: This package implements SCnorm — a method to normalize single-cel
 Imports:
 	stats,
 	graphics,
+	methods,
 	grDevices,
     	parallel,
 	quantreg,

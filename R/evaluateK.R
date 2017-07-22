@@ -12,7 +12,9 @@
 #' @param Name plot title
 #' @param Tau value of quantile for the quantile regression used to estimate
 #'    gene-specific slopes (default is median, Tau = .5 ).
-#' @param NCores number of cores to use, default is detectCores() - 1.
+#' @param PrintProgressPlots whether to automatically produce plot as SCnorm 
+#'    determines the optimal number of groups (default is FALSE, highly 
+#'    suggest using TRUE). Plots will be printed to the current device.
 #' @param ditherCounts whether to dither/jitter the counts, may be used for
 #'    data with many ties, default is FALSE.
 

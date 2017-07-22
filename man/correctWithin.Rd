@@ -7,9 +7,9 @@
 correctWithin(y, correctFactor)
 }
 \arguments{
-\item{x}{gene to perform the regression on.}
+\item{y}{gene to perform the regression on.}
 
-\item{InputData}{list of data needed for the regression.}
+\item{correctFactor}{list of data needed for the regression.}
 }
 \value{
 within-cell normalized expression estimates

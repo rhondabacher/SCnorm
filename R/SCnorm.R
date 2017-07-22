@@ -66,22 +66,20 @@
 
 
 #' @importFrom parallel detectCores
+#' @importFrom parallel mclapply
 #' @import graphics
 #' @import grDevices
 #' @import stats
-#' @importFrom BiocParallel bplapply  
-#' @importFrom BiocParallel register
-#' @importFrom BiocParallel MulticoreParam
-#' @importFrom BiocParallel bpparam
+#' @importFrom methods is
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @author Rhonda Bacher
 #' @examples 
 #'  
-#'  data(ExampleData)
+#'  data(ExampleSimSCData)
 #'    Conditions = rep(c(1,2), each= 90)
-#'    #DataNorm <- SCnorm(ExampleData, Conditions, 
+#'    #DataNorm <- SCnorm(ExampleSimSCData, Conditions, 
 #'    #FilterCellNum = 10)
 #'    #str(DataNorm)
 
@@ -152,7 +150,9 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
           package EDASeq." )
         
         S4Vectors::metadata(Data)[["OriginalData"]] <- Data
-        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, SCnorm::correctWithin, correctFactor = withinSample)
+        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, 
+                                                               correctWithin, 
+                                                               correctFactor = withinSample)
         
         } else{
           message("Length of withinSample should match the number of 

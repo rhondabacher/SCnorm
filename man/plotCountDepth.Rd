@@ -46,12 +46,12 @@ below this threshold from count-depth plots (default = 0).}
 genes are split into equally sized groups based on their non-zero median
 expression.}
 
-\item{NCores}{number of cores to use, default is detectCores() - 1.}
+\item{NCores}{number of cores to use, default is detectCores() - 1. 
+This will be used to set up a parallel environment using either MulticoreParam (Linux, Mac) 
+or SnowParam (Windows) with NCores using the package BiocParallel.}
 
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for
 data with many ties, default is FALSE.}
-
-\item{showPlot}{whether to produce the count-depth plot (default is TRUE).}
 }
 \value{
 returns a data.frame containing each gene's slope (count-depth relationship)
@@ -70,7 +70,7 @@ Quantile regression is used to estimate the dependence of read
 data(ExampleSimSCData)
 Conditions = rep(c(1,2), each= 90) 
 #plotCountDepth(Data = ExampleSimSCData, Conditions = Conditions, 
-  #OutputName = "count-depth_exampleData", FilterCellProportion = .1)
+  #FilterCellProportion = .1)
 }
 \author{
 Rhonda Bacher

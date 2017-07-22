@@ -21,7 +21,6 @@
 #'  is assumed to come from same condition/batch.
 #' @param Tau value of quantile for the quantile regression used to
 #'  estimate gene-specific slopes (default is Tau = .5 (median)). 
-#' @param showPlot whether to produce the count-depth plot (default is TRUE).
 #' @param FilterCellProportion the proportion of non-zero expression estimates
 #'  required to include the genes into the evaluation. Default is .10, and 
 #'  will not go below a proportion which uses less than 10 total cells/samples.
@@ -48,13 +47,10 @@
 #' @export
 
 #' @author Rhonda Bacher
-#' @importFrom parallel detectCores
+#' @importFrom parallel mclapply
 #' @import graphics
 #' @import grDevices
-#' @importFrom BiocParallel bplapply  
-#' @importFrom BiocParallel register
-#' @importFrom BiocParallel MulticoreParam
-#' @importFrom BiocParallel bpparam
+#' @importFrom methods is
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData

@@ -42,11 +42,11 @@
 #'  
 #' @examples 
 #'  
-#' data(ExampleData)
+#' data(ExampleSimSCData)
 #' Conditions = rep(c(1,2), each= 90) 
-#' exampleFactor = runif(dim(ExampleData)[1], 0, 1)
-#' #checkWithinFactor(Data = ExampleData,  
-#'   #withinSample=exampleFactor, Conditions = Conditions)
+#' exampleFactor = runif(dim(ExampleSimSCData)[1], 0, 1)
+#' #checkWithinFactor(Data = ExampleSimSCData,  
+#'   #withinSample=ExampleSimSCData, Conditions = Conditions)
 
 plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL, 
                               FilterExpression = 0, 

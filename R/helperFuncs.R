@@ -121,9 +121,8 @@ getDens <- function(ExprGroups, byGroup, RETURN=c("Mode", "Height")) {
 #'
 #' @importFrom SummarizedExperiment assays
 #' @examples 
-#' data(ExampleData)
-#' ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleData),
-#'                                      colData=data.frame(colnames(ExampleData)))
+#' data(ExampleSimSCData)
+#' ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleSimSCData))
 #' myData <- getCounts(ExampleData)
 
 getCounts <- function(DATA){
@@ -161,9 +160,9 @@ getCounts <- function(DATA){
 #'
 #' @importFrom S4Vectors metadata
 #' @examples 
-#' data(ExampleData)
+#' data(ExampleSimSCData)
 #' Conditions = rep(c(1), each= 90)
-#' #runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
+#' #runNorm <- SCnorm(Data=ExampleSimSCData, Conditions=Conditions)
 #' #normData <- getresults(runNorm)
 
 results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
@@ -182,8 +181,8 @@ results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFiltere
 #'  
 #' @details Performs within sample normalization.
 #' 
-#' @param x gene to perform the regression on.
-#' @param InputData list of data needed for the regression.
+#' @param y gene to perform the regression on.
+#' @param correctFactor list of data needed for the regression.
 #'   
 #' @return within-cell normalized expression estimates
 

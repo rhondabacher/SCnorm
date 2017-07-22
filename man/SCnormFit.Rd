@@ -28,8 +28,7 @@ Additional information about the experiment can be contained in the
 
 \item{K}{the number of groups for normalizing. If left unspecified, an
 evaluation procedure will determine the optimal value of K
-(recommended). If you're sure about specifiyng K, then a vector equal to
-the number of conditions may be used.}
+(recommended).}
 
 \item{PropToUse}{proportion of genes closest to the slope mode used for
 the group fitting, default is set at .25. This number #' mainly affects

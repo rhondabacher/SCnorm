@@ -37,6 +37,7 @@ If you use SCnorm in published research, please cite:
 Bacher R, Chu LF, Leng N, Gasch AP, Thomson J, Stewart R, Newton M,  
 Kendziorski C. SCnorm: robust normalization of single-cell RNA-seq data.
 Nature Methods. 14 (6), 584-586
+
 (http://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
 If after reading through this vignette and the FAQ section you have questions or problems using SCnorm,
@@ -157,12 +158,12 @@ In this example data, the relationship is quite variable across genes.
 
 
 
-\newpage
+
 
 After normalization the count-depth relationship can be estimated on the normalized data, where slopes near zero indicate successful normalization. 
 We can use the function \Rfunction{plotCountDepth} to evaluate normalized data:
 
-<<eval=TRUE, fig.height=3, fig.width=5, fig.align='center'>>=
+<<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
 ExampleSimSCData = SCnorm::getCounts(ExampleSimSCData)
 # Total Count normalization, Counts Per Million, CPM.
 ExampleSimSCData.CPM <- t((t(ExampleSimSCData) / colSums(ExampleSimSCData)) *
@@ -181,7 +182,7 @@ head(countDeptEst.CPM[[1]])
 If normalization is succesful the estimated count-depth relationship should be near zero for all genes. Here the highly expressed genes appear 
 well normalized, while moderate and low expressors have been over-normalized and have negative slopes.
 
-\newpage
+
 
 \subsection{SCnorm: Normalization}
 \label{sec:Normalization}
@@ -245,7 +246,7 @@ once all 10 slope densities have an absolute slope mode $< .1$.
 
 We can also use the function \Rfunction{plotCountDepth} to make the final plot of the
 normalized count-depth relationship:
-<<eval=TRUE, fig.height=3, fig.width=5, fig.align='center'>>=
+<<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
 
 countDeptEst.SCNORM <- plotCountDepth(Data = ExampleSimSCData, NormalizedData = NormalizedData,
                                    Conditions = Conditions,
@@ -354,7 +355,7 @@ returns the information used for plotting as a matrix of the expression medians 
 In this example I generate a random vector of gene specific features, this may be the proportion of GC content for example. 
 Each cell receives a different color
 
-<<eval=TRUE, fig.height=3, fig.width=7, fig.align='center'>>=
+<<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.4\\textwidth'>>=
 #Colors each sample:
 exampleGC <- runif(dim(ExampleSimSCData)[1], 0, 1)
 names(exampleGC) <- rownames(ExampleSimSCData)
@@ -429,7 +430,7 @@ DataNorm <- SCnorm(Data = BigData,
                   NCores=3, useZerosToScale=TRUE)
 @
 
-{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE}?})
+{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?})
 
 This parameter is only used when specifying multiple conditions in SCnorm. The \Robject{useZerosToScale} parameter 
 will determine whether zeros are used in estimating the condition based scaling factors. 
@@ -440,7 +441,7 @@ that separately model continuous and discrete measurements.
 If you plan on using an analysis method that explicitly uses zeros in the model like DESeq2, 
 then \Rcode{useZerosToScale=TRUE} should be used.
 
-\large{SCnorm was unable to converge.}
+{\bf \large SCnorm was unable to converge.}
 
 SCnorm will fail if $K$ exceeds 25 groups. It is unlikely that such a large number of groups is appropriate. This 
 might happen if a large proportion of your genes have estimated count-depth relationships very close to zero. 

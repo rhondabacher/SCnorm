@@ -32,8 +32,8 @@ This is the gene-specific fitting function, where a median
    least 10 non-zero expression values are considered.
 }
 \examples{
- data(ExampleData)
- myslopes <- GetSlopes(ExampleData)
+ data(ExampleSimSCData)
+ myslopes <- getSlopes(ExampleSimSCData)
 }
 \author{
 Rhonda Bacher
