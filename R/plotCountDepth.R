@@ -129,7 +129,7 @@ plotCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
     }
 
     GeneFilterList <- lapply(seq_along(Levels), function(x) {
-        names(which(PropZerosList[[x]] >= FilterCellProportion & 
+        names(which(PropZerosList[[x]] >= FilterCellProportion[[x]] & 
           MedExprList[[x]] >= FilterExpression))})
     NM <- unlist(lapply(seq_along(Levels), function(x) {
             length(GeneFilterList[[x]] )}))
