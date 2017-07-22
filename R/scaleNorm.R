@@ -28,8 +28,9 @@
 scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToScale) {
 
     NumCond <- length(NormData)
+    NumGroups <- 4
     MedExpr <- apply(OrigData[Genes,], 1, function(x) median(x[x != 0]))
-    ExprGroups <- splitGroups(MedExpr, NumGroups = 4)
+    ExprGroups <- splitGroups(MedExpr, NumGroups = NumGroups)
     
     FullNormMat <- do.call(cbind, lapply(seq_len(NumCond), function(x) {cbind(NormData[[x]]$NormData)[Genes,]}))
 
@@ -41,8 +42,8 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
         CondNormMat <- NormData[[i]]$NormData
         CondScaleMat <- NormData[[i]]$ScaleFactors
     
-        for(r in seq_len(groups)){
-             qgenes <- names(sreg[[r]])
+        for(r in seq_len(NumGroups)){
+             qgenes <- names(ExprGroups[[r]])
              scalegenes <- qgenes
              if(useSpikes==TRUE) {
                  scalegenes <- qgenes[grep("ERCC-", qgenes)] #which are spikes
@@ -67,9 +68,9 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
              CondScaleMat[qgenes,] <- CondScaleMat[qgenes,] * condFac
         }
 
-        ScaledDataList[[i]] <- CondNormMat[AllGenes,] #ensures order remains the same here
+        ScaledDataList[[i]] <- CondNormMat[Genes,] #ensures order remains the same here
     
-        ScaledFacsList[[i]] <- ScaleMat[AllGenes,] #ensures order remains the same here
+        ScaledFacsList[[i]] <- CondScaleMat[Genes,] #ensures order remains the same here
     }
 
 

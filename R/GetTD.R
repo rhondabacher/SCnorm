@@ -14,6 +14,7 @@
 #' @author Rhonda Bacher
 #' @importFrom data.table data.table
 
+
 GetTD <- function(x, InputData) {
 
 
@@ -41,7 +42,7 @@ GetTD <- function(x, InputData) {
             rqfit <- try(quantreg::rq(Y ~ ., data = polydata, na.action = na.exclude,
                  tau = TauGroup, method="fn"), silent=TRUE)
         }
-        if(!is(rqfit, "try-error")){
+        if(!methods::is(rqfit, "try-error")){
             revX <- data.frame(predict(polyX, SeqDepth))
                     
             colnames(revX) <- colnames(polydata[-1])

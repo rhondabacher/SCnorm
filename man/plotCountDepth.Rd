@@ -52,8 +52,6 @@ or SnowParam (Windows) with NCores using the package BiocParallel.}
 
 \item{ditherCounts}{whether to dither/jitter the counts, may be used for
 data with many ties, default is FALSE.}
-
-\item{showPlot}{whether to produce the count-depth plot (default is TRUE).}
 }
 \value{
 returns a data.frame containing each gene's slope (count-depth relationship)

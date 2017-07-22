@@ -91,9 +91,9 @@ Quantile regression is used to estimate the dependence of
 }
 \examples{
  
- data(ExampleData)
+ data(ExampleSimSCData)
    Conditions = rep(c(1,2), each= 90)
-   #DataNorm <- SCnorm(ExampleData, Conditions, 
+   #DataNorm <- SCnorm(ExampleSimSCData, Conditions, 
    #FilterCellNum = 10)
    #str(DataNorm)
 }

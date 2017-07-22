@@ -19,8 +19,8 @@
 #' @importFrom quantreg rq
 #' @importFrom BiocParallel bplapply
 #' @examples 
-#'  data(ExampleData)
-#'  myslopes <- GetSlopes(ExampleData)
+#'  data(ExampleSimSCData)
+#'  myslopes <- getSlopes(ExampleSimSCData)
 
 getSlopes <- function(Data, SeqDepth = 0, Tau = .5, FilterCellNum = 10, ditherCounts=FALSE) {
 

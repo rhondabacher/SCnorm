@@ -355,7 +355,7 @@ returns the information used for plotting as a matrix of the expression medians 
 In this example I generate a random vector of gene specific features, this may be the proportion of GC content for example. 
 Each cell receives a different color
 
-<<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.4\\textwidth'>>=
+<<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.8\\textwidth'>>=
 #Colors each sample:
 exampleGC <- runif(dim(ExampleSimSCData)[1], 0, 1)
 names(exampleGC) <- rownames(ExampleSimSCData)

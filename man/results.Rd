@@ -33,8 +33,8 @@ data.frames/matrices are stored in the
 convenience function by calling \code{metadata(DataNorm)}.
 }
 \examples{
-data(ExampleData)
+data(ExampleSimSCData)
 Conditions = rep(c(1), each= 90)
-#runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
-#normData <- results(runNorm)
+#NormData <- SCnorm(Data=ExampleSimSCData, Conditions=Conditions)
+#normDataMatrix <- results(NormData)
 }

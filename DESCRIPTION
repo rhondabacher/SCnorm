@@ -9,6 +9,7 @@ Depends:
 	R (>= 3.4.0),
 Imports:
 	stats,
+	methods,
 	graphics,
 	grDevices,
     	parallel,

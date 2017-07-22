@@ -69,6 +69,7 @@
 #' @import graphics
 #' @import grDevices
 #' @import stats
+#' @importFrom methods is
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register
 #' @importFrom BiocParallel MulticoreParam
@@ -79,9 +80,9 @@
 #' @author Rhonda Bacher
 #' @examples 
 #'  
-#'  data(ExampleData)
+#'  data(ExampleSimSCData)
 #'    Conditions = rep(c(1,2), each= 90)
-#'    #DataNorm <- SCnorm(ExampleData, Conditions, 
+#'    #DataNorm <- SCnorm(ExampleSimSCData, Conditions, 
 #'    #FilterCellNum = 10)
 #'    #str(DataNorm)
 
@@ -94,7 +95,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
   
     if (is.null(Conditions)) {stop("Must supply conditions.")}
     
-    if (is(Data, "SummarizedExperiment")) {
+    if (methods::is(Data, "SummarizedExperiment")) {
       if (is.null(  SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "Counts") {
         message("Renaming the first element in assays(Data) to 'Counts'")
           SummarizedExperiment::assayNames(Data)[1] <- "Counts"
@@ -105,7 +106,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     }
     
       
-    if (!(is(Data, "SummarizedExperiment"))) {
+    if (!(methods::is(Data, "SummarizedExperiment"))) {
       Data <- data.matrix(Data)
       Data <- SummarizedExperiment(assays=list("Counts"=Data))
      }
@@ -157,7 +158,9 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
           package EDASeq." )
         
         S4Vectors::metadata(Data)[["OriginalData"]] <- Data
-        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, SCnorm::correctWithin, correctFactor = withinSample)
+        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, 
+                                                               correctWithin, 
+                                                               correctFactor = withinSample)
         
         } else{
           message("Length of withinSample should match the number of 

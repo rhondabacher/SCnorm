@@ -19,8 +19,7 @@ Convenient helper function to extract the normalized expression
 matrix from the SummarizedExperiment
 }
 \examples{
-data(ExampleData)
-ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleData),
-                                     colData=data.frame(colnames(ExampleData)))
+data(ExampleSimSCData)
+ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleSimSCData))
 myData <- getCounts(ExampleData)
 }

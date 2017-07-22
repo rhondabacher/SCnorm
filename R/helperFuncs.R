@@ -21,20 +21,20 @@ quickReg <- function(x,InputData) {
     if(ditherFlag == TRUE) {
       slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
                   log(SeqDepth), tau = Tau, method="br")$coef[2], silent=TRUE)
-      if(is(slope, "try-error")){
+      if(methods::is(slope, "try-error")){
         slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
                     log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=TRUE)
-        if(is(slope, "try-error")){
+        if(methods::is(slope, "try-error")){
           slope <- NA
         }    
       } 
     } else {
       slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
               method="br")$coef[2], silent=TRUE)
-      if(is(slope, "try-error")){
+      if(methods::is(slope, "try-error")){
         slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
                 method="fn")$coef[2], silent=TRUE)
-        if(is(slope, "try-error")){
+        if(methods::is(slope, "try-error")){
           slope <- NA
         }    
       }
@@ -121,9 +121,8 @@ getDens <- function(ExprGroups, byGroup, RETURN=c("Mode", "Height")) {
 #'
 #' @importFrom SummarizedExperiment assays
 #' @examples 
-#' data(ExampleData)
-#' ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleData),
-#'                                      colData=data.frame(colnames(ExampleData)))
+#' data(ExampleSimSCData)
+#' ExampleData <- SummarizedExperiment::SummarizedExperiment(assays=list("Counts"=ExampleSimSCData))
 #' myData <- getCounts(ExampleData)
 
 getCounts <- function(DATA){
@@ -161,10 +160,10 @@ getCounts <- function(DATA){
 #'
 #' @importFrom S4Vectors metadata
 #' @examples 
-#' data(ExampleData)
+#' data(ExampleSimSCData)
 #' Conditions = rep(c(1), each= 90)
-#' #runNorm <- SCnorm(Data=ExampleData, Conditions=Conditions)
-#' #normData <- results(runNorm)
+#' #NormData <- SCnorm(Data=ExampleSimSCData, Conditions=Conditions)
+#' #normDataMatrix <- results(NormData)
 
 results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
   type <- match.arg(type)
@@ -182,8 +181,8 @@ results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFiltere
 #'  
 #' @details Performs within sample normalization.
 #' 
-#' @param x gene to perform the regression on.
-#' @param InputData list of data needed for the regression.
+#' @param y gene to perform the regression on.
+#' @param correctFactor list of data needed for the regression.
 #'   
 #' @return within-cell normalized expression estimates
 
