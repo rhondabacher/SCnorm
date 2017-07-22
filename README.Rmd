@@ -14,7 +14,7 @@ devtools::install_github("rhondabacher/SCnorm")
 ```
 To access a version of SCnorm that does not require R version >= 3.4 you can 
 download the SCnorm from the development branch here: 
-[develop branch](https://github.com/rhondabacher/SCnorm/tree/develop)
+[develop branch](https://github.com/rhondabacher/SCnorm/tree/devel)
 
 
 ## Author
