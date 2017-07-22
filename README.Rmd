@@ -1,6 +1,6 @@
 # SCnorm: robust normalization of single-cell RNA-seq data
 
-This is the development branch of SCnorm currently v0.99.5.
+This is the development branch of SCnorm currently on version v0.99.5.
 This version does not require R version >= 3.4 and uses parallel instead of BiocParallel.
 
 Details of SCnorm may be found in the vignette located here: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm.pdf)
@@ -23,6 +23,5 @@ Please cite SCnorm if you use it in your research:
 > Bacher R, Chu LF, Leng N, Gasch AP, Thomson JA, Stewart RM, Newton M, 
 Kendziorski C. SCnorm: robust normalization of single-cell
 RNA-seq data. nature methods. 2017 Jun 1;14(6):584-6.
-[https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html]
-(https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
+[https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html](https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
