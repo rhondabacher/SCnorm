@@ -44,7 +44,7 @@ generateEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name,
           ggplot2::geom_density(size=1.2, ggplot2::aes(fill=factor(longData$Group)), alpha=0) + 
           ggplot2::scale_colour_manual( values = colors, guide = FALSE)+ 
           ggplot2::scale_fill_manual( values = colors, guide=FALSE, labels=MEDS)+ 
-          ggplot2::theme_bw()+ ggtitle(Name)+coord_cartesian(xlim = c(-3, 3)+
+          ggplot2::theme_bw()+ ggtitle(Name)+coord_cartesian(xlim = c(-3, 3))+
           ggplot2::labs(x="Slope", y="Density") + 
           ggplot2::guides(fill=ggplot2::guide_legend(override.aes = list(colour=colors, alpha=1),
                           title="Expression Group Medians"))+
