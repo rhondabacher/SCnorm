@@ -16,7 +16,7 @@
 #' @return vector of estimated slopes.
 #' @author Rhonda Bacher
 #' @export
-#' @importFrom quantreg rq
+#' @importFrom quantreg rq dither
 #' @importFrom BiocParallel bplapply
 #' @examples 
 #'  data(ExampleSimSCData)

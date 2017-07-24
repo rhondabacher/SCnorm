@@ -94,7 +94,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
                     withinSample=NULL, useSpikes=FALSE, useZerosToScale=FALSE) {
   
     if (is.null(Conditions)) {stop("Must supply conditions.")}
-    
+     if (FilterCellNum< 10)  {stop("Must set FilterCellNum >= 10.")}
     if (methods::is(Data, "SummarizedExperiment")) {
       if (is.null(  SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "Counts") {
         message("Renaming the first element in assays(Data) to 'Counts'")

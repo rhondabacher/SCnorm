@@ -19,10 +19,10 @@ quickReg <- function(x,InputData) {
     ditherFlag = InputData[[5]]
 
     if(ditherFlag == TRUE) {
-      slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+      slope <- try(quantreg::rq(quantreg::dither(LogData[X, ], type="symmetric", value=.01) ~ 
                   log(SeqDepth), tau = Tau, method="br")$coef[2], silent=TRUE)
       if(methods::is(slope, "try-error")){
-        slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+        slope <- try(quantreg::rq(quantreg::dither(LogData[X, ], type="symmetric", value=.01) ~ 
                     log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=TRUE)
         if(methods::is(slope, "try-error")){
           slope <- NA
