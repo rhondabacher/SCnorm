@@ -19,22 +19,22 @@ quickReg <- function(x,InputData) {
     ditherFlag = InputData[[5]]
 
     if(ditherFlag == TRUE) {
-      slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+      slope <- try(quantreg::rq(quantreg::dither(LogData[X, ], type="symmetric", value=.01) ~ 
                   log(SeqDepth), tau = Tau, method="br")$coef[2], silent=TRUE)
-      if(is(slope, "try-error")){
-        slope <- try(quantreg::rq(dither(LogData[X, ], type="symmetric", value=.01) ~ 
+      if(methods::is(slope, "try-error")){
+        slope <- try(quantreg::rq(quantreg::dither(LogData[X, ], type="symmetric", value=.01) ~ 
                     log(SeqDepth), tau = Tau, method="fn")$coef[2], silent=TRUE)
-        if(is(slope, "try-error")){
+        if(methods::is(slope, "try-error")){
           slope <- NA
         }    
       } 
     } else {
       slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
               method="br")$coef[2], silent=TRUE)
-      if(is(slope, "try-error")){
+      if(methods::is(slope, "try-error")){
         slope <- try(quantreg::rq(LogData[X, ] ~ log(SeqDepth), tau = Tau, 
                 method="fn")$coef[2], silent=TRUE)
-        if(is(slope, "try-error")){
+        if(methods::is(slope, "try-error")){
           slope <- NA
         }    
       }
@@ -162,8 +162,8 @@ getCounts <- function(DATA){
 #' @examples 
 #' data(ExampleSimSCData)
 #' Conditions = rep(c(1), each= 90)
-#' #runNorm <- SCnorm(Data=ExampleSimSCData, Conditions=Conditions)
-#' #normData <- getresults(runNorm)
+#' #NormData <- SCnorm(Data=ExampleSimSCData, Conditions=Conditions)
+#' #normDataMatrix <- results(NormData)
 
 results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
   type <- match.arg(type)
