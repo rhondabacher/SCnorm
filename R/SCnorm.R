@@ -167,7 +167,8 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
             genes in Data!")
         }
     }
-
+    if(is.null(names(Conditions))) {names(Conditions) <- colnames(Data)}
+     
     DataList <- lapply(seq_along(Levels), function(x) {
         SCnorm::getCounts(Data)[,which(Conditions == Levels[x])]}) # split conditions
     Genes <- rownames(SCnorm::getCounts(Data)) 
@@ -262,13 +263,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       } else (stop("Check that the specification of K is correct!"))
     }    
   
-   FilterCellProportion = lapply(seq_along(Levels), function(x) {
-        FilterCellNum / ncol(DataList[[x]])})
-  
-    NORMDATA <- do.call(cbind, lapply(seq_along(Levels), function(x) {
-        NormList[[x]]$NormData}))
-  
-   
+
     if (length(Levels) > 1) {
     
       # Scaling
@@ -293,8 +288,8 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     
     
     # Return 
-    S4Vectors::metadata(Data)[["NormalizedData"]] <- NormDataFull
-    S4Vectors::metadata(Data)[["ScaleFactors"]] <- ScaleFactorsFull
+    S4Vectors::metadata(Data)[["NormalizedData"]] <- NormDataFull[,names(Conditions)]
+    S4Vectors::metadata(Data)[["ScaleFactors"]] <- ScaleFactorsFull[,names(Conditions)]
     S4Vectors::metadata(Data)[["GenesFilteredOut"]] <- GeneFilterOUT
 
   
