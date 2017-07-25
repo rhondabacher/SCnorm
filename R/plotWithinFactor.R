@@ -45,7 +45,7 @@
 #' data(ExampleSimSCData)
 #' Conditions = rep(c(1,2), each= 90) 
 #' exampleFactor = runif(dim(ExampleSimSCData)[1], 0, 1)
-#' #checkWithinFactor(Data = ExampleSimSCData,  
+#' #plotWithinFactor(Data = ExampleSimSCData,  
 #'   #withinSample=ExampleSimSCData, Conditions = Conditions)
 
 plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL, 
@@ -91,7 +91,7 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
         vapply(seq_len(NumExpressionGroups), function(y) {
             useg <- intersect(names(withinSplit[[y]]), GeneFilter)
             Y <- Data[useg,x]
-            mean(Y[Y!=0])
+            median(Y[Y!=0])
         }, FUN.VALUE=numeric(1))
       })
         
