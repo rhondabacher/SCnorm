@@ -91,7 +91,7 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
         vapply(seq_len(NumExpressionGroups), function(y) {
             useg <- intersect(names(withinSplit[[y]]), GeneFilter)
             Y <- Data[useg,x]
-            median(Y[Y!=0])
+            mean(Y[Y!=0])
         }, FUN.VALUE=numeric(1))
       })
         
@@ -109,21 +109,22 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
        QQ <- ggplot2::ggplot(data=longdata, aes_(x=forcats::fct_inorder(factor(longdata$variable)),
                                                  y=longdata$value,
                                                  colour=longdata$Sample, 
-                                                 group=longdata$Sample))
+                                                 group=longdata$Sample))+
+                    geom_line(size=.2,show.legend = FALSE)
     	
      } else {
       QQ <- ggplot2::ggplot(data=longdata, aes_(x=forcats::fct_inorder(factor(longdata$variable)),
                                                 y=longdata$value,
                                                 colour=longdata$Condition, 
-                                                group=longdata$Sample))
+                                                group=longdata$Sample))+
+                    geom_line(size=.2,show.legend = TRUE)
                      
     
       }
    plot(QQ  +  labs(x="GC content group", y="Log non-zero median expression") + 
                guides(colour=guide_legend(title="Conditions"))+
                geom_point(show.legend = FALSE) + 
-               geom_line(size=.2,show.legend = TRUE) +
-   	           theme_bw())
+               theme_bw())
   
     
   return(withinCells)
