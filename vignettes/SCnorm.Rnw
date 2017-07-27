@@ -50,22 +50,23 @@ and tag "SCnorm". This will notify the package maintainers and benefit other use
 Before analysis can proceed, the SCnorm package must be installed.
 There are three ways to download SCnorm (shown below).
 
-The first option is most useful if using a previous version of SCnorm (which can be found at
+The first option is most useful if using a previous version of SCnorm 
+
+(which can be found at
 https://github.com/rhondabacher/SCnorm/releases).
 
 The second option is to download the most recent development version of SCnorm. This version may be used with versions of R below 3.4. This version
 includes use of summarizedExperiment, but parallel computation is maintained using the parallel package.
 
-The third option is the version accepted by BioConductor and requires having at least R version 3.4.0 and makes use of summarizedExperiment 
-and BiocParallel.
+The third option is the to download the most recent version under review for BioConductor. It requires having at least R version 3.4.0 and makes use of SummarizedExperiment classes and BiocParallel.
 <<eval=FALSE, echo=TRUE>>=
 install.packages("SCnorm_x.x.x.tar.gz", repos=NULL, type="source")
 #OR
 library(devtools)
-devtools::install_github("rhondabacher/SCnorm", ref="develop")
+devtools::install_github("rhondabacher/SCnorm", ref="devel")
 #OR
-source("https://bioconductor.org/biocLite.R")
-biocLite("SCnorm")
+library(devtools)
+devtools::install_github("rhondabacher/SCnorm")
 @
 
 After successful installation, the package must be loaded into the working
@@ -355,7 +356,7 @@ returns the information used for plotting as a matrix of the expression medians 
 In this example I generate a random vector of gene specific features, this may be the proportion of GC content for example. 
 Each cell receives a different color
 
-<<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.4\\textwidth'>>=
+<<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.8\\textwidth'>>=
 #Colors each sample:
 exampleGC <- runif(dim(ExampleSimSCData)[1], 0, 1)
 names(exampleGC) <- rownames(ExampleSimSCData)
@@ -407,7 +408,7 @@ can to be obtained in SCnorm by setting \Rcode{reportSF=TRUE} in the SCnorm func
 The count-depth relationship of both unnormalized and normalized bulk RNA-seq data 
 can be evaluated using the \Rfunction{plotCountDepth} function.
 
-\large{How can I speedup SCnorm if I have thousands of cells?}
+{\bf \large How can I speedup SCnorm if I have thousands of cells?}
 
 Utilizing multiple cores via the \Rfunction{NCores} parameter is the most effective way.
 
@@ -416,6 +417,7 @@ Here is one example on how to cluster and the appropriate way to run \Rcode{SCno
 (This method of clustering single-cells was originally suggested by Lun et al., 2016 in \Biocpkg{scran}.)
 
 <<eval=FALSE>>=
+library(dynamicTreeCut)
 distM <- as.dist( 1 - cor(BigData, method = 'spearman'))
 htree <- hclust(distM, method='ward.D')
 clusters <- factor(unname(cutreeDynamic(htree, minClusterSize = 50,  
@@ -430,7 +432,7 @@ DataNorm <- SCnorm(Data = BigData,
                   NCores=3, useZerosToScale=TRUE)
 @
 
-{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?})
+{\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?}
 
 This parameter is only used when specifying multiple conditions in SCnorm. The \Robject{useZerosToScale} parameter 
 will determine whether zeros are used in estimating the condition based scaling factors. 
