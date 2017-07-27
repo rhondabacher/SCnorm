@@ -63,7 +63,7 @@ The third option is the to download the most recent version under review for Bio
 install.packages("SCnorm_x.x.x.tar.gz", repos=NULL, type="source")
 #OR
 library(devtools)
-devtools::install_github("rhondabacher/SCnorm", ref="develop")
+devtools::install_github("rhondabacher/SCnorm", ref="devel")
 #OR
 library(devtools)
 devtools::install_github("rhondabacher/SCnorm")
@@ -408,7 +408,7 @@ can to be obtained in SCnorm by setting \Rcode{reportSF=TRUE} in the SCnorm func
 The count-depth relationship of both unnormalized and normalized bulk RNA-seq data 
 can be evaluated using the \Rfunction{plotCountDepth} function.
 
-\large{How can I speedup SCnorm if I have thousands of cells?}
+{\bf \large How can I speedup SCnorm if I have thousands of cells?}
 
 Utilizing multiple cores via the \Rfunction{NCores} parameter is the most effective way.
 
@@ -417,6 +417,7 @@ Here is one example on how to cluster and the appropriate way to run \Rcode{SCno
 (This method of clustering single-cells was originally suggested by Lun et al., 2016 in \Biocpkg{scran}.)
 
 <<eval=FALSE>>=
+library(dynamicTreeCut)
 distM <- as.dist( 1 - cor(BigData, method = 'spearman'))
 htree <- hclust(distM, method='ward.D')
 clusters <- factor(unname(cutreeDynamic(htree, minClusterSize = 50,  
