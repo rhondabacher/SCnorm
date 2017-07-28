@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store
+.toc
+.gz
+.log
+.tar.gz
+.Rbuildignore
+.DS_Store

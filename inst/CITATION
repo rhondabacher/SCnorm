@@ -1,0 +1,21 @@
+citHeader("To cite SCnorm in publications use:")
+
+citEntry(entry = "Article",
+  title        = "SCnorm: robust normalization of single-cell RNA-seq data",
+  author       = personList(as.person("Rhonda Bacher"),
+                   as.person("Li-Fang Chu"),
+                   as.person("Ning Leng"),
+                   as.person("Audrey P. Gasch"),
+                   as.person("James A. Thomson"),
+                   as.person("Ron M. Stewart"),
+		               as.person("Michael A Newton"),
+                   as.person("Christina Kendziorski")),
+  journal      = "Nature Methods",
+  year         = "2017",
+  url          = "https://www.nature.com/nmeth/journal/vaop/ncurrent/full/nmeth.4263.html",
+
+  textVersion  =
+  paste("Bacher R, Chu LF, Leng N, Gasch AP, Thomson JA, Stewart RM, Newton MA, Kendziorski C.", 
+        "SCnorm: robust normalization of single-cell RNA-seq data.", 
+        "Nature Methods (2017).")
+)
