@@ -2,7 +2,7 @@
 
 SCnorm is an R package which can be used to normalize single-cell RNA-seq data. 
 
-Details of SCnorm may be found in the vignette: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm.pdf)
+Details of SCnorm may be found in the vignette: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm_vignette.pdf)
 
 ## Installation
 
