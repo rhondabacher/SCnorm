@@ -16,7 +16,7 @@ Make sure to use the latest version of SCnorm by installing it from BioConductor
 
 ```R
 source("https://bioconductor.org/biocLite.R")
-useDevel() # To use development version
+useDevel() # Need to use development version of Bioconductor
 biocLite("SCnorm")
 ```
 or
