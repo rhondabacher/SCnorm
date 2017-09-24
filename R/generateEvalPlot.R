@@ -21,10 +21,10 @@ generateEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name,
                 bias=2)(n = NumExpressionGroups)
         
 
-    ExprGroups <- splitGroups(MedExpr[intersect(names(MedExpr), names(Slopes))], 10)
+    ExprGroups <- splitGroups(MedExpr[intersect(names(MedExpr), names(Slopes))], NumExpressionGroups)
     DensH <- getDens(ExprGroups, Slopes, "Height")
 
-    YMax <- pmin(round(max(DensH), 2) + .2, 10) #just for plotting
+    YMax <- pmin(round(max(DensH), 2) + .2, NumExpressionGroups) #just for plotting
 
     groupGenes <- unlist(lapply(seq_len(NumExpressionGroups), function(x) {
                    Y <- rep(x, length(ExprGroups[[x]]))
