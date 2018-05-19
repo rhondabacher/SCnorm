@@ -56,28 +56,20 @@ useDevel() # Need to use development version of Bioconductor
 biocLite("SCnorm")
 @
 
-There are three additional ways to download SCnorm.
+There are two additional ways to download SCnorm.
+
 The first option is most useful if using a previous version of SCnorm 
-(which can be found at
-https://github.com/rhondabacher/SCnorm/releases).
+(which can be found at https://github.com/rhondabacher/SCnorm/releases).
 
 The second option is to download the most recent development version of SCnorm. This version may be used with versions of R below 3.4. This version
 includes use of summarizedExperiment, but parallel computation is maintained using the parallel package.
 
-The third option is the to download the Bioconductor version through GitHub. It requires having at least R version 3.4.0 and makes use of SummarizedExperiment classes and BiocParallel.
 
 <<eval=FALSE, echo=TRUE>>=
 install.packages("SCnorm_x.x.x.tar.gz", repos=NULL, type="source")
 #OR
 library(devtools)
 devtools::install_github("rhondabacher/SCnorm", ref="devel")
-#OR
-source("https://bioconductor.org/biocLite.R")
-useDevel() # To use development version
-biocLite("SCnorm")
-#OR
-library(devtools)
-devtools::install_github("rhondabacher/SCnorm")
 @
 
 After successful installation, the package must be loaded into the working
@@ -354,6 +346,7 @@ DataNorm <- SCnorm(Data = MultiCondData, Conditions = Conditions,
 
 SCnorm allows correction of gene-specific features prior to the between-sample
 normalization. We implement the regression based procedure from
+
 Risso et al., 2011 in \Biocpkg{EDASeq}. To use this feature you must set withinSample equal to a
 vector of gene-specific features, one per gene. This could be anything,
 but is often GC-content or gene length.
@@ -409,11 +402,17 @@ compiled:
 
 \section{Frequently Asked Questions}
 
+{\bf \large Does SCnorm work for all datasets?}
+
+No, while SCnorm has proven useful in normalizing many single-cell RNA-seq datasets, it will not be appropriate in every setting. It is important to evaluate normalized data for selected genes as well as overall (e.g. using plotCountDepth).
+
+
 {\bf \large Can I use SCnorm on your 10X (or very sparse) dataset?}
 
 SCnorm is not intended for datasets with more than $\sim$80\% zero counts, often K will not converge in these situations. 
 Setting the FilterExpression parameter to 1 or 2 may help, but is not a guarantee. 
 It may also be helpful to use the ditherCounts = TRUE parameter for sparse UMI based data which may contain numerous tied counts (counts of 1 and 2 for example).
+
 
 {\bf \large Can/Should I use SCnorm on my bulk RNA-seq data?}
 

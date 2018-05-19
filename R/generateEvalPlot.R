@@ -20,11 +20,11 @@ generateEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name,
     colors <- grDevices::colorRampPalette(c("#00C3FF", "blue","black", "#FF0700"), 
                 bias=2)(n = NumExpressionGroups)
         
-
     ExprGroups <- splitGroups(MedExpr[intersect(names(MedExpr), names(Slopes))], NumExpressionGroups)
     DensH <- getDens(ExprGroups, Slopes, "Height")
 
     YMax <- pmin(round(max(DensH), 2) + .2, NumExpressionGroups) #just for plotting
+
 
     groupGenes <- unlist(lapply(seq_len(NumExpressionGroups), function(x) {
                    Y <- rep(x, length(ExprGroups[[x]]))
