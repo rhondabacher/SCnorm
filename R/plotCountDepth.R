@@ -43,7 +43,7 @@
 #'  used to evaluate data normalized by alternative methods.
 
 #' @return returns a data.frame containing each gene's slope (count-depth relationship)
-#' and it's associated expression group. A plot will be output if showPlot=TRUE.
+#' and it's associated expression group. A plot will be output.
 #' @export
 
 #' @author Rhonda Bacher
