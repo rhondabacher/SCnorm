@@ -98,12 +98,16 @@ ExampleSimSCData[1:5,1:5]
 str(ExampleSimSCData)
 @
 
-If the input is a \Rclass{SummarizedExperiment} class, then the main assay should contain the expression matrix. 
-
+SCnorm now implements the\Rclass{SingleCellExperiment} class. The input data should be formatted as following, where ExamplesSimSCData is the expression matrix:
 <<eval=TRUE>>=
-ExampleSimSCData <- SummarizedExperiment::SummarizedExperiment(assays = 
-                                                list("Counts"=ExampleSimSCData))
+ExampleSimSCData <- SingleCellExperiment::SingleCellExperiment(assays = list('counts' = ExampleSimSCData))
 @
+
+If the data was originally formatted as a \Rclass{SummarizedExperiment}, then it can be coerced using:
+<<eval=FALSE>>=
+ExampleSimSCData <- as(ExampleSimSCData, "SingleCellExperiment")
+@
+
 
 {\bf Conditions}: The object \Robject{Conditions} should be a vector of length $S$
 indicating which condition/group each cell belongs to. The order of this vector
@@ -161,14 +165,11 @@ In this example data, the relationship is quite variable across genes.
 \end{figure}
 
 
-
-
-
 After normalization the count-depth relationship can be estimated on the normalized data, where slopes near zero indicate successful normalization. 
 We can use the function \Rfunction{plotCountDepth} to evaluate normalized data:
 
 <<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
-ExampleSimSCData = SCnorm::getCounts(ExampleSimSCData)
+ExampleSimSCData = SingleCellExperiment::counts(ExampleSimSCData)
 # Total Count normalization, Counts Per Million, CPM.
 ExampleSimSCData.CPM <- t((t(ExampleSimSCData) / colSums(ExampleSimSCData)) *
                         mean(colSums(ExampleSimSCData)))
@@ -222,9 +223,10 @@ DataNorm <- SCnorm(Data = ExampleSimSCData,
                    Conditions = Conditions,
                    PrintProgressPlots = TRUE,
                    FilterCellNum = 10,
-                   NCores=3)
+                   NCores=3, reportSF = TRUE)
 dev.off()
-NormalizedData <- results(DataNorm)
+DataNorm
+NormalizedData <- SingleCellExperiment::normcounts(DataNorm)
 NormalizedData[1:5,1:5]
 
 @

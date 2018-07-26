@@ -22,6 +22,7 @@
 #' @return matrix of normalized and scaled expression values for all
 #'    conditions.
 #' @author Rhonda Bacher
+#' @import SingleCellExperiment
 
 
 
@@ -29,7 +30,7 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
 
     NumCond <- length(NormData)
     NumGroups <- 4
-    MedExpr <- apply(OrigData[Genes,], 1, function(x) median(x[x != 0]))
+    MedExpr <- apply(counts(OrigData)[Genes,], 1, function(x) median(x[x != 0]))
     ExprGroups <- splitGroups(MedExpr, NumGroups = NumGroups)
     
     FullNormMat <- do.call(cbind, lapply(seq_len(NumCond), function(x) {cbind(NormData[[x]]$NormData)[Genes,]}))
@@ -46,7 +47,7 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
              qgenes <- names(ExprGroups[[r]])
              scalegenes <- qgenes
              if(useSpikes==TRUE) {
-                 scalegenes <- qgenes[grep("ERCC-", qgenes)] #which are spikes
+                 scalegenes <- qgenes[Genes[which(SingleCellExperiment::isSpike(OrigData))]] #which are spikes
                  if(length(scalegenes) <= 5) {
                      warnings("Not enough spike-ins or spike-ins do not 
                      span range of expression to perform reasonably well. 

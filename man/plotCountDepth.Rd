@@ -55,7 +55,7 @@ data with many ties, default is FALSE.}
 }
 \value{
 returns a data.frame containing each gene's slope (count-depth relationship)
-and it's associated expression group. A plot will be output if showPlot=TRUE.
+and its associated expression group. A plot will be output.
 }
 \description{
 Quantile regression is used to estimate the dependence of read

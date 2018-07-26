@@ -1,6 +1,6 @@
 # SCnorm: robust normalization of single-cell RNA-seq data
 
-SCnorm is an R package which can be used to normalize single-cell RNA-seq data. SCnorm is on Bioconductor and instructions for download may be found at [https://bioconductor.org/packages/devel/bioc/html/SCnorm.html](https://bioconductor.org/packages/devel/bioc/html/SCnorm.html).
+SCnorm is an R package which can be used to normalize single-cell RNA-seq data. SCnorm is on Bioconductor and instructions for download may be found at [https://bioconductor.org/packages/release/bioc/html/SCnorm.html](https://bioconductor.org/packages/release/bioc/html/SCnorm.html).
 
 #### Can you use SCnorm on your 10X (or very sparse) dataset?
 
@@ -8,7 +8,7 @@ SCnorm is not intended for datasets with more than ~80% zero counts, often K wil
 Setting the FilterExpression parameter to 1 or 2 may help, but is not a guarantee. 
 It may also be helpful to use the ditherCounts = TRUE parameter for sparse UMI based data which may contain numerous tied counts (counts of 1 and 2 for example).
 
-Additional details and a FAQ for SCnorm are described in the vignette: [SCnorm Vignette](https://www.biostat.wisc.edu/~kendzior/SCNORM/SCnorm_vignette.pdf)
+Additional details and a FAQ for SCnorm are described in the vignette: [SCnorm Vignette](https://bioconductor.org/packages/release/bioc/vignettes/SCnorm/inst/doc/SCnorm.pdf)
 
 ## Installation
 
@@ -26,8 +26,7 @@ devtools::install_github("rhondabacher/SCnorm")
 ```
 To access a version of SCnorm that does not require R version >= 3.4 you can 
 download SCnorm from the development branch here: 
-
-[develop branch](https://github.com/rhondabacher/SCnorm/tree/devel)
+[https://github.com/rhondabacher/SCnorm/tree/devel](https://github.com/rhondabacher/SCnorm/tree/devel)
 
 
 ## Author
@@ -43,6 +42,8 @@ RNA-seq data. Nature Methods. 2017 Jun 1;14(6):584-6.
 [https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html](https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
 
-## Latest Update: v1.3.0
+## Latest Update: v1.3.1
+
+Package updated to use SingleCellExperiment class.
 
 

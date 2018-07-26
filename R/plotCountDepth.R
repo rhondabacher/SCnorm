@@ -43,14 +43,15 @@
 #'  used to evaluate data normalized by alternative methods.
 
 #' @return returns a data.frame containing each gene's slope (count-depth relationship)
-#' and it's associated expression group. A plot will be output.
+#' and its associated expression group. A plot will be output.
 #' @export
 
 #' @author Rhonda Bacher
 #' @importFrom parallel detectCores
 #' @import graphics
 #' @import grDevices
-#' @importFrom methods is
+#' @import SingleCellExperiment
+#' @importFrom methods is as
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register
 #' @importFrom BiocParallel MulticoreParam
@@ -71,16 +72,16 @@ plotCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
                            ditherCounts = FALSE) {
     
     # Checks  
-    if (methods::is(Data, "SummarizedExperiment")) {
-      if (is.null( SummarizedExperiment::assayNames(Data)) ||  SummarizedExperiment::assayNames(Data)[1] != "Counts") {
-        message("renaming the first element in assays(Data) to 'Counts'")
-        SummarizedExperiment::assayNames(Data)[1] <- "Counts"
-    }
-
-    Data = SCnorm::getCounts(Data)
+    if (methods::is(Data, "SummarizedExperiment") | methods::is(Data, "SingleCellExperiment")) {
+      if (is.null(SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "counts") {
+        message("Renaming the first element in assays(Data) to 'counts'")
+          SummarizedExperiment::assayNames(Data)[1] <- "counts"
+  
+        if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
+      }
+      Data <- SingleCellExperiment::counts(Data)
     }
     
-    Data <- data.matrix(Data)
     if (anyNA(Data)) {stop("Data contains at least one value of NA. 
                             Unsure how to proceed.")}
 

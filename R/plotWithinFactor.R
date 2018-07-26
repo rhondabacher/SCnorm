@@ -35,7 +35,9 @@
 #' @author Rhonda Bacher
 #' @import graphics
 #' @import ggplot2
+#' @import SingleCellExperiment
 #' @import grDevices
+#' @importFrom methods is as
 #' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @importFrom S4Vectors metadata
 #' @importFrom data.table melt
@@ -54,13 +56,18 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
                               NumExpressionGroups = 4) {
       
 
-  if("SummarizedExperiment" %in% class(Data)) {
-    if(is.null(SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "Counts") {
-      message("renaming the first element in assays(Data) to 'Counts'")
-      SummarizedExperiment::assayNames(Data)[1] <- "Counts"
-    }
+  #Checks
+  if (methods::is(Data, "SummarizedExperiment") | methods::is(Data, "SingleCellExperiment")) {
+      Data <- methods::as(Data, "SingleCellExperiment")
+    if (is.null(SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "counts") {
+      message("Renaming the first element in assays(Data) to 'counts'")
+        SummarizedExperiment::assayNames(Data)[1] <- "counts"
 
-    Data = SCnorm::getCounts(Data)
+    if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
+
+
+    }
+    Data <- SingleCellExperiment::counts(Data)
   }
       
     Data <- data.matrix(Data)

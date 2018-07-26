@@ -46,7 +46,8 @@
 #'    be performed. Examples of gene-specific features are GC content or gene
 #'    length.
 #' @param useSpikes whether to use spike-ins to perform across condition
-#'    scaling (default=FALSE). SCnorm will assume spike-in names start with "ERCC-".
+#'    scaling (default=FALSE). Spike-ins must be stored in the SingleCellExperiment object 
+#'    using isSpike() function. See vignette for example. 
 #' @param useZerosToScale whether to use zeros when scaling across conditions (default=FALSE).
 #'
 #' @description Quantile regression is used to estimate the dependence of
@@ -69,7 +70,8 @@
 #' @import graphics
 #' @import grDevices
 #' @import stats
-#' @importFrom methods is
+#' @import SingleCellExperiment
+#' @importFrom methods is as
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register
 #' @importFrom BiocParallel MulticoreParam
@@ -94,31 +96,34 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
                     withinSample=NULL, useSpikes=FALSE, useZerosToScale=FALSE) {
   
     if (is.null(Conditions)) {stop("Must supply conditions.")}
-     if (FilterCellNum< 10)  {stop("Must set FilterCellNum >= 10.")}
-    if (methods::is(Data, "SummarizedExperiment")) {
-      if (is.null(  SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "Counts") {
-        message("Renaming the first element in assays(Data) to 'Counts'")
-          SummarizedExperiment::assayNames(Data)[1] <- "Counts"
+    if (FilterCellNum< 10)  {stop("Must set FilterCellNum >= 10.")}
+        
+    if (methods::is(Data, "SummarizedExperiment") | methods::is(Data, "SingleCellExperiment")) {
+        Data <- methods::as(Data, "SingleCellExperiment")
+      if (is.null(SummarizedExperiment::assayNames(Data)) || SummarizedExperiment::assayNames(Data)[1] != "counts") {
+        message("Renaming the first element in assays(Data) to 'counts'")
+          SummarizedExperiment::assayNames(Data)[1] <- "counts"
   
-      if (is.null(colnames(SCnorm::getCounts(Data)))) {stop("Must supply sample/cell names!")}
+      if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
 
+      
       }
     }
     
       
-    if (!(methods::is(Data, "SummarizedExperiment"))) {
+    if (!(methods::is(Data, "SummarizedExperiment")) & !(methods::is(Data, "SingleCellExperiment"))) {
       Data <- data.matrix(Data)
-      Data <- SummarizedExperiment(assays=list("Counts"=Data))
+      Data <- SingleCellExperiment(assays=list("counts"=Data))
      }
        
     ## Checks
     
-    if(any(colSums(SCnorm::getCounts(Data)) == 0)) {stop("Data contains at least one 
+    if(any(colSums(SingleCellExperiment::counts(Data)) == 0)) {stop("Data contains at least one 
             column will all zeros. Please remove these columns before 
             calling SCnorm(). Performing quality control on your data is highly recommended prior
             to running SCnorm!")}
       
-    if(anyNA(SCnorm::getCounts(Data))) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
+    if(anyNA(SingleCellExperiment::counts(Data))) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
      
     if (is.null(NCores)) {NCores <- max(1, parallel::detectCores() - 1)}
     
@@ -132,10 +137,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       BiocParallel::register(BPPARAM = prll, default=TRUE)
     }
     
-    if (is.null(rownames(SCnorm::getCounts(Data)))) {stop("Must supply gene/row names!")}
-    if (is.null(colnames(SCnorm::getCounts(Data)))) {stop("Must supply sample/cell names!")}
+    if (is.null(rownames(SingleCellExperiment::counts(Data)))) {stop("Must supply gene/row names!")}
+    if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
 
-    if (ncol(SCnorm::getCounts(Data)) != length(Conditions)) {stop("Number of columns in 
+    if (ncol(SingleCellExperiment::counts(Data)) != length(Conditions)) {stop("Number of columns in 
       expression matrix must match length of conditions vector!")}
     
     if (!is.null(K)) {message(paste0("SCnorm will normalize assuming ",
@@ -151,14 +156,14 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
   
     # Option to normalize within samples:
     if(!is.null(withinSample)) {
-        if(length(withinSample) == nrow(SCnorm::getCounts(Data))) {
+        if(length(withinSample) == nrow(SingleCellExperiment::counts(Data))) {
           message("Using loess method described in ''GC-Content Normalization 
           for RNA-Seq Data'', Risso et al. to perform within-sample 
           normalization. For other options see the original publication and 
           package EDASeq." )
         
         S4Vectors::metadata(Data)[["OriginalData"]] <- Data
-        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SCnorm::getCounts(Data), 2, 
+        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SingleCellExperiment::counts(Data), 2, 
                                                                correctWithin, 
                                                                correctFactor = withinSample)
         
@@ -170,11 +175,11 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     if(is.null(names(Conditions))) {names(Conditions) <- colnames(Data)}
      
     DataList <- lapply(seq_along(Levels), function(x) {
-        SCnorm::getCounts(Data)[,which(Conditions == Levels[x])]}) # split conditions
-    Genes <- rownames(SCnorm::getCounts(Data)) 
+        SingleCellExperiment::counts(Data)[,which(Conditions == Levels[x])]}) # split conditions
+    Genes <- rownames(SingleCellExperiment::counts(Data)) 
     
     SeqDepthList <- lapply(seq_along(Levels), function(x) {
-        colSums(SCnorm::getCounts(Data)[,which(Conditions == Levels[x])])})
+        colSums(SingleCellExperiment::counts(Data)[,which(Conditions == Levels[x])])})
 
     if(any(do.call(c, SeqDepthList) <= 10000)) {
        warning("At least one cell/sample has less than 10,000 counts total. 
@@ -267,10 +272,9 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     if (length(Levels) > 1) {
     
       # Scaling
-      ### Genes = Reduce(intersect, GeneFilterList)
       message("Scaling data between conditions...")
       ScaledNormData <- scaleNormMultCont(NormData = NormList, 
-                        OrigData = SCnorm::getCounts(Data), 
+                        OrigData = Data, 
                         Genes = Genes, useSpikes = useSpikes, 
                         useZerosToScale = useZerosToScale)
       names(ScaledNormData) <- c("NormalizedData", "ScaleFactors")
@@ -287,8 +291,8 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
         }
     
     
-    # Return 
-    S4Vectors::metadata(Data)[["NormalizedData"]] <- NormDataFull[,names(Conditions)]
+    # Return, To match SingleCellExperiment 
+    normcounts(Data) <- NormDataFull[,names(Conditions)]
     S4Vectors::metadata(Data)[["ScaleFactors"]] <- ScaleFactorsFull[,names(Conditions)]
     S4Vectors::metadata(Data)[["GenesFilteredOut"]] <- GeneFilterOUT
 

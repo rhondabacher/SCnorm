@@ -70,7 +70,8 @@ be performed. Examples of gene-specific features are GC content or gene
 length.}
 
 \item{useSpikes}{whether to use spike-ins to perform across condition
-scaling (default=FALSE). SCnorm will assume spike-in names start with "ERCC-".}
+scaling (default=FALSE). Spike-ins must be stored in the SingleCellExperiment object 
+using isSpike() function. See vignette for example.}
 
 \item{useZerosToScale}{whether to use zeros when scaling across conditions (default=FALSE).}
 }
