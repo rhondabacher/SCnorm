@@ -15,8 +15,9 @@ Additional details and a FAQ for SCnorm are described in the vignette: [SCnorm V
 Make sure to use the latest version of SCnorm by installing it from BioConductor or GitHub. 
 
 ```R
-source("https://bioconductor.org/biocLite.R")
-biocLite("SCnorm")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("SCnorm")
 ```
 or
 
