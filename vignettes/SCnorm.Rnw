@@ -49,11 +49,12 @@ and tag "SCnorm". This will notify the package maintainers and benefit other use
 \label{sec:quickstart}
 Before analysis can proceed, the SCnorm package must be installed.
 
-The easiest way to install SCnorm is through Bioconductor(https://bioconductor.org/packages/devel/bioc/html/SCnorm.html):
+The easiest way to install SCnorm is through Bioconductor
+(https://bioconductor.org/packages/SCnorm):
 <<eval=FALSE, echo=TRUE>>=
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-useDevel() # Need to use development version of Bioconductor
+BiocManager::install(version = "devel")
 BiocManager::install("SCnorm")
 @
 
