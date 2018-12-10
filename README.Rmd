@@ -43,8 +43,8 @@ RNA-seq data. Nature Methods. 2017 Jun 1;14(6):584-6.
 [https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html](https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
 
-## Latest Update: v1.3.1
+## Latest Update: v1.5.1
 
-Package updated to use SingleCellExperiment class.
+Fix results() function to provide "NormalizedData" (equivalent to using SingleCellExperiment::normcounts())
 
 
