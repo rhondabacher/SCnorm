@@ -54,7 +54,6 @@ The easiest way to install SCnorm is through Bioconductor
 <<eval=FALSE, echo=TRUE>>=
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install(version = "devel")
 BiocManager::install("SCnorm")
 @
 

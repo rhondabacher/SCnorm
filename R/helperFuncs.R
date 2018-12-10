@@ -159,6 +159,7 @@ getCounts <- function(DATA){
 #' @export
 #'
 #' @importFrom S4Vectors metadata
+#' @importFrom SingleCellExperiment normcounts
 #' @examples 
 #' data(ExampleSimSCData)
 #' Conditions = rep(c(1), each= 90)
@@ -166,8 +167,12 @@ getCounts <- function(DATA){
 #' #normDataMatrix <- results(NormData)
 
 results <- function(DATA, type=c("NormalizedData", "ScaleFactors", "GenesFilteredOut")){
-  type <- match.arg(type)
-  return(S4Vectors::metadata(DATA)[[type]])
+  if (type=="NormalizedData") {
+    return(SingleCellExperiment::normcounts(DATA))
+  } else {
+    type <- match.arg(type)
+    return(S4Vectors::metadata(DATA)[[type]])
+  }
 }
 
 
