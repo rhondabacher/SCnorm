@@ -22,7 +22,7 @@
 #' @return matrix of normalized and scaled expression values for all
 #'    conditions.
 #' @author Rhonda Bacher
-#' @import SingleCellExperiment
+#' @importFrom SingleCellExperiment isSpike
 
 
 

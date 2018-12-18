@@ -38,7 +38,7 @@
 #' @import SingleCellExperiment
 #' @import grDevices
 #' @importFrom methods is as
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
 #' @importFrom S4Vectors metadata
 #' @importFrom data.table melt
 #'  

@@ -78,12 +78,12 @@
 #' @importFrom BiocParallel bpparam
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
 #' @author Rhonda Bacher
 #' @examples 
 #'  
 #'  data(ExampleSimSCData)
-#'    Conditions = rep(c(1,2), each= 90)
+#'    Conditions = rep(c(1,2), each= 45)
 #'    #DataNorm <- SCnorm(ExampleSimSCData, Conditions, 
 #'    #FilterCellNum = 10)
 #'    #str(DataNorm)
@@ -172,7 +172,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
             genes in Data!")
         }
     }
-    if(is.null(names(Conditions))) {names(Conditions) <- colnames(Data)}
+    names(Conditions) <- colnames(Data)
      
     DataList <- lapply(seq_along(Levels), function(x) {
         SingleCellExperiment::counts(Data)[,which(Conditions == Levels[x])]}) # split conditions
