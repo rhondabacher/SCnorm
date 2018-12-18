@@ -78,7 +78,7 @@
 #' @importFrom BiocParallel bpparam
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
 #' @author Rhonda Bacher
 #' @examples 
 #'  
