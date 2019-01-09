@@ -70,15 +70,15 @@
 #' @import graphics
 #' @import grDevices
 #' @import stats
-#' @import SingleCellExperiment
 #' @importFrom methods is as
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register
 #' @importFrom BiocParallel MulticoreParam
 #' @importFrom BiocParallel bpparam
 #' @importFrom parallel detectCores
+#' @importFrom SingleCellExperiment counts SingleCellExperiment normcounts
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
+#' @importFrom SummarizedExperiment SummarizedExperiment assays colData
 #' @author Rhonda Bacher
 #' @examples 
 #'  
@@ -292,7 +292,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     
     
     # Return, To match SingleCellExperiment 
-    normcounts(Data) <- NormDataFull[,names(Conditions)]
+    SingleCellExperiment::normcounts(Data) <- NormDataFull[,names(Conditions)]
     S4Vectors::metadata(Data)[["ScaleFactors"]] <- ScaleFactorsFull[,names(Conditions)]
     S4Vectors::metadata(Data)[["GenesFilteredOut"]] <- GeneFilterOUT
 

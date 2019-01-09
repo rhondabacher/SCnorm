@@ -29,13 +29,16 @@ matrix of normalized and scaled expression values for all
 }
 \description{
 After conditions are independently normalized with the 
-count-depth 
-effect removed, conditions need to be additionally scaled prior to further
+count-depth effect removed, conditions need to be additionally scaled prior to further
    analysis. Genes that were normalized in both
 conditions are split into quartiles based on their un-normalized non-zero
    medians. Genes in each quartile are scaled to the 
 median fold change of 
-condition specific gene means and overall gene means.
+condition specific gene means and overall gene means. This function can be used independetly if SCnorm 
+was run across different Conditions separately. However, the input must be as follow:
+NormData <- list(list(NormData = normalizedDataSet1),
+                   list(NormData = normalizedDataSet2))
+where normalizedDataSet1 is the normalized matrix obtained using normcounts() on the output of SCnorm().
 }
 \author{
 Rhonda Bacher

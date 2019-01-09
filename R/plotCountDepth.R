@@ -50,7 +50,6 @@
 #' @importFrom parallel detectCores
 #' @import graphics
 #' @import grDevices
-#' @import SingleCellExperiment
 #' @importFrom methods is as
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register
@@ -58,7 +57,8 @@
 #' @importFrom BiocParallel bpparam
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
+#' @importFrom SingleCellExperiment counts SingleCellExperiment normcounts
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @examples 
 #'  
 #' data(ExampleSimSCData)

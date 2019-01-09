@@ -35,10 +35,9 @@
 #' @author Rhonda Bacher
 #' @import graphics
 #' @import ggplot2
-#' @import SingleCellExperiment
 #' @import grDevices
 #' @importFrom methods is as
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData counts
+#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @importFrom S4Vectors metadata
 #' @importFrom data.table melt
 #'  

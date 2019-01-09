@@ -124,7 +124,7 @@ head(Conditions)
 \subsection{SCnorm: Check count-depth relationship}
 \label{sec:checkData}
 Before normalizing using SCnorm it is advised to check the relationship between expression counts and sequencing
-depth (referred to as the count-depth relationship) for your data. 
+depth (referred to as the count-depth relationship) for your data.
 If all genes have a similar relationship then
 a global normalization strategy such as median-by-ratio in the DESeq package or TMM in edgeR will also be
 adequate. However, we find that when the count-depth relationship
@@ -133,16 +133,16 @@ strategies leads to poor normalization. In these cases we strongly recommend pro
 normalization provided by SCnorm.
 
 The \Rfunction{plotCountDepth} function will estimate the count-depth relationship for all
-genes. The genes are first divided into ten equally sized groups based on their non-zero median expression. 
+genes. The genes are first divided into ten equally sized groups based on their non-zero median expression.
 The function will generate a plot of the distribution of slopes for each group. We also recommend checking a variety of
 filter options in case you find that only genes expressed in very few cells or
 very low expressors are the main concern.
 
-The function \Rfunction{plotCountDepth} produces a plot as output which may be wrapped around 
+The function \Rfunction{plotCountDepth} produces a plot as output which may be wrapped around
 a call to pdf() or png() to save it for future reference. The function also returns
 the information used for plotting which may be ultilized if a user would like to generate a more
 customized figure. The returned object is a list with length equal to the number of conditions and each element of the
-list is a mtrix containing each genes's assigned group (based on non-zero median expression) and its' estimated 
+list is a mtrix containing each genes's assigned group (based on non-zero median expression) and its' estimated
 count-depth relationship (Slope).
 
 
@@ -155,9 +155,9 @@ str(countDeptEst)
 head(countDeptEst[[1]])
 @
 
-Since gene expression increases proportionally with sequencing depth, we expect to find the estimated count-depth relationships near 1 for all genes. 
+Since gene expression increases proportionally with sequencing depth, we expect to find the estimated count-depth relationships near 1 for all genes.
 This is typically true for bulk RNA-seq datasets. However, it does not hold in most single-cell RNA-seq datasets.
-In this example data, the relationship is quite variable across genes. 
+In this example data, the relationship is quite variable across genes.
 
 \begin{figure}[h!]
 \centering
@@ -166,7 +166,7 @@ In this example data, the relationship is quite variable across genes.
 \end{figure}
 
 
-After normalization the count-depth relationship can be estimated on the normalized data, where slopes near zero indicate successful normalization. 
+After normalization the count-depth relationship can be estimated on the normalized data, where slopes near zero indicate successful normalization.
 We can use the function \Rfunction{plotCountDepth} to evaluate normalized data:
 
 <<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
@@ -176,7 +176,7 @@ ExampleSimSCData.CPM <- t((t(ExampleSimSCData) / colSums(ExampleSimSCData)) *
                         mean(colSums(ExampleSimSCData)))
 
 
-countDeptEst.CPM <- plotCountDepth(Data = ExampleSimSCData, 
+countDeptEst.CPM <- plotCountDepth(Data = ExampleSimSCData,
                                   NormalizedData = ExampleSimSCData.CPM,
                                    Conditions = Conditions,
                                    FilterCellProportion = .1, NCores=3)
@@ -185,7 +185,7 @@ str(countDeptEst.CPM)
 head(countDeptEst.CPM[[1]])
 @
 
-If normalization is succesful the estimated count-depth relationship should be near zero for all genes. Here the highly expressed genes appear 
+If normalization is succesful the estimated count-depth relationship should be near zero for all genes. Here the highly expressed genes appear
 well normalized, while moderate and low expressors have been over-normalized and have negative slopes.
 
 
@@ -194,25 +194,25 @@ well normalized, while moderate and low expressors have been over-normalized and
 \label{sec:Normalization}
 SCnorm will normalize across cells to remove the effect of sequencing
 depth on the counts. The function \Rfunction{SCnorm} returns: the normalized expression counts, a list of
-genes which were not considered in the normalization due to filter options, and optionally a 
+genes which were not considered in the normalization due to filter options, and optionally a
 matrix of scale factors (if \Rcode{reportSF = TRUE}).
 
-The default filter for SCnorm only considers genes having at least 10 non-zero expression values. 
+The default filter for SCnorm only considers genes having at least 10 non-zero expression values.
 The user may wish to adjust the filter and may do so by changing the value of FilterCellNum. The
 user may also wish to not normalize very low expressed genes. The parameter \Robject{FilterExpression} can be used
-to exclude genes which have non-zero medians lower than a threshold specified by \Robject{FilterExpression} 
+to exclude genes which have non-zero medians lower than a threshold specified by \Robject{FilterExpression}
 (\Robject{FilterExpression}=0 is default).
 
 SCnorm starts at $K = 1$, which normalizes the data assuming all genes should be normalized in one group.
 The sufficiency of $K = 1$ is evaluated by estimating the normalized count-depth relationships. This is done
-by splitting genes into 10 groups based on their non-zero unnormalized median expression (equally sized groups) 
+by splitting genes into 10 groups based on their non-zero unnormalized median expression (equally sized groups)
 and estimating the mode for each group. If all 10 modes are within .1 of zero, then $K = 1$ is sufficient. If any mode
 is large than .1 or less than -.1, SCnorm will attempt to normalize assuming $K = 2$ and repeat the group normalizations
-and evaluation. This continues until all modes are within .1 of zero. (Simulation studies have shown .1 
-generally works well and is default, but may be adjusted using the 
+and evaluation. This continues until all modes are within .1 of zero. (Simulation studies have shown .1
+generally works well and is default, but may be adjusted using the
 parameter \Robject{Thresh} in the \Rfunction{SCnorm} function).
 If \Robject{PrintProgressPlots = TRUE} is specified, the progress plots of SCnorm
-will be created for each value of $K$ tried (default is \Rcode{FALSE}). 
+will be created for each value of $K$ tried (default is \Rcode{FALSE}).
 
 Normalized data can be accessed using the \Rclass{results()} function.
 
@@ -220,10 +220,10 @@ Normalized data can be accessed using the \Rclass{results()} function.
 Conditions = rep(c(1), each= 90)
 pdf("MyNormalizedData_k_evaluation.pdf")
 par(mfrow=c(2,2))
-DataNorm <- SCnorm(Data = ExampleSimSCData, 
+DataNorm <- SCnorm(Data = ExampleSimSCData,
                    Conditions = Conditions,
                    PrintProgressPlots = TRUE,
-                   FilterCellNum = 10,
+                   FilterCellNum = 10, K =1,
                    NCores=3, reportSF = TRUE)
 dev.off()
 DataNorm
@@ -255,9 +255,10 @@ We can also use the function \Rfunction{plotCountDepth} to make the final plot o
 normalized count-depth relationship:
 <<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
 
-countDeptEst.SCNORM <- plotCountDepth(Data = ExampleSimSCData, NormalizedData = NormalizedData,
-                                   Conditions = Conditions,
-                                   FilterCellProportion = .1, NCores=3)
+countDeptEst.SCNORM <- plotCountDepth(Data = ExampleSimSCData, 
+                                      NormalizedData = NormalizedData,
+                                      Conditions = Conditions,
+                                      FilterCellProportion = .1, NCores=3)
 
 str(countDeptEst.SCNORM)
 head(countDeptEst.SCNORM[[1]])
@@ -270,19 +271,19 @@ In this step the assumption is that most genes are not differentially expressed 
 conditions and that any systematic differences in expression across the
 majority of genes is due to technical biases and should be removed.
 
-Zeros are not included in the estimations of scaling factors across conditions by default, 
-this will make the means across conditions equal when zeros are not considered (which can 
-then used for downstream differential expression analyses with \Biocpkg{MAST}, for example). 
-However, if the proportion of zeros is very unequal between conditions and the user plans to 
-use a downstream tool which includes zeros in the model (such as \Biocpkg{DESeq} or \Biocpkg{edgeR}), 
-then the scaling should be estimated with zeros included in this calculation by using 
+Zeros are not included in the estimations of scaling factors across conditions by default,
+this will make the means across conditions equal when zeros are not considered (which can
+then used for downstream differential expression analyses with \Biocpkg{MAST}, for example).
+However, if the proportion of zeros is very unequal between conditions and the user plans to
+use a downstream tool which includes zeros in the model (such as \Biocpkg{DESeq} or \Biocpkg{edgeR}),
+then the scaling should be estimated with zeros included in this calculation by using
 the \Rcode{useZerosToScale=TRUE} option:
 
 <<eval=FALSE>>=
 Conditions = rep(c(1, 2), each= 90)
-DataNorm <- SCnorm(Data = MultiCondData, 
+DataNorm <- SCnorm(Data = MultiCondData,
                   Conditions = Conditions,
-                  PrintProgressPlots = TRUE                
+                  PrintProgressPlots = TRUE
                   FilterCellNum = 10,
                   NCores=3,
                   useZerosToScale=TRUE)
@@ -293,23 +294,67 @@ setup. If the data are very heterogenous within an experimental setup it may be
 beneficial to first cluster more similar cells into groups and define these as
 conditions in SCnorm.
 
+
+For very large datasets, it might be more reasonable to 
+normalize each condition separately. To do this, 
+first normalize each Condition separate:
+<<eval=FALSE>>=
+
+DataNorm1 <- SCnorm(Data = ExampleSimSCData[,1:45], 
+                   Conditions = rep("1", 45),
+                   PrintProgressPlots = TRUE,
+                   FilterCellNum = 10, K = 1,
+                   NCores=3, reportSF = TRUE)
+                   
+                   
+DataNorm2 <- SCnorm(Data = ExampleSimSCData[,46:90], 
+                  Conditions = rep("2", 45),
+                  PrintProgressPlots = TRUE,
+                  FilterCellNum = 10, K = 1,
+                  NCores=3, reportSF = TRUE)
+@
+
+Then the final scaling step can be performed as follows:
+
+<<eval=FALSE>>=
+normalizedDataSet1 <- results(DataNorm1, type = "NormalizedData")
+normalizedDataSet2 <- results(DataNorm2, type = "NormalizedData")
+
+NormList <- list(list(NormData = normalizedDataSet1),
+                    list(NormData = normalizedDataSet2))
+OrigData <- ExampleSimSCData
+Genes <- rownames(ExampleSimSCData)
+useSpikes = FALSE
+useZerosToScale = FALSE
+
+DataNorm <- scaleNormMultCont(NormData = NormList, 
+                  OrigData = OrigData, 
+                  Genes = Genes, useSpikes = useSpikes, 
+                  useZerosToScale = useZerosToScale)
+                  
+                  
+str(DataNorm$ScaledData)
+myNormalizedData <- DataNorm$ScaledData
+@
+
+
 \section{SCnorm: UMI data}
 
-If the single-cell expression matrix is very sparse (having a lot of zeros) 
-then SCnorm may not be appropriate. Currently, SCnorm will issue a 
-warning if at least one cell/sample has less than 100 non-zero values or 
-total counts below 10,000. SCnorm will fail if the filtering criteria or 
+If the single-cell expression matrix is very sparse (having a lot of zeros)
+then SCnorm may not be appropriate. Currently, SCnorm will issue a
+warning if at least one cell/sample has less than 100 non-zero values or
+total counts below 10,000. SCnorm will fail if the filtering criteria or
 quality of data leaves less then 100 genes for normalization.
 
 If the data have -many- tied count values consider
-setting the option \Rcode{ditherCounts=TRUE} (default is \Rcode{FALSE}) which will help 
+setting the option \Rcode{ditherCounts=TRUE} (default is \Rcode{FALSE}) which will help
 in estimating the count-depth relationships. This
-introduces some randomness but results will not change if the 
+introduces some randomness but results will not change if the
 command is rerun.
 
 It is highly recommended to check the
 count-depth relationship before and after normalization. In some cases,
-it might be desired to adjust the threshold used to decide K. Lowering the threshold 
+it might be desired to adjust the threshold used to decide K. Lowering the threshold
 may improve results for some datasets (default \Rcode{Thresh = .1}).
 
 For larger datasets, it may also be desired to increase the speed.
@@ -324,9 +369,9 @@ checkCountDepth(Data = umiData, Conditions = Conditions,
 
 DataNorm <- SCnorm(Data = umiData, Conditions= Conditions,
                   PrintProgressPlots = TRUE,
-                  FilterCellNum = 10, 
+                  FilterCellNum = 10,
                   PropToUse = .1,
-                  Thresh = .1, 
+                  Thresh = .1,
                   ditherCounts = TRUE)
 @
 
@@ -355,12 +400,12 @@ vector of gene-specific features, one per gene. This could be anything,
 but is often GC-content or gene length.
 
 A function to evaluate the extent of bias in expression related to the gene-specific feature is \Rcode{plotWithinFactor()}.
-Genes are split into 4 (NumExpressionGroups = 4 is default) equally sized groups 
+Genes are split into 4 (NumExpressionGroups = 4 is default) equally sized groups
 based on the gene-specific factor provided. For each cell the median expression of genes
-in each group isestimated and plot. The function \Rcode{plotWithinFactor} 
+in each group isestimated and plot. The function \Rcode{plotWithinFactor}
 returns the information used for plotting as a matrix of the expression medians for each group for all cells.
 
-In this example I generate a random vector of gene specific features, this may be the proportion of GC content for example. 
+In this example I generate a random vector of gene specific features, this may be the proportion of GC content for example.
 Each cell receives a different color
 
 <<eval=TRUE, fig.height=5, fig.width=10, fig.align='center', out.width='0.8\\textwidth'>>=
@@ -375,9 +420,9 @@ head(withinFactorMatrix)
 Specifying a Conditions vector will color each cell according to its associated condition:
 <<eval=TRUE, fig.height=3, fig.width=4, fig.align='center'>>=
 #Colors samples by Condition:
-Conditions <- rep(c(1,2), each=45) 
+Conditions <- rep(c(1,2), each=45)
 withinFactorMatrix <- plotWithinFactor(ExampleSimSCData, withinSample = exampleGC,
-                   Conditions=Conditions)
+                                       Conditions=Conditions)
 
 head(withinFactorMatrix)
 @
@@ -412,26 +457,26 @@ No, while SCnorm has proven useful in normalizing many single-cell RNA-seq datas
 
 {\bf \large Can I use SCnorm on your 10X (or very sparse) dataset?}
 
-SCnorm is not intended for datasets with more than $\sim$80\% zero counts, often K will not converge in these situations. 
-Setting the FilterExpression parameter to 1 or 2 may help, but is not a guarantee. 
+SCnorm is not intended for datasets with more than $\sim$80\% zero counts, often K will not converge in these situations.
+Setting the FilterExpression parameter to 1 or 2 may help, but is not a guarantee.
 It may also be helpful to use the ditherCounts = TRUE parameter for sparse UMI based data which may contain numerous tied counts (counts of 1 and 2 for example).
 
 
 {\bf \large Can/Should I use SCnorm on my bulk RNA-seq data?}
 
-SCnorm can normalize bulk data. However, SCnorm should not be used to normalize data containing less 
+SCnorm can normalize bulk data. However, SCnorm should not be used to normalize data containing less
 then 10 cells/samples. Consideration must also be given to what downstream analysis methods will be used.
 Methods such as DESeq2 or edgeR typically expect a matrix of scaling factors to be supplied, these
 can to be obtained in SCnorm by setting \Rcode{reportSF=TRUE} in the SCnorm function.
 
-The count-depth relationship of both unnormalized and normalized bulk RNA-seq data 
+The count-depth relationship of both unnormalized and normalized bulk RNA-seq data
 can be evaluated using the \Rfunction{plotCountDepth} function.
 
 {\bf \large How can I speedup SCnorm if I have thousands of cells?}
 
 Utilizing multiple cores via the \Rfunction{NCores} parameter is the most effective way.
 
-Splitting the data into smaller clusters may also improve speed. 
+Splitting the data into smaller clusters may also improve speed.
 Here is one example on how to cluster and the appropriate way to run \Rcode{SCnorm}:
 (This method of clustering single-cells was originally suggested by Lun et al., 2016 in \Biocpkg{scran}.)
 
@@ -439,43 +484,43 @@ Here is one example on how to cluster and the appropriate way to run \Rcode{SCno
 library(dynamicTreeCut)
 distM <- as.dist( 1 - cor(BigData, method = 'spearman'))
 htree <- hclust(distM, method='ward.D')
-clusters <- factor(unname(cutreeDynamic(htree, minClusterSize = 50,  
+clusters <- factor(unname(cutreeDynamic(htree, minClusterSize = 50,
                     method="tree", respectSmallClusters = FALSE)))
 names(clusters) <- colnames(BigData)
 Conditions = clusters
 
-DataNorm <- SCnorm(Data = BigData, 
+DataNorm <- SCnorm(Data = BigData,
                   Conditions = Conditions,
-                  PrintProgressPlots = TRUE                
+                  PrintProgressPlots = TRUE
                   FilterCellNum = 10,
                   NCores=3, useZerosToScale=TRUE)
 @
 
 {\bf \large When should I set the parameter \Rcode{useZerosToScale=TRUE} ?}
 
-This parameter is only used when specifying multiple conditions in SCnorm. The \Robject{useZerosToScale} parameter 
-will determine whether zeros are used in estimating the condition based scaling factors. 
+This parameter is only used when specifying multiple conditions in SCnorm. The \Robject{useZerosToScale} parameter
+will determine whether zeros are used in estimating the condition based scaling factors.
 
-Use the default, \Rcode{useZerosToScale=FALSE}, when planning to use single-cell specific methods such as MAST 
+Use the default, \Rcode{useZerosToScale=FALSE}, when planning to use single-cell specific methods such as MAST
 that separately model continuous and discrete measurements.
 
-If you plan on using an analysis method that explicitly uses zeros in the model like DESeq2, 
+If you plan on using an analysis method that explicitly uses zeros in the model like DESeq2,
 then \Rcode{useZerosToScale=TRUE} should be used.
 
 {\bf \large SCnorm was unable to converge.}
 
-SCnorm will fail if $K$ exceeds 25 groups. It is unlikely that such a large number of groups is appropriate. This 
-might happen if a large proportion of your genes have estimated count-depth relationships very close to zero. 
-Typically this error can be resolved by removing genes with very small counts from 
-the normalization using the parameter \Robject{FilterExpression}. Genes having non-zero median expression 
-less than \Robject{FilterExpression} will 
-not be scaled during normalization. An appropriate value for \Robject{FilterExpression} will be data dependent and decided based on 
+SCnorm will fail if $K$ exceeds 25 groups. It is unlikely that such a large number of groups is appropriate. This
+might happen if a large proportion of your genes have estimated count-depth relationships very close to zero.
+Typically this error can be resolved by removing genes with very small counts from
+the normalization using the parameter \Robject{FilterExpression}. Genes having non-zero median expression
+less than \Robject{FilterExpression} will
+not be scaled during normalization. An appropriate value for \Robject{FilterExpression} will be data dependent and decided based on
 exploring the data. One way that might help decide is to see if there are any natural cutoffs in the non-zero medians:
 
 <<eval=FALSE>>=
 MedExpr <- apply(Data, 1, function(c) median(c[c != 0]))
 plot(density(log(MedExpr), na.rm=T))
-abline(v=log(c(1,2,3,4,5))) 
+abline(v=log(c(1,2,3,4,5)))
 # might set FilterExpression equal to one of these values.
 @
 
