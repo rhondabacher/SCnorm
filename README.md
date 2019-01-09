@@ -43,8 +43,9 @@ RNA-seq data. Nature Methods. 2017 Jun 1;14(6):584-6.
 [https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html](https://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
 
-## Latest Update: v1.5.1
 
-Fix results() function to provide "NormalizedData" (equivalent to using SingleCellExperiment::normcounts())
+## Latest Update: v1.5.4
+
+Allow separate normalizations for different Conditions for very large dataset. See vignette for example.
 
 

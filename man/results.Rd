@@ -4,7 +4,8 @@
 \alias{results}
 \title{results}
 \usage{
-results(DATA, type = c("NormalizedData", "ScaleFactors", "GenesFilteredOut"))
+results(DATA, type = c("NormalizedData", "ScaleFactors",
+  "GenesFilteredOut"))
 }
 \arguments{
 \item{DATA}{An object of class \code{SummarizedExperiment} that contains 

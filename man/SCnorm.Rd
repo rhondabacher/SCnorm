@@ -7,8 +7,8 @@
 SCnorm(Data = NULL, Conditions = NULL, PrintProgressPlots = FALSE,
   reportSF = FALSE, FilterCellNum = 10, FilterExpression = 0,
   Thresh = 0.1, K = NULL, NCores = NULL, ditherCounts = FALSE,
-  PropToUse = 0.25, Tau = 0.5, withinSample = NULL, useSpikes = FALSE,
-  useZerosToScale = FALSE)
+  PropToUse = 0.25, Tau = 0.5, withinSample = NULL,
+  useSpikes = FALSE, useZerosToScale = FALSE)
 }
 \arguments{
 \item{Data}{can be a matrix of single-cell expression with cells
@@ -93,7 +93,7 @@ Quantile regression is used to estimate the dependence of
 \examples{
  
  data(ExampleSimSCData)
-   Conditions = rep(c(1,2), each= 90)
+   Conditions = rep(c(1,2), each= 45)
    #DataNorm <- SCnorm(ExampleSimSCData, Conditions, 
    #FilterCellNum = 10)
    #str(DataNorm)
