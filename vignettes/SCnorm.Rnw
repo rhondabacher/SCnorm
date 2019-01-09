@@ -303,14 +303,14 @@ first normalize each Condition separate:
 DataNorm1 <- SCnorm(Data = ExampleSimSCData[,1:45], 
                    Conditions = rep("1", 45),
                    PrintProgressPlots = TRUE,
-                   FilterCellNum = 10, K = 1,
+                   FilterCellNum = 10,
                    NCores=3, reportSF = TRUE)
                    
                    
 DataNorm2 <- SCnorm(Data = ExampleSimSCData[,46:90], 
                   Conditions = rep("2", 45),
                   PrintProgressPlots = TRUE,
-                  FilterCellNum = 10, K = 1,
+                  FilterCellNum = 10, 
                   NCores=3, reportSF = TRUE)
 @
 
