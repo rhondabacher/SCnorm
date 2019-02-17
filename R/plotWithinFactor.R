@@ -66,7 +66,7 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
 
 
     }
-    Data <- SingleCellExperiment::counts(Data)
+    Data <- as.matrix(SingleCellExperiment::counts(Data))
   }
       
     Data <- data.matrix(Data)

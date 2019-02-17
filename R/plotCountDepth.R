@@ -79,7 +79,7 @@ plotCountDepth <- function(Data, NormalizedData= NULL, Conditions = NULL,
   
         if (is.null(colnames(Data))) {stop("Must supply sample/cell names!")}
       }
-      Data <- SingleCellExperiment::counts(Data)
+      Data <- as.matrix(SingleCellExperiment::counts(Data))
     }
     
     if (anyNA(Data)) {stop("Data contains at least one value of NA. 

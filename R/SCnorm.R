@@ -115,15 +115,16 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       Data <- data.matrix(Data)
       Data <- SingleCellExperiment(assays=list("counts"=Data))
      }
-       
+      
+    Counts <- as.matrix(SingleCellExperiment::counts(Data))
     ## Checks
     
-    if(any(colSums(SingleCellExperiment::counts(Data)) == 0)) {stop("Data contains at least one 
+    if(any(colSums(Counts) == 0)) {stop("Data contains at least one 
             column will all zeros. Please remove these columns before 
             calling SCnorm(). Performing quality control on your data is highly recommended prior
             to running SCnorm!")}
       
-    if(anyNA(SingleCellExperiment::counts(Data))) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
+    if(anyNA(Counts)) {stop("Data contains at least one value of NA. SCnorm is unsure how to proceed.")}
      
     if (is.null(NCores)) {NCores <- max(1, parallel::detectCores() - 1)}
     
@@ -137,10 +138,10 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       BiocParallel::register(BPPARAM = prll, default=TRUE)
     }
     
-    if (is.null(rownames(SingleCellExperiment::counts(Data)))) {stop("Must supply gene/row names!")}
-    if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
+    if (is.null(rownames(Counts))) {stop("Must supply gene/row names!")}
+    if (is.null(colnames(Counts))) {stop("Must supply sample/cell names!")}
 
-    if (ncol(SingleCellExperiment::counts(Data)) != length(Conditions)) {stop("Number of columns in 
+    if (ncol(Counts) != length(Conditions)) {stop("Number of columns in 
       expression matrix must match length of conditions vector!")}
     
     if (!is.null(K)) {message(paste0("SCnorm will normalize assuming ",
@@ -156,14 +157,14 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
   
     # Option to normalize within samples:
     if(!is.null(withinSample)) {
-        if(length(withinSample) == nrow(SingleCellExperiment::counts(Data))) {
+        if(length(withinSample) == nrow(Counts)) {
           message("Using loess method described in ''GC-Content Normalization 
           for RNA-Seq Data'', Risso et al. to perform within-sample 
           normalization. For other options see the original publication and 
           package EDASeq." )
         
         S4Vectors::metadata(Data)[["OriginalData"]] <- Data
-        SummarizedExperiment::assays(Data)[["Counts"]] = apply(SingleCellExperiment::counts(Data), 2, 
+        SummarizedExperiment::assays(Data)[["Counts"]] = apply(Counts, 2, 
                                                                correctWithin, 
                                                                correctFactor = withinSample)
         
@@ -175,11 +176,11 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     names(Conditions) <- colnames(Data)
      
     DataList <- lapply(seq_along(Levels), function(x) {
-        SingleCellExperiment::counts(Data)[,which(Conditions == Levels[x])]}) # split conditions
-    Genes <- rownames(SingleCellExperiment::counts(Data)) 
+        Counts[,which(Conditions == Levels[x])]}) # split conditions
+    Genes <- rownames(Counts) 
     
     SeqDepthList <- lapply(seq_along(Levels), function(x) {
-        colSums(SingleCellExperiment::counts(Data)[,which(Conditions == Levels[x])])})
+        colSums(Counts[,which(Conditions == Levels[x])])})
 
     if(any(do.call(c, SeqDepthList) <= 10000)) {
        warning("At least one cell/sample has less than 10,000 counts total. 
