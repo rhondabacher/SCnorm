@@ -42,6 +42,17 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
     ScaledDataList <- vector("list", NumCond)
     ScaledFacsList <- vector("list", NumCond)
     
+    if (useSpikes == TRUE) {
+      if (is.null(SingleCellExperiment::isSpike(OrigData))) {
+        stop("No spike-ins found in data! Check that spike-ins were specified
+       in the SingleCellExperiment object. This can be done by specifying 
+       which rows via (example where spikes are first 90 rows in the data): 
+       SingleCellExperiment::isSpike(sce, ``ERCC'') <- 1:90")
+      } else {
+      spikeG <- Genes[which(SingleCellExperiment::isSpike(OrigData))]
+      }
+    }
+    printWarning <- FALSE
     for(i in seq_len(NumCond)){
 
     
@@ -58,13 +69,10 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
         for(r in seq_len(NumGroups)){
              qgenes <- names(ExprGroups[[r]])
              scalegenes <- qgenes
-             if(useSpikes==TRUE) {
-                 scalegenes <- qgenes[Genes[which(SingleCellExperiment::isSpike(OrigData))]] #which are spikes
+             if (useSpikes==TRUE) {
+                 scalegenes <- intersect(qgenes,spikeG) #which are spikes
                  if(length(scalegenes) <= 5) {
-                     warnings("Not enough spike-ins or spike-ins do not 
-                     span range of expression to perform reasonably well. 
-                     Using all genes instead. SCnorm expects spike-ins to
-                     contain 'ERCC-' in the gene name.")
+                   printWarning <- TRUE
                      scalegenes <- qgenes
                  }
              }
@@ -91,6 +99,16 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
     ScaleNormFacsAll <- do.call(cbind, ScaledFacsList)
 
     ScaledDataList <- list(ScaledData = ScaleNormMatAll, ScaleFactors = ScaleNormFacsAll)
+    
+    
+    if (printWarning == TRUE) {
+      warning("Not enough spike-ins or spike-ins do not 
+      span range of expression to perform reasonably well. 
+      Using all genes instead. Also check that spike-ins were specified
+     in the SingleCellExperiment object. This can be done by specifying 
+     which rows via (example where spikes are first 90 rows in the data): 
+     SingleCellExperiment::isSpike(sce, ``ERCC'') <- 1:90")
+    }
     return(ScaledDataList)
 }
 

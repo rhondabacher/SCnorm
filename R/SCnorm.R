@@ -181,15 +181,17 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
     
     SeqDepthList <- lapply(seq_along(Levels), function(x) {
         colSums(Counts[,which(Conditions == Levels[x])])})
-
-    if(any(do.call(c, SeqDepthList) <= 10000)) {
-       warning("At least one cell/sample has less than 10,000 counts total. 
-       Check the quality of your data or filtering criteria. 
-       SCnorm may not be appropriate for your data (see vignette for details).")
-     }
   
      NumZerosCellList <- lapply(seq_along(Levels), function(x) {
          colSums(DataList[[x]]!= 0) })
+         
+     if((sum(do.call(c, SeqDepthList) == 10000) / (nrow(Counts) * ncol(Counts))) >= .80) {
+        warning("More than 80% of your data is zeros.  
+        Check the quality of your data (remove low quality cells prior to running SCnorm). 
+        You may need to adjust the filtering criteria for SCnorm using
+        parameters FilterExpression and FilterCellNum. 
+        It could also be the case that SCnorm is not be appropriate for your data (see vignette for details).")
+      }
      if(any(do.call(c, NumZerosCellList) <= 100)) {
         warning("At least one cell/sample has less than 100 genes detected (non-zero). 
         Check the quality of your data or filtering criteria. 
