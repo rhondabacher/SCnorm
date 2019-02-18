@@ -44,8 +44,10 @@ RNA-seq data. Nature Methods. 2017 Jun 1;14(6):584-6.
 
 
 
-## Latest Update: v1.5.4
+## Latest Update: v1.5.7
+Added additional warnings when using the useSpikes option and SCnorm now supports input data in the sparse matrix format.
 
+#### Previous updates: v1.5.4
 Allow separate normalizations for different Conditions for very large dataset. See vignette for example.
 
 
