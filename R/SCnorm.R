@@ -76,7 +76,8 @@
 #' @importFrom BiocParallel MulticoreParam
 #' @importFrom BiocParallel bpparam
 #' @importFrom parallel detectCores
-#' @importFrom SingleCellExperiment counts SingleCellExperiment normcounts
+#' @importFrom SingleCellExperiment SingleCellExperiment normcounts
+#' @importMethodsFrom SingleCellExperiment counts
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment SummarizedExperiment assays colData
 #' @author Rhonda Bacher

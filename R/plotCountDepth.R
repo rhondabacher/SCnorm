@@ -51,13 +51,11 @@
 #' @import graphics
 #' @import grDevices
 #' @importFrom methods is as
-#' @importFrom BiocParallel bplapply  
-#' @importFrom BiocParallel register
-#' @importFrom BiocParallel MulticoreParam
-#' @importFrom BiocParallel bpparam
+#' @importFrom BiocParallel bplapply register MulticoreParam bpparam
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
-#' @importFrom SingleCellExperiment counts SingleCellExperiment normcounts
+#' @importFrom SingleCellExperiment SingleCellExperiment normcounts
+#' @importMethodsFrom SingleCellExperiment counts
 #' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @examples 
 #'  
