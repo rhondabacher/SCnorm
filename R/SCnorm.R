@@ -78,7 +78,7 @@
 #' @importFrom parallel detectCores
 #' @import SingleCellExperiment
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment SummarizedExperiment assays colData
+#' @import SummarizedExperiment
 #' @author Rhonda Bacher
 #' @examples 
 #'  

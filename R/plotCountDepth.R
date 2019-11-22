@@ -55,7 +55,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
 #' @import SingleCellExperiment
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
+#' @import SummarizedExperiment
 #' @examples 
 #'  
 #' data(ExampleSimSCData)
