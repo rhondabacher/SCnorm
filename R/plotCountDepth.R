@@ -54,8 +54,7 @@
 #' @importFrom BiocParallel bplapply register MulticoreParam bpparam
 #' @importFrom parallel detectCores
 #' @importFrom S4Vectors metadata
-#' @importFrom SingleCellExperiment SingleCellExperiment normcounts
-#' @importMethodsFrom SingleCellExperiment counts
+#' @import SingleCellExperiment
 #' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
 #' @examples 
 #'  
