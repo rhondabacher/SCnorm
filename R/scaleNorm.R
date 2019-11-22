@@ -34,7 +34,7 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
 
     NumCond <- length(NormData)
     NumGroups <- 4
-    MedExpr <- apply(SingleCellExperiment::counts(OrigData)[Genes,], 1, function(x) median(x[x != 0]))
+    MedExpr <- apply(counts(OrigData)[Genes,], 1, function(x) median(x[x != 0]))
     ExprGroups <- splitGroups(MedExpr, NumGroups = NumGroups)
     
     FullNormMat <- do.call(cbind, lapply(seq_len(NumCond), function(x) {cbind(NormData[[x]]$NormData)[Genes,]}))

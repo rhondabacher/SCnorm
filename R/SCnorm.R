@@ -104,7 +104,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
         message("Renaming the first element in assays(Data) to 'counts'")
           SummarizedExperiment::assayNames(Data)[1] <- "counts"
   
-      if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
+      if (is.null(colnames(counts(Data)))) {stop("Must supply sample/cell names!")}
 
       
       }
@@ -116,7 +116,7 @@ SCnorm <- function(Data=NULL, Conditions=NULL,
       Data <- SingleCellExperiment(assays=list("counts"=Data))
      }
       
-    Counts <- as.matrix(SingleCellExperiment::counts(Data))
+    Counts <- as.matrix(counts(Data))
     ## Checks
     
     if(any(colSums(Counts) == 0)) {stop("Data contains at least one 

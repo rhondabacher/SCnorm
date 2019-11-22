@@ -62,11 +62,11 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
       message("Renaming the first element in assays(Data) to 'counts'")
         SummarizedExperiment::assayNames(Data)[1] <- "counts"
 
-    if (is.null(colnames(SingleCellExperiment::counts(Data)))) {stop("Must supply sample/cell names!")}
+    if (is.null(colnames(counts(Data)))) {stop("Must supply sample/cell names!")}
 
 
     }
-    Data <- as.matrix(SingleCellExperiment::counts(Data))
+    Data <- as.matrix(counts(Data))
   }
       
     Data <- data.matrix(Data)
