@@ -56,6 +56,7 @@
 #' @importFrom S4Vectors metadata
 #' @import SingleCellExperiment
 #' @import SummarizedExperiment
+#' @importFrom BiocGenerics counts
 #' @examples 
 #'  
 #' data(ExampleSimSCData)

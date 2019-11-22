@@ -79,6 +79,7 @@
 #' @import SingleCellExperiment
 #' @importFrom S4Vectors metadata
 #' @import SummarizedExperiment
+#' @importFrom BiocGenerics counts
 #' @author Rhonda Bacher
 #' @examples 
 #'  

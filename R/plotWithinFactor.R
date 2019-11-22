@@ -37,7 +37,7 @@
 #' @import ggplot2
 #' @import grDevices
 #' @importFrom methods is as
-#' @importFrom SummarizedExperiment SummarizedExperiment assayNames assays colData
+#' @import SummarizedExperiment
 #' @importFrom S4Vectors metadata
 #' @importFrom data.table melt
 #'  
