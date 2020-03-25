@@ -4,8 +4,14 @@
 \alias{generateEvalPlot}
 \title{Internal plotting function.}
 \usage{
-generateEvalPlot(MedExpr, SeqDepth, Slopes, Name,
-  NumExpressionGroups = 10, BeforeNorm = TRUE)
+generateEvalPlot(
+  MedExpr,
+  SeqDepth,
+  Slopes,
+  Name,
+  NumExpressionGroups = 10,
+  BeforeNorm = TRUE
+)
 }
 \arguments{
 \item{MedExpr}{non-zero median expression for all genes.}

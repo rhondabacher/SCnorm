@@ -5,9 +5,17 @@
 \title{Evaluate the count-depth relationship before (or after) normalizing
 the data.}
 \usage{
-plotCountDepth(Data, NormalizedData = NULL, Conditions = NULL,
-  Tau = 0.5, FilterCellProportion = 0.1, FilterExpression = 0,
-  NumExpressionGroups = 10, NCores = NULL, ditherCounts = FALSE)
+plotCountDepth(
+  Data,
+  NormalizedData = NULL,
+  Conditions = NULL,
+  Tau = 0.5,
+  FilterCellProportion = 0.1,
+  FilterExpression = 0,
+  NumExpressionGroups = 10,
+  NCores = NULL,
+  ditherCounts = FALSE
+)
 }
 \arguments{
 \item{Data}{can be a matrix of single-cell expression with cells

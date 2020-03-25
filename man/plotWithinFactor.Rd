@@ -4,8 +4,13 @@
 \alias{plotWithinFactor}
 \title{Evaluate gene-specific factors in the the data.}
 \usage{
-plotWithinFactor(Data, withinSample = NULL, Conditions = NULL,
-  FilterExpression = 0, NumExpressionGroups = 4)
+plotWithinFactor(
+  Data,
+  withinSample = NULL,
+  Conditions = NULL,
+  FilterExpression = 0,
+  NumExpressionGroups = 4
+)
 }
 \arguments{
 \item{Data}{can be a matrix of single-cell expression with cells

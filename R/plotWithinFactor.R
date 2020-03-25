@@ -104,7 +104,7 @@ plotWithinFactor <- function(Data, withinSample=NULL, Conditions = NULL,
         
 
 
-    withinCells <- data.frame(Sample = colnames(Data), Condition = factor(Conditions),
+    withinCells <- data.table::data.table(Sample = colnames(Data), Condition = factor(Conditions),
                              do.call(rbind, SplitMedExprList))
     rownames(withinCells) <- colnames(Data)
     colnames(withinCells) <- c("Sample", "Condition", 

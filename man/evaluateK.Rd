@@ -4,8 +4,16 @@
 \alias{evaluateK}
 \title{Evaluate normalization using K slope groups}
 \usage{
-evaluateK(Data, SeqDepth, OrigData, Slopes, Name, Tau, PrintProgressPlots,
-  ditherCounts)
+evaluateK(
+  Data,
+  SeqDepth,
+  OrigData,
+  Slopes,
+  Name,
+  Tau,
+  PrintProgressPlots,
+  ditherCounts
+)
 }
 \arguments{
 \item{Data}{matrix of normalized expression counts. Rows are genes and

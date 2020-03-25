@@ -10,7 +10,7 @@
 <<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex()
 @
-  
+
 \begin{document}
 
 \title{SCnorm: robust normalization of
@@ -23,25 +23,25 @@ BiocStyle::latex()
 \section{Introduction}
 \label{sec:intro}
 Normalization is an important first step in analyzing RNA-seq expression data to allow for accurate 
-comparisons of a gene's expression across samples. Typically, normalization methods estimate a scale factor per sample to 
-adjust for differences in the amount of sequencing each sample receives. This is because increases in sequencing 
-typically lead to proportional increases in gene counts. However, in scRNA-seq data 
-sequencing depth does not affect gene counts equally. SCnorm (as detailed in Bacher* and Chu* {\it et al.}, {{2017}}) 
-is a normalization approach we developed for single-cell RNA-seq data (scRNA-seq). SCnorm groups genes based on their count-depth 
-relationship and within each group applies a quantile regression to 
+comparisons of a gene's expression across samples. Typically, normalization methods estimate a scale factor per sample to
+adjust for differences in the amount of sequencing each sample receives. This is because increases in sequencing
+typically lead to proportional increases in gene counts. However, in scRNA-seq data
+sequencing depth does not affect gene counts equally. SCnorm (as detailed in Bacher* and Chu* {\it et al.}, {{2017}})
+is a normalization approach we developed for single-cell RNA-seq data (scRNA-seq). SCnorm groups genes based on their count-depth
+relationship and within each group applies a quantile regression to
 estimate scaling factors to remove the effect of sequencing depth from
-the counts. 
+the counts.
 
 If you use SCnorm in published research, please cite:
 
-Bacher R, Chu LF, Leng N, Gasch AP, Thomson J, Stewart R, Newton M,  
+Bacher R, Chu LF, Leng N, Gasch AP, Thomson J, Stewart R, Newton M,
 Kendziorski C. SCnorm: robust normalization of single-cell RNA-seq data.
 Nature Methods. 14 (6), 584-586
 
 (http://www.nature.com/nmeth/journal/v14/n6/full/nmeth.4263.html)
 
 If after reading through this vignette and the FAQ section you have questions or problems using SCnorm,
-please post them to 
+please post them to
 https://support.bioconductor.org
 and tag "SCnorm". This will notify the package maintainers and benefit other users.
 
@@ -59,7 +59,7 @@ BiocManager::install("SCnorm")
 
 There are two additional ways to download SCnorm.
 
-The first option is most useful if using a previous version of SCnorm 
+The first option is most useful if using a previous version of SCnorm
 (which can be found at https://github.com/rhondabacher/SCnorm/releases).
 
 The second option is to download the most recent development version of SCnorm. This version may be used with versions of R below 3.4. This version
@@ -85,10 +85,10 @@ library(SCnorm)
 {\bf \Robject{Data}}:  Input to SCnorm may be either of class SummarizedExperiment or a matrix.
 The expression matrix should be a $G-by-S$ matrix containing the
 expression values for each gene and each cell,
-where $G$ is the number of genes and $S$ is the number of cells/samples. 
+where $G$ is the number of genes and $S$ is the number of cells/samples.
 Gene names should be assigned as rownames and not a column in the matrix.
 Estimates of gene expression are typically obtained using RSEM, HTSeq,
-Cufflinks, Salmon or similar approaches. 
+Cufflinks, Salmon or similar approaches.
 
 \noindent The object \Robject{ExampleSimSCData} is a simulated single-cell data matrix containing
 5,000 rows of genes and 90 columns of cells.
@@ -223,7 +223,7 @@ par(mfrow=c(2,2))
 DataNorm <- SCnorm(Data = ExampleSimSCData,
                    Conditions = Conditions,
                    PrintProgressPlots = TRUE,
-                   FilterCellNum = 10, K =1,
+                   FilterCellNum = 10, K = 1,
                    NCores=3, reportSF = TRUE)
 dev.off()
 DataNorm
@@ -255,7 +255,7 @@ We can also use the function \Rfunction{plotCountDepth} to make the final plot o
 normalized count-depth relationship:
 <<eval=TRUE, fig.height=5, fig.width=7, fig.align='center', out.width='0.4\\textwidth'>>=
 
-countDeptEst.SCNORM <- plotCountDepth(Data = ExampleSimSCData, 
+countDeptEst.SCNORM <- plotCountDepth(Data = ExampleSimSCData,
                                       NormalizedData = NormalizedData,
                                       Conditions = Conditions,
                                       FilterCellProportion = .1, NCores=3)
@@ -283,7 +283,7 @@ the \Rcode{useZerosToScale=TRUE} option:
 Conditions = rep(c(1, 2), each= 90)
 DataNorm <- SCnorm(Data = MultiCondData,
                   Conditions = Conditions,
-                  PrintProgressPlots = TRUE
+                  PrintProgressPlots = TRUE,
                   FilterCellNum = 10,
                   NCores=3,
                   useZerosToScale=TRUE)
@@ -295,22 +295,22 @@ beneficial to first cluster more similar cells into groups and define these as
 conditions in SCnorm.
 
 
-For very large datasets, it might be more reasonable to 
-normalize each condition separately. To do this, 
+For very large datasets, it might be more reasonable to
+normalize each condition separately. To do this,
 first normalize each Condition separate:
 <<eval=FALSE>>=
 
-DataNorm1 <- SCnorm(Data = ExampleSimSCData[,1:45], 
+DataNorm1 <- SCnorm(Data = ExampleSimSCData[,1:45],
                    Conditions = rep("1", 45),
                    PrintProgressPlots = TRUE,
                    FilterCellNum = 10,
                    NCores=3, reportSF = TRUE)
-                   
-                   
-DataNorm2 <- SCnorm(Data = ExampleSimSCData[,46:90], 
+
+
+DataNorm2 <- SCnorm(Data = ExampleSimSCData[,46:90],
                   Conditions = rep("2", 45),
                   PrintProgressPlots = TRUE,
-                  FilterCellNum = 10, 
+                  FilterCellNum = 10,
                   NCores=3, reportSF = TRUE)
 @
 
@@ -327,12 +327,12 @@ Genes <- rownames(ExampleSimSCData)
 useSpikes = FALSE
 useZerosToScale = FALSE
 
-DataNorm <- scaleNormMultCont(NormData = NormList, 
-                  OrigData = OrigData, 
-                  Genes = Genes, useSpikes = useSpikes, 
+DataNorm <- scaleNormMultCont(NormData = NormList,
+                  OrigData = OrigData,
+                  Genes = Genes, useSpikes = useSpikes,
                   useZerosToScale = useZerosToScale)
-                  
-                  
+
+
 str(DataNorm$ScaledData)
 myNormalizedData <- DataNorm$ScaledData
 @
@@ -385,7 +385,14 @@ factors. If the spike-ins do not span the full range of expression, SCnorm will
 issue a warning and will use all genes to scale. SCnorm also assumes the spikes-ins are named with the prefix "ERCC-".
 
 <<eval=FALSE>>=
-DataNorm <- SCnorm(Data = MultiCondData, Conditions = Conditions,
+
+ExampleSimSCData.SCE <- SingleCellExperiment::SingleCellExperiment(assays = list('counts' = ExampleSimSCData))
+
+## Assuming the spikes are ERCC, otherwise specify which features are spike-ins manuallly using the splitAltExps function.
+myspikes <- grepl("^ERCC-", rownames(ExampleSimSCData.SCE))
+ExampleSimSCData.SCE <- SingleCellExperiment::splitAltExps(ExampleSimSCData.SCE, ifelse(myspikes, "ERCC", "gene"))
+
+DataNorm <- SCnorm(Data = ExampleSimSCData.SCE, Conditions = Conditions,
                    PrintProgressPlots = TRUE,
                    FilterCellNum = 10, useSpikes=TRUE)
 @
@@ -412,7 +419,7 @@ Each cell receives a different color
 #Colors each sample:
 exampleGC <- runif(dim(ExampleSimSCData)[1], 0, 1)
 names(exampleGC) <- rownames(ExampleSimSCData)
-withinFactorMatrix <- plotWithinFactor(ExampleSimSCData, withinSample = exampleGC)
+withinFactorMatrix <- plotWithinFactor(Data = ExampleSimSCData, withinSample = exampleGC)
 
 head(withinFactorMatrix)
 @

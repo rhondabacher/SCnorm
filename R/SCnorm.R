@@ -47,7 +47,7 @@
 #'    length.
 #' @param useSpikes whether to use spike-ins to perform across condition
 #'    scaling (default=FALSE). Spike-ins must be stored in the SingleCellExperiment object 
-#'    using isSpike() function. See vignette for example. 
+#'    using altExp() function from SingleCellExperiment. See vignette for example. 
 #' @param useZerosToScale whether to use zeros when scaling across conditions (default=FALSE).
 #'
 #' @description Quantile regression is used to estimate the dependence of
@@ -69,7 +69,6 @@
 #' @importFrom parallel detectCores
 #' @import graphics
 #' @import grDevices
-#' @import stats
 #' @importFrom methods is as
 #' @importFrom BiocParallel bplapply  
 #' @importFrom BiocParallel register

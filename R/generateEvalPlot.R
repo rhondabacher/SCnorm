@@ -30,8 +30,8 @@ generateEvalPlot <- function(MedExpr, SeqDepth, Slopes, Name,
                    Y <- rep(x, length(ExprGroups[[x]]))
                    names(Y) <- names(ExprGroups[[x]])
                    return(Y)}))
-    meltedGroups <- data.table::melt(groupGenes, value.name="Group")
-    meltedGroups <- data.table::data.table(Group=meltedGroups$Group, Gene = rownames(meltedGroups))
+  
+    meltedGroups <- data.table::data.table(Group=groupGenes, Gene = names(groupGenes))
     Slopes <- data.table::data.table(Slope = Slopes, Gene = names(Slopes))
     longData <- merge(meltedGroups, Slopes, by="Gene")
     

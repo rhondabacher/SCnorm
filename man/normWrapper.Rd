@@ -4,8 +4,17 @@
 \alias{normWrapper}
 \title{Iteratively fit group regression and evaluate to choose optimal K}
 \usage{
-normWrapper(Data, SeqDepth = NULL, Slopes = NULL, CondNum = NULL,
-  PrintProgressPlots, PropToUse, Tau, Thresh, ditherCounts)
+normWrapper(
+  Data,
+  SeqDepth = NULL,
+  Slopes = NULL,
+  CondNum = NULL,
+  PrintProgressPlots,
+  PropToUse,
+  Tau,
+  Thresh,
+  ditherCounts
+)
 }
 \arguments{
 \item{Data}{can be a matrix of single-cell expression with cells

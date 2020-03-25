@@ -4,8 +4,7 @@
 \alias{SCnormFit}
 \title{Fit group quantile regression for K groups}
 \usage{
-SCnormFit(Data, SeqDepth, Slopes, K, PropToUse = 0.25, Tau = 0.5,
-  ditherCounts)
+SCnormFit(Data, SeqDepth, Slopes, K, PropToUse = 0.25, Tau = 0.5, ditherCounts)
 }
 \arguments{
 \item{Data}{can be a matrix of single-cell expression with cells

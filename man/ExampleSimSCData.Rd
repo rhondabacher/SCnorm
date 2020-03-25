@@ -4,7 +4,9 @@
 \name{ExampleSimSCData}
 \alias{ExampleSimSCData}
 \title{Example datasets for SCnorm}
-\format{data matrix}
+\format{
+data matrix
+}
 \usage{
 ExampleSimSCData
 }

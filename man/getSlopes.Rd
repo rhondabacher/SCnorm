@@ -4,8 +4,13 @@
 \alias{getSlopes}
 \title{Estimate gene specific count-depth relationships}
 \usage{
-getSlopes(Data, SeqDepth = 0, Tau = 0.5, FilterCellNum = 10,
-  ditherCounts = FALSE)
+getSlopes(
+  Data,
+  SeqDepth = 0,
+  Tau = 0.5,
+  FilterCellNum = 10,
+  ditherCounts = FALSE
+)
 }
 \arguments{
 \item{Data}{matrix of un-normalized expression counts. Rows are genes and

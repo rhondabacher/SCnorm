@@ -25,7 +25,7 @@
 #' @return matrix of normalized and scaled expression values for all
 #'    conditions.
 #' @author Rhonda Bacher
-#' @importFrom SingleCellExperiment isSpike
+#' @import SingleCellExperiment
 #' @export
 
 
@@ -43,13 +43,18 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
     ScaledFacsList <- vector("list", NumCond)
     
     if (useSpikes == TRUE) {
-      if (is.null(SingleCellExperiment::isSpike(OrigData))) {
-        stop("No spike-ins found in data! Check that spike-ins were specified
-       in the SingleCellExperiment object. This can be done by specifying 
-       which rows via (example where spikes are first 90 rows in the data): 
-       SingleCellExperiment::isSpike(sce, ``ERCC'') <- 1:90")
+      if (length(SingleCellExperiment::altExpNames(OrigData)) == 0) {
+       
+       spikeG <- grepl("^ERCC-", rownames(OrigData))
+       if (length(spikeG) == 0) {       
+         stop("No spike-ins found in data! Check that spike-ins were specified
+          in the SingleCellExperiment object. Default is assumed to start with 'ERCC-'. 
+          See Vignette on how to specify alternative spike-in names.")
       } else {
-      spikeG <- Genes[which(SingleCellExperiment::isSpike(OrigData))]
+       OrigData <- SingleCellExperiment::splitAltExps(OrigData, ifelse(spikeG, "ERCC", "gene"))
+      }
+     } else {
+      spikeG <- rownames(SingleCellExperiment::altExp(OrigData))
       }
     }
     printWarning <- FALSE
@@ -105,9 +110,8 @@ scaleNormMultCont <- function(NormData, OrigData, Genes, useSpikes, useZerosToSc
       warning("Not enough spike-ins or spike-ins do not 
       span range of expression to perform reasonably well. 
       Using all genes instead. Also check that spike-ins were specified
-     in the SingleCellExperiment object. This can be done by specifying 
-     which rows via (example where spikes are first 90 rows in the data): 
-     SingleCellExperiment::isSpike(sce, ``ERCC'') <- 1:90")
+     in the SingleCellExperiment object. Default is assumed to start with 'ERCC-'. 
+          See Vignette on how to specify alternative spike-in names.")
     }
     return(ScaledDataList)
 }
