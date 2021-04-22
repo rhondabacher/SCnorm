@@ -12,7 +12,7 @@ citEntry(entry = "Article",
                    as.person("Christina Kendziorski")),
   journal      = "Nature Methods",
   year         = "2017",
-  url          = "https://www.nature.com/nmeth/journal/vaop/ncurrent/full/nmeth.4263.html",
+  url          = "https://www.nature.com/articles/nmeth.4263",
 
   textVersion  =
   paste("Bacher R, Chu LF, Leng N, Gasch AP, Thomson JA, Stewart RM, Newton MA, Kendziorski C.", 
