@@ -92,8 +92,8 @@ SCnormFit <- function(Data, SeqDepth, Slopes, K, PropToUse = .25, Tau = .5, dith
       TauGroup <- Grid[which.min(abs(PEAK - AllIter)),1]
       
       polyX <- poly(O, degree = DG, raw = FALSE)
-      Xmat <- data.table::data.table(model.matrix( ~ polyX ))
-      polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
+      # Xmat <- data.table::data.table(model.matrix( ~ polyX ))
+      polydata <- data.frame(Y = Y, Xmat = polyX)
 
       rqfit <- quantreg::rq(Y ~ ., data = polydata, na.action = na.exclude, 
                   tau = TauGroup, method="fn")
