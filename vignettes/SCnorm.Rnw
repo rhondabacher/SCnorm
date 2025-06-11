@@ -101,7 +101,8 @@ str(ExampleSimSCData)
 
 SCnorm now implements the\Rclass{SingleCellExperiment} class. The input data should be formatted as following, where ExamplesSimSCData is the expression matrix:
 <<eval=TRUE>>=
-ExampleSimSCData <- SingleCellExperiment::SingleCellExperiment(assays = list('counts' = ExampleSimSCData))
+library(SingleCellExperiment)
+ExampleSimSCData <- SingleCellExperiment(assays = list('counts' = ExampleSimSCData))
 @
 
 If the data was originally formatted as a \Rclass{SummarizedExperiment}, then it can be coerced using:
