@@ -30,9 +30,9 @@ GetTD <- function(x, InputData) {
     polyX <- try(poly(O, degree = DG, raw = FALSE), silent=TRUE)
     
     if(!is.null(dim(polyX))){
-        Xmat <- data.table::data.table(model.matrix( ~ polyX ))
+        # Xmat <- data.table::data.table(model.matrix( ~ polyX ))
     
-        polydata <- data.frame(Y = Y, Xmat = Xmat[,-1])
+        polydata <- data.frame(Y = Y, Xmat = polyX)
     
         if(ditherFlag == TRUE) {
             rqfit <- try(quantreg::rq(dither(Y, type="symmetric", value=.01) ~ ., 
